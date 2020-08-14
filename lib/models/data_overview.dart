@@ -3,8 +3,8 @@ import 'package:meta/meta.dart';
 class StockOverviewModel {
   final String symbol;
   final String name;
-  final double price;
-  final double changesPercentage;
+  final num price;
+  final num changesPercentage;
   final num change;
 
   StockOverviewModel({
@@ -15,6 +15,7 @@ class StockOverviewModel {
     @required this.change
   });
 
+// Changed for IEX Cloud
   factory StockOverviewModel.fromJson(Map<String, dynamic> json) {
     return StockOverviewModel(
       symbol: json['symbol'],

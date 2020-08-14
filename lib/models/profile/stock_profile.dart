@@ -1,5 +1,6 @@
 class StockProfile {
   final num price;
+  final num beta;
   final num peRatio;
   final num volAvg;
   final num mktCap;
@@ -14,6 +15,7 @@ class StockProfile {
 
   StockProfile({
     this.price,
+    this.beta,
     this.peRatio,
     this.volAvg,
     this.mktCap,
@@ -30,13 +32,13 @@ class StockProfile {
   factory StockProfile.fromFinancialModeling(Map<String, dynamic> json) {
     return StockProfile(
       price: json['price'],
-      // beta: json['beta'],
-      volAvg: json['avgTotalVolume'],
-      mktCap: json['marketcap'],
-      changes: json['change'],
-      changesPercentage: json['changePercent'],
+      beta: json['beta'],
+      volAvg: json['volAvg'],
+      mktCap: json['mktCap'],
+      changes: json['changes'],
+      changesPercentage: json['changesPercent'],
       companyName: json['companyName'],
-      exchange: json['primaryExchange'],
+      exchange: json['exchange'],
       industry: json['industry'],
       description: json['description'],
       ceo: json['ceo'],
@@ -45,8 +47,6 @@ class StockProfile {
   }
 
   factory StockProfile.fromIEXCloud(Map<String, dynamic> jsonCompany, Map<String, dynamic> jsonQuote) {
-    //print ("StockProfile.fromIEX");
-    //print (jsonCompany);
     return StockProfile(
       price: jsonQuote['latestPrice'],
       peRatio: jsonQuote['peRatio'],

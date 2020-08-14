@@ -38,8 +38,6 @@ class SectorPerformanceBloc extends Bloc<SectorPerformanceEvent, SectorPerforman
       
     } catch (e, stack) {
       await SentryHelper(exception: e,  stackTrace: stack).report();
-      print (e);
-      print (stack);
       yield SectorPerformanceError(message: 'There was an unknown error');
     }
   }
