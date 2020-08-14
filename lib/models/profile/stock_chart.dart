@@ -20,7 +20,7 @@ class StockChart {
   factory StockChart.fromJson(Map<dynamic, dynamic> json) {
     return StockChart(
       date: json['date'],
-      close: json['close'],
+      close: json['close'].toDouble (),
       label: json['label'],
     );
   }

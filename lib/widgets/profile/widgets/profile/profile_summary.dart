@@ -54,7 +54,7 @@ class StatisticsWidget extends StatelessWidget {
       ListTile(
         contentPadding: EdgeInsets.zero,
         title: Text('52 WK Low', style: subtitleStyle),
-        trailing: _renderText(quote.dayLow)
+        trailing: _renderText(quote.yearLow)
       ),
     ];
   }

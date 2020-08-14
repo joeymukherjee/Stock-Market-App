@@ -5,7 +5,7 @@ class StockOverviewModel {
   final String name;
   final double price;
   final double changesPercentage;
-  final double change;
+  final num change;
 
   StockOverviewModel({
     @required this.symbol,
@@ -18,9 +18,9 @@ class StockOverviewModel {
   factory StockOverviewModel.fromJson(Map<String, dynamic> json) {
     return StockOverviewModel(
       symbol: json['symbol'],
-      name: json['name'],
-      price: json['price'],
-      changesPercentage: json['changesPercentage'],
+      name: json['companyName'],
+      price: json['latestPrice'].toDouble (),
+      changesPercentage: json['changePercent'],
       change: json['change'],
     );
   }

@@ -11,6 +11,19 @@ class MarketIndexModel {
     this.name
   });
 
+  static List<MarketIndexModel> fromMap (Map <String, dynamic> json) {  
+    List<MarketIndexModel> retVal = List ();
+    json.forEach((key, value) =>
+      retVal.add (MarketIndexModel (
+        symbol: value ['quote']['symbol'], 
+        change: value ['quote']['change'],
+        price: value ['quote']['latestPrice'].toDouble (),
+        name: value ['quote']['companyName'])
+      )
+    );
+    return retVal;
+  }
+  /*
   static List<MarketIndexModel> toList(List<dynamic> items) {
     return items
     .map((item) => MarketIndexModel.fromJson(item))
@@ -21,8 +34,10 @@ class MarketIndexModel {
     return MarketIndexModel(
       symbol: json['symbol'],
       change: json['change'],
-      price: json['price'],
-      name: json['name'],
+      // price: json['price'],
+      price: json ['latestPrice'],
+      // name: json['name'],
+      name: json ['companyName']
     );
-  }
+  }*/
 }

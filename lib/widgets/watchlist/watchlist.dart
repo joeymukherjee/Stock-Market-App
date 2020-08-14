@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_offline/flutter_offline.dart';
-import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
-import 'package:sma/shared/colors.dart';
-import 'package:sma/widgets/portfolio/widgets/heading/portfolio_heading.dart';
-import 'package:sma/widgets/portfolio/widgets/content/portfolio_folders.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
-class PortfolioSection extends StatelessWidget {
+import 'package:sma/bloc/watchlist/watchlist_bloc.dart';
+import 'package:sma/shared/colors.dart';
+import 'package:sma/widgets/watchlist/watchlist_stonks.dart';
+
+import 'package:sma/widgets/watchlist/widgets/heading/watchlist_heading.dart';
+import 'package:sma/widgets/widgets/empty_screen.dart';
+
+class WatchlistSection extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,18 +44,19 @@ class PortfolioSection extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           children: [
-            PortfolioHeadingSection(),
-            PortfolioFoldersSection()
+            WatchlistHeadingSection(),
+            WatchlistStonksSection()
           ]
         )
       ),
 
       onRefresh: () async {
-        // Reload folders section.
-       BlocProvider
-        .of<PortfolioFolderBloc>(context)
-        .add(FetchPortfolioFolderData());
+        // Reload stocks section.
+        BlocProvider
+        .of<WatchlistBloc>(context)
+        .add(FetchWatchlistData());
       },
     );
   }
+
 }

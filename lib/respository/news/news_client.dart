@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
-import 'package:sma/helpers/http_helper.dart';
+// import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
+import 'package:sma/helpers/iex_cloud_http_helper.dart';
+
 import 'package:sma/keys/api_keys.dart';
 import 'package:sma/models/news/news.dart';
 import 'package:sma/models/news/single_new_model.dart';

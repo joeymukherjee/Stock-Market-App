@@ -2,24 +2,25 @@ class StockQuote {
   final String symbol;
   final String name;
 
-  final double price;
-  final double changesPercentage;
-  final double change;
-  final double dayLow;
-  final double dayHigh;
-  final double yearHigh;
-  final double yearLow;
-  final double marketCap;
+  final num price;
+  final num changesPercentage;
+  final num change;
+  final num dayLow;
+  final num dayHigh;
+  final num yearHigh;
+  final num yearLow;
+  final num marketCap;
 
-  final int volume;
-  final int avgVolume;
+  final num volume;
+  final num avgVolume;
 
-  final double open;
-  final double previousClose;
-  final double eps;
-  final double pe;
+  final num open;
+  final num previousClose;
+  final num eps;
+  final num pe;
+  final num beta;
   
-  final int sharesOutstanding;
+  final num sharesOutstanding;
 
   StockQuote({
     this.symbol,
@@ -38,29 +39,52 @@ class StockQuote {
     this.previousClose,
     this.eps,
     this.pe,
+    this.beta,
     this.sharesOutstanding,
   });
 
-  factory StockQuote.fromJson(Map<String, dynamic> json) {
+  factory StockQuote.fromFinancialModeling(Map<String, dynamic> json) {
     return StockQuote(
       symbol: json['symbol'],
       name: json['name'],
       price: json['price'],
-      changesPercentage: json['changesPercentage'],
+      changesPercentage: json['changePercent'],
       change: json['change'],
       dayLow: json['dayLow'],
       dayHigh: json['dayHigh'],
       yearHigh: json['yearHigh'],
       yearLow: json['yearLow'],
-      marketCap: json['marketCap'],
+      marketCap: json['marketcap'],
       volume: json['volume'],
-      avgVolume: json['avgVolume'],
+      avgVolume: json['avgTotalVolume'],
       open: json['open'],
       previousClose: json['previousClose'],
-      eps: json['eps'],
-      pe: json['pe'],
+      eps: 1.0, // json['eps'].toDouble (),
+      pe: json['peRatio'].toDouble (),
       sharesOutstanding: json['sharesOutstanding'],
     );
   }
 
+  factory StockQuote.fromIEXCloud(Map<String, dynamic> jsonQuote, Map<String, dynamic> jsonStats) {
+    return StockQuote(
+      symbol: jsonQuote['symbol'],
+      name: jsonQuote['companyName'],
+      price: jsonQuote['latestPrice'],
+      changesPercentage: jsonQuote['changePercent'],
+      change: jsonQuote['change'],
+      dayLow: jsonQuote['low'],
+      dayHigh: jsonQuote['high'],
+      yearHigh: jsonStats['week52high'],
+      yearLow: jsonStats['week52low'],
+      marketCap: jsonStats['marketcap'],
+      volume: jsonQuote['latestVolume'],
+      avgVolume: jsonQuote['avgTotalVolume'],
+      open: jsonQuote['open'],
+      previousClose: jsonQuote['previousClose'],
+      eps: jsonStats['ttmEPS'],
+      beta: jsonStats['beta'],
+      pe: jsonStats['peRatio'],
+      sharesOutstanding: jsonStats['sharesOutstanding'],
+    );
+  }
 }

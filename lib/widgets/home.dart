@@ -5,6 +5,7 @@ import 'package:sma/shared/colors.dart';
 
 import 'package:sma/widgets/markets/markets_section.dart';
 import 'package:sma/widgets/news/news_section.dart';
+import 'package:sma/widgets/watchlist/watchlist.dart';
 import 'package:sma/widgets/portfolio/portfolio.dart';
 import 'package:sma/widgets/search/search_section.dart';
 
@@ -17,7 +18,11 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
 
   int _selectedIndex = 0;
 
+// TODO - create a real Portfolio page
+//        save portfolio
+
   final List<Widget> tabs = [
+    WatchlistSection(),
     PortfolioSection(),
     MarketsSection(),
     SearchSection(),
@@ -36,7 +41,7 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
             gap: 8,
             activeColor: Colors.white,
             iconSize: 24,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             duration: Duration(milliseconds: 800),
             tabBackgroundColor: Colors.white30,
             selectedIndex: _selectedIndex,
@@ -52,10 +57,14 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
     return [
       GButton(
         icon: FontAwesomeIcons.shapes,
-        text: 'Home',
+        text: 'Watchlist',
       ),
       GButton(
         icon: FontAwesomeIcons.suitcase,
+        text: 'Portfolios',
+      ),
+      GButton(
+        icon: FontAwesomeIcons.chartLine,
         text: 'Markets',
       ),
       GButton(

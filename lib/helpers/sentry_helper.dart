@@ -16,9 +16,9 @@ class SentryHelper {
     print(this.exception);
     print(this.stackTrace);
 
-    await SentryClient(dsn: kSentryDomainNameSystem).captureException(
+    /*await SentryClient(dsn: kSentryDomainNameSystem).captureException(
       exception: exception,
       stackTrace: stackTrace
-    );
+    );*/
   }
 }

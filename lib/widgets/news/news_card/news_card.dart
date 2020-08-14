@@ -8,7 +8,7 @@ class NewsCardWidget extends StatelessWidget {
 
   final String title;
   final List<SingleNewModel> news;
-
+  
   NewsCardWidget({
     @required this.title,
     @required this.news
@@ -16,13 +16,16 @@ class NewsCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print (MediaQuery.textScaleFactorOf(context));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Divider(),
         Text(this.title, style: kCompanyNameHeading),
         Container(
-          height: 225,
+          constraints: BoxConstraints.expand(
+            height:200 + 1.6 * 3 * MediaQuery.textScaleFactorOf(context) * Theme.of(context).textTheme.bodyText1.fontSize
+          ),
           child: ListView.builder(
             shrinkWrap: true,
             physics: BouncingScrollPhysics(),
@@ -41,7 +44,7 @@ class NewsCardWidget extends StatelessWidget {
 
   Widget _renderNewsArticle(SingleNewModel singleNew) {
 
-    print(singleNew.title);
+    // print(singleNew.title);
     return GestureDetector(
       onTap: () => launchUrl(singleNew.url),
       child: Container(

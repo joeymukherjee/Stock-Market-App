@@ -21,7 +21,7 @@ class MarketMovers extends StatelessWidget {
       padding: EdgeInsets.only(right: 14),
       child: Container(
         child: _buildContent(context),
-        width: 100,
+        width: 150, // TODO - should be based on font size
         decoration: BoxDecoration(
           borderRadius: kStandatBorder,
           color: color,
@@ -56,7 +56,7 @@ class MarketMovers extends StatelessWidget {
 
           // Change percentage.
           SizedBox(height: 5),
-          Text(data.changesPercentage),
+          Text(data.changesPercentage.toString()),
         ],
       ),
     );

@@ -9,8 +9,12 @@ class MarketMoversModelData {
   });
 
   static List<MarketActiveModel> toList(List<dynamic> items) {
-    return items
-    .map((item) => MarketActiveModel.fromJson(item))
-    .toList();
+    if (items != null) {
+      return items
+      .map((item) => MarketActiveModel.fromJson(item))
+      .toList();
+    } else {
+      return <MarketActiveModel>[];
+    }
   }
 }

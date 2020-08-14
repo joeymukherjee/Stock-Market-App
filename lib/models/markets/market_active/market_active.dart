@@ -1,8 +1,8 @@
 class MarketActiveModel {
   final String ticker;
   final double changes;
-  final String price;
-  final String changesPercentage;
+  final double price;
+  final double changesPercentage;
   final String companyName;
 
   MarketActiveModel({
@@ -15,10 +15,10 @@ class MarketActiveModel {
 
   factory MarketActiveModel.fromJson(Map<String, dynamic> json) {
     return MarketActiveModel(
-      ticker: json['ticker'],
+      ticker: json['symbol'], // json['ticker'],
       changes: json['changes'],
       price: json['price'],
-      changesPercentage: json['changesPercentage'],
+      changesPercentage: json['changePercent'], // json['changesPercentage'],
       companyName: json['companyName'],
     );
   }
