@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:sma/bloc/profile/profile_bloc.dart';
 import 'package:sma/models/markets/market_active/market_active.dart';
 import 'package:sma/shared/styles.dart';
@@ -31,6 +32,7 @@ class MarketMovers extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    var fmt = NumberFormat.decimalPercentPattern(locale: "en_US", decimalDigits: 2);
     return GestureDetector(
       
       onTap: () {
@@ -47,6 +49,14 @@ class MarketMovers extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          // Company Name
+          Text (data.companyName, 
+            style: TextStyle (
+              fontSize: 8,
+            ),
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ),
 
           // Ticker Symbol.
           Text(data.ticker, style: TextStyle(
@@ -56,7 +66,7 @@ class MarketMovers extends StatelessWidget {
 
           // Change percentage.
           SizedBox(height: 5),
-          Text(data.changesPercentage.toString()),
+          Text(fmt.format (data.changesPercentage)),
         ],
       ),
     );
