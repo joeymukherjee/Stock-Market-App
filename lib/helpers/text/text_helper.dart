@@ -4,12 +4,16 @@ String displayDefaultTextIfNull(String text) {
   return text.isEmpty ? '-' : text;
 }
 
-String formatText(dynamic text ) {
+String formatText(dynamic text) {
   return text == null ? '-' : NumberFormat().format(text);
 }
 
-String compactText(dynamic text ) {
-  return text == null ? '-' : NumberFormat.compact().format(text);
+String formatCurrencyText(dynamic text) {
+  return text == null ? '-' : NumberFormat.currency(name: '', symbol: '', decimalDigits: 2).format(text);
+}
+
+String compactText(dynamic text) {
+  return text == null ? '-' : NumberFormat.compactSimpleCurrency(decimalDigits: 2).format(text);
 }
 
 /// This function will add a + sign to an string
