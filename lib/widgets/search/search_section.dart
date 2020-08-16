@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sma/widgets/search/search.dart';
-import 'package:sma/widgets/search/search_box/seach_box.dart';
+import 'package:sma/widgets/search/search_box/search_box.dart';
 import 'package:sma/widgets/widgets/base_list.dart';
 import 'package:sma/widgets/widgets/standard/header.dart';
 
