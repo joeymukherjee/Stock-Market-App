@@ -74,7 +74,7 @@ class MarketsPerformance extends StatelessWidget {
 
   Widget _buildMarketMovers({MarketMoversModelData stonks, Color color}) {
     return Container(
-      height: 80,
+      height: 100,
       child: ListView.builder(
         physics: BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(vertical: 10),

@@ -19,7 +19,7 @@ class StandardHeader extends StatelessWidget {
 
   static const kPortfolioSubtitle = const TextStyle(
     color: Colors.white54,
-    fontSize: 24,
+    fontSize: 14,
     fontWeight: FontWeight.w800
   );
 
