@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sma/shared/colors.dart';
 
-Color determineColorBasedOnChange(double change ) {
+Color determineColorBasedOnChange(double change) {
   return change < 0 
     ? kNegativeColor 
     : kPositiveColor;
 }
 
-TextStyle determineTextStyleBasedOnChange(double change ) {
+TextStyle determineTextStyleBasedOnChange(double change) {
   return change < 0 
     ?  kNegativeChange
     : kPositiveChange;
