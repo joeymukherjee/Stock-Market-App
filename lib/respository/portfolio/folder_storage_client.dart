@@ -15,7 +15,6 @@ class PortfolioFolderStorageClient {
 
     final Finder finder = Finder(sortOrders: [SortOrder(Field.key, false)]);
     final response = await _store.find(await _database, finder: finder);
-
     return response
     .map((snapshot) => PortfolioFolderStorageModel.fromJson(snapshot.value))
     .toList();
@@ -24,8 +23,7 @@ class PortfolioFolderStorageClient {
   // Fetch all the stuff for a single folder
 
   Future<PortfolioFolderModel> fetchPortfolio(PortfolioFolderStorageModel storageModel) async {
-    print ("fetchPortfolio");
-    return null;
+    return PortfolioFolderModel (name: storageModel.name, exclude: storageModel.exclude);
   }
 
   // Checks if a name already exists in the Database.
