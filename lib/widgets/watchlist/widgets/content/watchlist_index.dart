@@ -45,7 +45,7 @@ class WatchlistIndexWidget extends StatelessWidget {
           children: [
 
             Text(index.name, style: _indexNameStyle, maxLines: 1),
-            Text(formatText(index.price), style: _indexPriceStyle),     
+            Text(formatCurrencyText(index.price), style: _indexPriceStyle),
 
             Container(
               decoration: BoxDecoration(

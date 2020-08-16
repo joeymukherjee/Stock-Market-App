@@ -108,7 +108,7 @@ class WatchlistStockCard extends StatelessWidget {
         
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text(formatText(data.price), 
+          child: Text(formatCurrencyText(data.price),
             textAlign: TextAlign.end, 
             style: _kStockPriceStyle
           ),
