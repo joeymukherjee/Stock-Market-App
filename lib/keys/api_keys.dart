@@ -27,10 +27,12 @@ const String kNewsKey = newsApi;
 /// Financial Modeling Prep API is used to power the Home, U.S Market and Profile Section.
 /// Now an API key is required which means that we won't be able to make infinite requests. :(
 /// To get your own API key go to: https://financialmodelingprep.com/developer/docs/
+/// JM - This is no longer used.  The free account only gives you 250
 const String kFinancialModelingPrepApi = financialAPI;
 
 /// IEX Cloud API Key
 /// Get an API key here: https://iexcloud.io/s/ae6531cc
+const bool useIEXCloudSandbox = true;
 final String kIEXCloudBaseUrl = 'cloud.iexapis.com';  // real
 const String kIEXCloudKey = kIEXCloudKey;
 final String kIEXCloudSandboxBaseUrl = 'sandbox.iexapis.com';  // sandbox
