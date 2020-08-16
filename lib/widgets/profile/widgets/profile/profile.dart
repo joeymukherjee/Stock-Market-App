@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sma/helpers/color/color_helper.dart';
 import 'package:sma/helpers/text/text_helper.dart';
@@ -9,6 +10,76 @@ import 'package:sma/widgets/profile/widgets/profile/profile_graph.dart';
 import 'package:sma/widgets/profile/widgets/profile/profile_summary.dart';
 
 import 'package:sma/widgets/profile/widgets/styles.dart';
+import 'package:sma/respository/profile/client.dart'; 
+
+class ChartSwitcher extends StatefulWidget {
+  final String ticker;
+  final Color color;
+  final List<StockChart> stockChart;
+
+  ChartSwitcher ({Key key, @required this.ticker, @required this.color, @required this.stockChart}) : super (key:key);
+  @override
+  _ChartSwitcherState createState() => _ChartSwitcherState(stockChart);
+}
+
+class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProviderStateMixin {
+  List<StockChart> stockChart;
+  _ChartSwitcherState (this.stockChart); // constructor
+  void setChart (List<StockChart> newValue) {setState (() { stockChart = newValue; });}
+
+  final List<Tab> cadences = <Tab>[
+    Tab (text: '1d'),
+    Tab (text: '5d'),
+    Tab (text: '1m'),
+    Tab (text: '3m'),
+    Tab (text: '1y'),
+    Tab (text: '5y')
+  ];
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, initialIndex: 4, length: cadences.length);
+    _tabController.addListener(_handleTabChange);
+  }
+
+  void _handleTabChange () async {
+    if (!_tabController.indexIsChanging) {
+      final String duration = cadences [_tabController.index].text;
+      try {
+        final Response<dynamic> stockChart = await ProfileClient().fetchChart (symbol: widget.ticker, duration: duration);
+        setChart (StockChart.toList(stockChart.data));
+      } catch (err) {
+        print ('Caught error $err');
+      }
+      build(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return
+      Column(
+        children: [
+          Container(
+            height: 250,
+            padding: EdgeInsets.only(top: 26),
+            child: SimpleTimeSeriesChart(
+              chart: stockChart,
+              color: widget.color
+            )
+          ),
+          TabBar (
+            tabs: cadences,
+            controller: _tabController,
+            isScrollable: true,
+          ),
+        ],
+      )
+    ;
+  }
+}
 
 class Profile extends StatelessWidget {
 
@@ -36,16 +107,7 @@ class Profile extends StatelessWidget {
             Text(this.stockQuote.name ?? '-', style: kProfileCompanyName),
 
             _buildPrice(),
-            
-            Container(
-              height: 250,
-              padding: EdgeInsets.only(top: 26),
-              child: SimpleTimeSeriesChart(
-                chart: this.stockChart,
-                color: this.color
-              )
-            ),
-
+            ChartSwitcher(ticker: this.stockQuote.symbol, color: this.color, stockChart: this.stockChart),
             StatisticsWidget(
               quote: stockQuote,
               profile: stockProfile,
@@ -63,7 +125,7 @@ class Profile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('\$${formatText(stockQuote.price)}', style: priceStyle),
+          Text('\$${formatCurrencyText(stockQuote.price)}', style: priceStyle),
           SizedBox(height: 8),
           Text('${determineTextBasedOnChange(stockQuote.change)}  (${determineTextPercentageBasedOnChange(stockQuote.changesPercentage)})', 
             style: determineTextStyleBasedOnChange(stockQuote.change)

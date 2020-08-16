@@ -12,15 +12,18 @@ class StockChart {
   });
 
   static List<StockChart> toList(List<dynamic> items) {
-    return items
+    var retVal = items
     .map((item) => StockChart.fromJson(item))
     .toList();
+    retVal.removeWhere((element) => element == null);
+    return (retVal);
   } 
 
   factory StockChart.fromJson(Map<dynamic, dynamic> json) {
+    if (json ['close'] == null) return (null);
     return StockChart(
-      date: json['date'],
-      close: json['close'].toDouble (),
+      date: json.containsKey ('minute') ? json['date'] + ' ' + json ['minute'] : json ['date'],
+      close: json['close'].toDouble (), // This has to stay converting or the plot doesn't work?
       label: json['label'],
     );
   }

@@ -21,3 +21,9 @@ const subtitleStyle = const TextStyle(
   fontSize: 14.5,
   height: 1.5
 );
+
+const summaryStyle = const TextStyle(
+  color: kLighterGray,
+  fontSize: 10,
+  height: 1.5
+);

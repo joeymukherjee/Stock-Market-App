@@ -14,7 +14,6 @@ class SimpleTimeSeriesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return charts.TimeSeriesChart(
       [
         charts.Series<RowData, DateTime>(
@@ -28,11 +27,11 @@ class SimpleTimeSeriesChart extends StatelessWidget {
         ),
       ],
 
-      animate: false,
+      animate: true,
           
       primaryMeasureAxis: charts.NumericAxisSpec(
-        tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
-        renderSpec: charts.NoneRenderSpec()
+        tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 1, zeroBound: false),
+        //renderSpec: charts.NoneRenderSpec()  // Turns off Y axis like Robinhood, but I kinda like the numbers.
       ),
       
     );
