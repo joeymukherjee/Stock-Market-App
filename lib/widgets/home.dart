@@ -56,7 +56,7 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
   List<GButton> _bottomNavigationBarItemItems() {
     return [
       GButton(
-        icon: FontAwesomeIcons.shapes,
+        icon: FontAwesomeIcons.eye,
         text: 'Watchlist',
       ),
       GButton(

@@ -28,8 +28,14 @@ class Attributions extends StatelessWidget {
     return BaseList(
       children: <Widget>[
         _buildContent(
-          title: 'Application Developed by Joshua García',
+          title: 'Application Developed by Joey Mukherjee',
           text: 'You can find this app\'s source code by tapping here.',
+          url: 'https://github.com/joeymukherjee/Stock-Market-App.git'
+        ),
+        Divider(),
+        _buildContent(
+          title: 'This code started from code done by Joshua García',
+          text: 'You can find his app\'s source code by tapping here.',
           url: 'https://github.com/JoshuaR503/Stock-Market-App'
         ),
         Divider(),
@@ -44,10 +50,17 @@ class Attributions extends StatelessWidget {
 
         Text('APIs used in this app:', style: _kHeadlineStyle),
         SizedBox(height: 18),
-        
+        _buildApisContent(
+          title: 'IEX Cloud API',
+          text: 'The Portfolio & Markets are powered by this API. Tap here to learn more.',
+          url: 'https://iexcloud.io/s/ae6531cc',
+          icon: FontAwesomeIcons.cloud,
+        ),
+
+        Divider(),
         _buildApisContent(
           title: 'Financial Modeling Prep API',
-          text: 'The Portfolio & Markets are powered by this API. Tap here to learn more.',
+          text: 'Nothing is done by this API, but was used originally.',
           url: 'https://financialmodelingprep.com/developer/docs/',
           icon: FontAwesomeIcons.shapes,
         ),
