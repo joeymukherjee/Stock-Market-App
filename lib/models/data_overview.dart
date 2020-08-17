@@ -21,8 +21,8 @@ class StockOverviewModel {
       symbol: json['symbol'],
       name: json['companyName'],
       price: json['latestPrice'].toDouble (),
-      changesPercentage: json['changePercent'],
-      change: json['change'],
+      changesPercentage: json['changePercent'].toDouble (),
+      change: json['change'].toDouble (),
     );
   }
 }
