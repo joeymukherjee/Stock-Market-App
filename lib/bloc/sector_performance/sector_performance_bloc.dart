@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:sma/helpers/iex_cloud_http_helper.dart';
+import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
 import 'package:sma/helpers/sentry_helper.dart';
 
 import 'package:sma/models/markets/market_active/market_active_model.dart';
@@ -27,7 +29,7 @@ class SectorPerformanceBloc extends Bloc<SectorPerformanceEvent, SectorPerforman
 
   Stream<SectorPerformanceState> _fetchData() async* {
     try {
-      final client = MarketClient();
+      final client = MarketClient(IEXFetchClient());
 
       yield SectorPerformanceLoaded(
         sectorPerformance: await client.fetchSectorPerformance(),

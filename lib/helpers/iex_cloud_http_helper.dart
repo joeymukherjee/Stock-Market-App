@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/keys/api_keys.dart';
+import 'package:sma/models/profile/market_index.dart';
+import 'package:sma/models/profile/stock_quote.dart';
+import 'package:sma/models/profile/stock_profile.dart';
 
-class FetchClient {
+class IEXFetchClient extends FetchClient {
   final String baseUrl = useIEXCloudSandbox ? kIEXCloudSandboxBaseUrl : kIEXCloudBaseUrl;
   final String iexCloudKey = useIEXCloudSandbox ? kIEXCloudSandboxKey : kIEXCloudKey;
 
@@ -23,21 +27,130 @@ class FetchClient {
     return await Dio().getUri(uri);
   }
 
-  Future<Response> iexCloudIndexesRequest () async {
+  StockQuote fromIEXCloudQuote (Map<String, dynamic> jsonQuote, Map<String, dynamic> jsonStats) {
+    if (jsonStats != null) {
+      return StockQuote(
+        symbol: jsonQuote['symbol'],
+        name: jsonQuote['companyName'],
+        price: jsonQuote['latestPrice'],
+        changesPercentage: jsonQuote['changePercent'],
+        change: jsonQuote['change'],
+        dayLow: jsonQuote['low'],
+        dayHigh: jsonQuote['high'],
+        volume: jsonQuote['latestVolume'],
+        avgVolume: jsonQuote['avgTotalVolume'],
+        open: jsonQuote['open'],
+        previousClose: jsonQuote['previousClose'],
+
+        yearHigh: jsonStats['week52high'],
+        yearLow: jsonStats['week52low'],
+        marketCap: jsonStats['marketcap'],
+        eps: jsonStats['ttmEPS'],
+        beta: jsonStats['beta'],
+        pe: jsonStats['peRatio'],
+        sharesOutstanding: jsonStats['sharesOutstanding'],
+      );
+    } else {
+      return StockQuote(
+        symbol: jsonQuote['symbol'],
+        name: jsonQuote['companyName'],
+        price: jsonQuote['latestPrice'],
+        changesPercentage: jsonQuote['changePercent'],
+        change: jsonQuote['change'],
+        dayLow: jsonQuote['low'],
+        dayHigh: jsonQuote['high'],
+        volume: jsonQuote['latestVolume'],
+        avgVolume: jsonQuote['avgTotalVolume'],
+        open: jsonQuote['open'],
+        previousClose: jsonQuote['previousClose'],
+      );
+    }
+  }
+
+  StockProfile fromIEXCloudProfile (Map<String, dynamic> jsonCompany, Map<String, dynamic> jsonQuote) {
+    return StockProfile(
+      price: jsonQuote['latestPrice'],
+      peRatio: jsonQuote['peRatio'],
+      volAvg: jsonQuote['avgTotalVolume'],
+      mktCap: jsonQuote['marketcap'],
+      changes: jsonQuote['change'],
+      changesPercentage: jsonQuote['changePercent'],
+      companyName: jsonCompany['companyName'],
+      exchange: jsonCompany['exchange'],
+      industry: jsonCompany['industry'],
+      description: jsonCompany['description'],
+      ceo: jsonCompany['CEO'],
+      sector: jsonCompany['sector'],
+    );
+  }
+
+  List<MarketIndexModel> fromIEXCloudIndexes (Map <String, dynamic> json) {
+    List<MarketIndexModel> retVal = List ();
+    json.forEach((key, value) =>
+      retVal.add (MarketIndexModel (
+        symbol: value ['quote']['symbol'],
+        change: value ['quote']['change'],
+        price: value ['quote']['latestPrice'],
+        name: value ['quote']['companyName'])
+      )
+    );
+    return retVal;
+  }
+
+  @override
+  Future<List<MarketIndexModel>> getIndexes () async {
     final Uri uri = Uri.https(baseUrl, '/stable/stock/market/batch/', {
       'symbols' : 'DIA,SPY,QQQ,IWM,VXX',
       'types': 'quote',
       'token': iexCloudKey
     });
     // print ("iex_cloud_http_helper - " + uri.toString());
-    return await Dio().getUri(uri);
+    Response response = await Dio().getUri(uri);
+    return fromIEXCloudIndexes (response.data);
   }
 
-  Future<Response> iexCloudChartRequest (String symbol, String duration) async {
-    return await iexCloudRequest ('/stable/stock/$symbol/chart/$duration/');
+  @override
+  Future<Response> getChart (String symbol, String duration) {
+    return iexCloudRequest ('/stable/stock/$symbol/chart/$duration/');
+  }
+
+  @override
+  Future<Response> getProfileStats (String symbol) {
+    return iexCloudRequest('/stable/stock/$symbol/stats');
+  }
+
+  @override
+  Future <StockQuote> getQuote (String symbol) async {
+    Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
+    return fromIEXCloudQuote (jsonQuote.data, null);
+  }
+
+  @override
+  Future <StockQuote> getQuoteFull (String symbol) async {
+    Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
+    Response jsonStats = await iexCloudRequest('/stable/stock/$symbol/stats');
+    return fromIEXCloudQuote (jsonQuote.data, jsonStats.data);
+  }
+
+  @override
+  Future<StockProfile> getCompanyProfile (String symbol) async {
+    Response jsonCompany = await iexCloudRequest('/stable/stock/$symbol/company');
+    Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/company');
+    return fromIEXCloudProfile(jsonCompany.data, jsonQuote.data);
+  }
+
+  @override
+  Future<Response> getMarketActives () {
+    return iexCloudRequest('/stable/stock/market/list/mostactive');
   }
   
-  Future<Response> iexCloudProfileStats (String symbol) async {
-    return await iexCloudRequest('/stable/stock/$symbol/stats');
+  @override
+  Future<Response> getMarketGainers () {
+    return iexCloudRequest('/stable/stock/market/list/gainers');
+  }
+
+  @override
+  Future<Response> getMarketLosers () {
+    return iexCloudRequest('/stable/stock/market/list/losers');
   }
 }

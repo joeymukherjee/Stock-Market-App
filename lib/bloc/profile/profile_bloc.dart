@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
+import 'package:sma/helpers/iex_cloud_http_helper.dart';
+import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
+
 import 'package:sma/helpers/sentry_helper.dart';
 import 'package:sma/models/profile/profile.dart';
 
@@ -14,7 +17,7 @@ part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   
-  final _httpClient = ProfileClient();
+  final _httpClient = ProfileClient(IEXFetchClient());
   final _storageClient = WatchlistStorageClient();
 
   @override

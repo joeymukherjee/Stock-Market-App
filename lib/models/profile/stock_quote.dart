@@ -42,49 +42,4 @@ class StockQuote {
     this.beta,
     this.sharesOutstanding,
   });
-
-  factory StockQuote.fromFinancialModeling(Map<String, dynamic> json) {
-    return StockQuote(
-      symbol: json['symbol'],
-      name: json['name'],
-      price: json['price'],
-      changesPercentage: json['changesPercentage'],
-      change: json['change'],
-      dayLow: json['dayLow'],
-      dayHigh: json['dayHigh'],
-      yearHigh: json['yearHigh'],
-      yearLow: json['yearLow'],
-      marketCap: json['marketCap'],
-      volume: json['volume'],
-      avgVolume: json['avgVolume'],
-      open: json['open'],
-      previousClose: json['previousClose'],
-      eps: json['eps'],
-      pe: json['pe'],
-      sharesOutstanding: json['sharesOutstanding'],
-    );
-  }
-
-  factory StockQuote.fromIEXCloud(Map<String, dynamic> jsonQuote, Map<String, dynamic> jsonStats) {
-    return StockQuote(
-      symbol: jsonQuote['symbol'],
-      name: jsonQuote['companyName'],
-      price: jsonQuote['latestPrice'],
-      changesPercentage: jsonQuote['changePercent'],
-      change: jsonQuote['change'],
-      dayLow: jsonQuote['low'],
-      dayHigh: jsonQuote['high'],
-      yearHigh: jsonStats['week52high'],
-      yearLow: jsonStats['week52low'],
-      marketCap: jsonStats['marketcap'],
-      volume: jsonQuote['latestVolume'],
-      avgVolume: jsonQuote['avgTotalVolume'],
-      open: jsonQuote['open'],
-      previousClose: jsonQuote['previousClose'],
-      eps: jsonStats['ttmEPS'],
-      beta: jsonStats['beta'],
-      pe: jsonStats['peRatio'],
-      sharesOutstanding: jsonStats['sharesOutstanding'],
-    );
-  }
 }

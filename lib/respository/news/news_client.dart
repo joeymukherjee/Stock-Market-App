@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
-
-// import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
-import 'package:sma/helpers/iex_cloud_http_helper.dart';
-
 import 'package:sma/keys/api_keys.dart';
 import 'package:sma/models/news/news.dart';
 import 'package:sma/models/news/single_new_model.dart';
 
-class NewsClient extends FetchClient {
+class NewsClient {
 
   Future<NewsDataModel> fetchNews({String title}) async {
 
@@ -19,7 +15,7 @@ class NewsClient extends FetchClient {
       'apikey': kNewsKey
     });
 
-    final Response<dynamic> newsResponse = await super.fetchData(uri: newsUri);
+    final Response<dynamic> newsResponse = await Dio().getUri (newsUri);
     final List<SingleNewModel> newsOverviews = SingleNewModel.toList(newsResponse.data['articles']);
 
     return NewsDataModel(

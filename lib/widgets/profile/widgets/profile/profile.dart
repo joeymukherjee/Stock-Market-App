@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sma/helpers/color/color_helper.dart';
+import 'package:sma/helpers/iex_cloud_http_helper.dart';
+import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
+
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/models/profile/stock_chart.dart';
 import 'package:sma/models/profile/stock_profile.dart';
@@ -48,7 +51,7 @@ class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProvider
     if (!_tabController.indexIsChanging) {
       final String duration = cadences [_tabController.index].text;
       try {
-        final Response<dynamic> stockChart = await ProfileClient().fetchChart (symbol: widget.ticker, duration: duration);
+        final Response<dynamic> stockChart = await ProfileClient(IEXFetchClient()).fetchChart (symbol: widget.ticker, duration: duration);
         setChart (StockChart.toList(stockChart.data));
       } catch (err) {
         print ('Caught error $err');

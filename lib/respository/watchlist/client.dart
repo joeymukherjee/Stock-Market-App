@@ -1,18 +1,19 @@
-import 'package:dio/dio.dart';
-// import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
-import 'package:sma/helpers/iex_cloud_http_helper.dart';
+import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/models/data_overview.dart';
 import 'package:sma/models/profile/market_index.dart';
+import 'package:sma/models/profile/stock_quote.dart';
 
-class WatchlistClient extends FetchClient {
+class WatchlistClient {
+  final FetchClient fetchClient;
+  WatchlistClient (this.fetchClient);
 
   Future<List<MarketIndexModel>> fetchIndexes() async {
-    final Response<dynamic> response = await super.iexCloudIndexesRequest();
-    return MarketIndexModel.fromMap(response.data);
+    final List<MarketIndexModel> response = await fetchClient.getIndexes();
+    return response;
   }
 
   Future<StockOverviewModel> fetchStocks({String symbol}) async {
-    final Response<dynamic> response = await super.iexCloudRequest('/stable/stock/$symbol/quote');
-    return StockOverviewModel.fromJson(response.data);
+    final StockQuote stockQuote = await fetchClient.getQuote(symbol);
+    return StockOverviewModel.fromStockQuote(stockQuote);
   }
 }

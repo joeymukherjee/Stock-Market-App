@@ -28,38 +28,4 @@ class StockProfile {
     this.ceo,
     this.sector,
   });
-
-  factory StockProfile.fromFinancialModeling(Map<String, dynamic> json) {
-    return StockProfile(
-      price: json['price'],
-      beta: json['beta'],
-      volAvg: json['volAvg'],
-      mktCap: json['mktCap'],
-      changes: json['changes'],
-      changesPercentage: json['changesPercent'],
-      companyName: json['companyName'],
-      exchange: json['exchange'],
-      industry: json['industry'],
-      description: json['description'],
-      ceo: json['ceo'],
-      sector: json['sector'],
-    );
-  }
-
-  factory StockProfile.fromIEXCloud(Map<String, dynamic> jsonCompany, Map<String, dynamic> jsonQuote) {
-    return StockProfile(
-      price: jsonQuote['latestPrice'],
-      peRatio: jsonQuote['peRatio'],
-      volAvg: jsonQuote['avgTotalVolume'],
-      mktCap: jsonQuote['marketcap'],
-      changes: jsonQuote['change'].toDouble (),
-      changesPercentage: jsonQuote['changePercent'],
-      companyName: jsonCompany['companyName'],
-      exchange: jsonCompany['exchange'],
-      industry: jsonCompany['industry'],
-      description: jsonCompany['description'],
-      ceo: jsonCompany['CEO'],
-      sector: jsonCompany['sector'],
-    );
-  }
 }

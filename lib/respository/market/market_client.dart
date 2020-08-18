@@ -1,19 +1,17 @@
 import 'package:dio/dio.dart';
-
-// TODO - move the iex/financial stuff to a differnt file and keep this generic
-// import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
-import 'package:sma/helpers/iex_cloud_http_helper.dart';
-
+import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/models/markets/market_active/market_active_model.dart';
 import 'package:sma/models/markets/sector_performance/sector_performance_model.dart';
 
-class MarketClient extends FetchClient {
+class MarketClient {
+  final FetchClient fetchClient;
+  MarketClient(this.fetchClient);
 
   /// Fetches sector performance and returns [SectorPerformanceModel].
   Future<SectorPerformanceModel> fetchSectorPerformance() async {
 
-    final Response<dynamic> response = await super.fetchData(
-      uri: Uri.https('www.alphavantage.co', '/query', {
+    final Response<dynamic> response = await Dio().getUri(
+      Uri.https('www.alphavantage.co', '/query', {
         'function': 'SECTOR',
         'apikey': 'demo'
       })
@@ -26,8 +24,7 @@ class MarketClient extends FetchClient {
 
   /// Fetches market most active stocks and retuns [MarketMoversModelData].
   Future<MarketMoversModelData> fetchMarketActive() async {
-    // final Response<dynamic> response = await super.financialModelRequest('/api/v3/stock/actives');
-    final Response<dynamic> response = await super.iexCloudRequest('/stable/stock/market/list/mostactive');
+    final Response<dynamic> response = await fetchClient.getMarketActives();
     return MarketMoversModelData(
       // marketActiveModelData: MarketMoversModelData.toList(response.data['mostActiveStock'])
       marketActiveModelData: MarketMoversModelData.toList(response.data)
@@ -36,8 +33,7 @@ class MarketClient extends FetchClient {
 
   /// Fetches market most gainer stocks and retuns [MarketMoversModelData].
   Future<MarketMoversModelData> fetchMarketGainers() async {
-    // final Response<dynamic> response = await super.financialModelRequest('/api/v3/stock/gainers');
-    final Response<dynamic> response = await super.iexCloudRequest('/stable/stock/market/list/gainers');
+    final Response<dynamic> response = await fetchClient.getMarketGainers();
     return MarketMoversModelData(
       marketActiveModelData: MarketMoversModelData.toList(response.data) // ['mostGainerStock'])
     );
@@ -45,8 +41,7 @@ class MarketClient extends FetchClient {
 
   /// Fetches market most loser stocks and retuns [MarketMoversModelData].
   Future<MarketMoversModelData> fetchMarketLosers() async {
-    // final Response<dynamic> response = await super.financialModelRequest('/api/v3/stock/losers');
-    final Response<dynamic> response = await super.iexCloudRequest('/stable/stock/market/list/losers');
+    final Response<dynamic> response = await fetchClient.getMarketLosers();
     return MarketMoversModelData(
       marketActiveModelData: MarketMoversModelData.toList(response.data) // ['mostLoserStock'])
     );

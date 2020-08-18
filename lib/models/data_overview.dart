@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:sma/models/profile/stock_quote.dart';
 
 class StockOverviewModel {
   final String symbol;
@@ -15,14 +16,10 @@ class StockOverviewModel {
     @required this.change
   });
 
-// Changed for IEX Cloud
-  factory StockOverviewModel.fromJson(Map<String, dynamic> json) {
-    return StockOverviewModel(
-      symbol: json['symbol'],
-      name: json['companyName'],
-      price: json['latestPrice'].toDouble (),
-      changesPercentage: json['changePercent'].toDouble (),
-      change: json['change'].toDouble (),
-    );
-  }
+  StockOverviewModel.fromStockQuote(StockQuote stockQuote) :
+    this.symbol = stockQuote.symbol,
+    this.name = stockQuote.symbol,
+    this.price = stockQuote.price,
+    this.change = stockQuote.change,
+    this.changesPercentage = stockQuote.changesPercentage;
 }
