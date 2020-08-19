@@ -12,12 +12,12 @@ class StandardHeader extends StatelessWidget {
     @required this.action
   });
 
-  static const kPortfolioHeaderTitle = const TextStyle(
+  static const kStandardHeaderTitle = const TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold
   );
 
-  static const kPortfolioSubtitle = const TextStyle(
+  static const kStandardSubtitle = const TextStyle(
     color: Colors.white54,
     fontSize: 14,
     fontWeight: FontWeight.w800
@@ -32,12 +32,12 @@ class StandardHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Expanded(flex: 10, child: Text(this.title, style: kPortfolioHeaderTitle),),
+            Expanded(flex: 10, child: Text(this.title, style: kStandardHeaderTitle),),
             this.action
           ],
         ),
 
-        Text(this.subtitle, style: kPortfolioSubtitle),
+        Text(this.subtitle, style: kStandardSubtitle),
       ],
     );
   }
