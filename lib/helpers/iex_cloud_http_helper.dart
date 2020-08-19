@@ -6,6 +6,8 @@ import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
 class IEXFetchClient extends FetchClient {
+  String getAttribution () { return "IEX Cloud"; }
+
   final String baseUrl = useIEXCloudSandbox ? kIEXCloudSandboxBaseUrl : kIEXCloudBaseUrl;
   final String iexCloudKey = useIEXCloudSandbox ? kIEXCloudSandboxKey : kIEXCloudKey;
 

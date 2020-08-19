@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:sma/helpers/iex_cloud_http_helper.dart';
-import 'package:sma/helpers/financial_modeling_prep_http_helper.dart';
 import 'package:sma/helpers/sentry_helper.dart';
 
 import 'package:sma/models/data_overview.dart';
@@ -12,6 +10,7 @@ import 'package:sma/models/storage/storage.dart';
 
 import 'package:sma/respository/watchlist/client.dart';
 import 'package:sma/respository/watchlist/storage_client.dart';
+import 'package:sma/helpers/fetch_client.dart';
 
 part 'watchlist_event.dart';
 part 'watchlist_state.dart';
@@ -19,7 +18,7 @@ part 'watchlist_state.dart';
 class WatchlistBloc extends Bloc<WatchlistEvent, WatchlistState> {
   
   final _databaseRepository = WatchlistStorageClient();
-  final _repository = WatchlistClient(IEXFetchClient());
+  final _repository = WatchlistClient(globalFetchClient);
 
   @override
   WatchlistState get initialState => WatchlistInitial();

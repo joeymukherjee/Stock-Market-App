@@ -6,6 +6,8 @@ import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
 class FNPFetchClient extends FetchClient {
+  String getAttribution () { return "Financial Modeling Prep"; }
+
   Future<Response> fetchData({Uri uri}) async {
     return await Dio().getUri(uri);
   }
