@@ -27,7 +27,7 @@ String determineTextBasedOnChange(double change) {
 /// This function will add a + sign to an string
 /// based on the [change].
 String determineTextPercentageBasedOnChange(double change) {
-  return change < 0 
+  return (change == null || change < 0)
     ? '${formatText(change)}%' 
     : '+${formatText(change)}%';
 }
