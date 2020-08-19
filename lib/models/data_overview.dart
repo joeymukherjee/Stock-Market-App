@@ -18,7 +18,7 @@ class StockOverviewModel {
 
   StockOverviewModel.fromStockQuote(StockQuote stockQuote) :
     this.symbol = stockQuote.symbol,
-    this.name = stockQuote.symbol,
+    this.name = stockQuote.name,
     this.price = stockQuote.price,
     this.change = stockQuote.change,
     this.changesPercentage = stockQuote.changesPercentage;
