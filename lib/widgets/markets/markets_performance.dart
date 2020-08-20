@@ -37,9 +37,6 @@ class MarketsPerformance extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               
-              SectorPerformance(performanceData: state.sectorPerformance),
-              Divider(height: 2),
-
               // Section title.
               Padding(
                 padding: EdgeInsets.only(top: 16, bottom: 8),
@@ -59,6 +56,9 @@ class MarketsPerformance extends StatelessWidget {
                 child: Text('Top Losers', style: kSubtitleStyling),
               ),
               _buildMarketMovers(stonks: state.marketLoser, color: Colors.red),
+
+              Divider(height: 2),
+              SectorPerformance(performanceData: state.sectorPerformance),
             ]
           );
         }
