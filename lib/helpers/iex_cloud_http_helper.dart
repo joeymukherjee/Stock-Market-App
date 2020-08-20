@@ -57,9 +57,9 @@ class IEXFetchClient extends FetchClient {
       return StockQuote(
         symbol: jsonQuote['symbol'],
         name: jsonQuote['companyName'],
-        price: jsonQuote['latestPrice'],
-        changesPercentage: jsonQuote['changePercent'],
-        change: jsonQuote['change'],
+        price: jsonQuote['latestPrice'].toDouble (),
+        changesPercentage: jsonQuote['changePercent'].toDouble (),
+        change: jsonQuote['change'].toDouble (),
         dayLow: jsonQuote['low'],
         dayHigh: jsonQuote['high'],
         volume: jsonQuote['latestVolume'],
@@ -92,8 +92,8 @@ class IEXFetchClient extends FetchClient {
     json.forEach((key, value) =>
       retVal.add (MarketIndexModel (
         symbol: value ['quote']['symbol'],
-        change: value ['quote']['change'],
-        price: value ['quote']['latestPrice'],
+        change: value ['quote']['change'].toDouble (),
+        price: value ['quote']['latestPrice'].toDouble (),
         name: value ['quote']['companyName'])
       )
     );
