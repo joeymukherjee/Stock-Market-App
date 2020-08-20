@@ -7,10 +7,10 @@ const kStandatBorder = const BorderRadius.all(Radius.circular(6));
 /// This border is slightly more sharp than the standard boder.
 const kSharpBorder = const BorderRadius.all(Radius.circular(2));
 
-/// This is the common text styling for a subtile. 
+/// This is the common text styling for a subtile on markets performance.
 const kSubtitleStyling = const TextStyle(
   color: kGray,
-  fontSize: 24,
+  fontSize: 15,
   fontWeight: FontWeight.w800
 );
 
