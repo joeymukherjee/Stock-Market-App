@@ -18,9 +18,6 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
 
   int _selectedIndex = 0;
 
-// TODO - create a real Portfolio page
-//        save portfolio
-
   final List<Widget> tabs = [
     WatchlistSection(),
     PortfolioSection(),
