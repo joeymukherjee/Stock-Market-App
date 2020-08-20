@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:sma/helpers/iex_cloud_http_helper.dart';
 import 'package:sma/models/profile/market_index.dart';
+import 'package:sma/models/markets/market_active/market_active.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 
@@ -12,9 +13,9 @@ abstract class FetchClient {
   Future <StockQuote> getQuote (String symbol);
   Future <StockQuote> getQuoteFull (String symbol);
   Future <StockProfile> getCompanyProfile (String symbol);
-  Future <Response> getMarketActives ();
-  Future <Response> getMarketGainers ();
-  Future <Response> getMarketLosers ();
+  Future <List<MarketActiveModel>> getMarketActives ();
+  Future <List<MarketActiveModel>> getMarketGainers ();
+  Future <List<MarketActiveModel>> getMarketLosers ();
 }
 
 final FetchClient globalFetchClient = IEXFetchClient();  // How do we make this selectable by user?  Do we want that?

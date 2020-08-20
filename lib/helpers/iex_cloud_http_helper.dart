@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/keys/api_keys.dart';
+import 'package:sma/models/markets/market_active/market_active.dart';
 import 'package:sma/models/profile/market_index.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
@@ -99,6 +100,26 @@ class IEXFetchClient extends FetchClient {
     return retVal;
   }
 
+  List<MarketActiveModel> fromIEXCloudActives(List<dynamic> items) {
+    if (items != null) {
+      return items
+      .map((item) => fromIEXCloudActivesSingle(item))
+      .toList();
+    } else {
+      return <MarketActiveModel>[];
+    }
+  }
+
+  MarketActiveModel fromIEXCloudActivesSingle (Map<String, dynamic> json) {
+    return MarketActiveModel(
+      ticker: json['symbol'],
+      changes: json['change'] != null ? json['change'].toDouble () : 0.0,
+      price: json['latestPrice'] != null ? json['latestPrice'].toDouble () : 0.0,
+      changesPercentage: json['changePercent'] != null ? json['changePercent'].toDouble () : 0.0,
+      companyName: json['companyName'],
+    );
+  }
+
   @override
   Future<List<MarketIndexModel>> getIndexes () async {
     final Uri uri = Uri.https(baseUrl, '/stable/stock/market/batch/', {
@@ -142,17 +163,20 @@ class IEXFetchClient extends FetchClient {
   }
 
   @override
-  Future<Response> getMarketActives () {
-    return iexCloudRequest('/stable/stock/market/list/mostactive');
+  Future<List<MarketActiveModel>> getMarketActives () async {
+    Response json = await iexCloudRequest('/stable/stock/market/list/mostactive');
+    return fromIEXCloudActives(json.data);
   }
   
   @override
-  Future<Response> getMarketGainers () {
-    return iexCloudRequest('/stable/stock/market/list/gainers');
+  Future<List<MarketActiveModel>> getMarketGainers () async {
+    Response json = await iexCloudRequest('/stable/stock/market/list/gainers');
+    return fromIEXCloudActives(json.data);
   }
 
   @override
-  Future<Response> getMarketLosers () {
-    return iexCloudRequest('/stable/stock/market/list/losers');
+  Future<List<MarketActiveModel>> getMarketLosers () async {
+    Response json = await iexCloudRequest('/stable/stock/market/list/losers');
+    return fromIEXCloudActives(json.data);
   }
 }

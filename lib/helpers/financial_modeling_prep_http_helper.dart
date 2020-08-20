@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/keys/api_keys.dart';
 import 'package:sma/models/profile/market_index.dart';
+import 'package:sma/models/markets/market_active/market_active.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
@@ -79,6 +80,26 @@ class FNPFetchClient extends FetchClient {
     );
   }
 
+  List<MarketActiveModel> fromFinancialModelingActives(List<dynamic> items) {
+    if (items != null) {
+      return items
+      .map((item) => fromFinancialModelingSingle(item))
+      .toList();
+    } else {
+      return <MarketActiveModel>[];
+    }
+  }
+
+  MarketActiveModel fromFinancialModelingSingle (Map<String, dynamic> json) {
+    return MarketActiveModel(
+      ticker: json['ticker'],
+      changes: json['changes'].toDouble (),
+      price: json['price'].toDouble (),
+      changesPercentage: json['changesPercentage'].toDouble (),
+      companyName: json['companyName'],
+    );
+  }
+
   @override
   Future<List<MarketIndexModel>> getIndexes () async {
     String symbols = 'DIA,SPY,QQQ,IWM,VXX';
@@ -145,17 +166,20 @@ class FNPFetchClient extends FetchClient {
   }
 
   @override
-  Future<Response> getMarketActives () {
-    return financialModelRequest('/api/v3/stock/actives');
+  Future<List<MarketActiveModel>> getMarketActives () async {
+    Response json = await financialModelRequest('/api/v3/stock/actives');
+    return fromFinancialModelingActives(json.data);
   }
 
   @override
-  Future<Response> getMarketGainers () {
-    return financialModelRequest('/api/v3/stock/gainers');
+  Future<List<MarketActiveModel>> getMarketGainers () async {
+    Response json = await financialModelRequest('/api/v3/stock/gainers');
+    return fromFinancialModelingActives(json.data);
   }
 
   @override
-  Future<Response> getMarketLosers () {
-    return financialModelRequest('/api/v3/stock/losers');
+  Future<List<MarketActiveModel>> getMarketLosers () async {
+    Response json = await financialModelRequest('/api/v3/stock/losers');
+    return fromFinancialModelingActives(json.data);
   }
 }

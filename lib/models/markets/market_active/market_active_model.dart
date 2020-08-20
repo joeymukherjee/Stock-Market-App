@@ -7,14 +7,4 @@ class MarketMoversModelData {
   MarketMoversModelData({
     @required this.marketActiveModelData
   });
-
-  static List<MarketActiveModel> toList(List<dynamic> items) {
-    if (items != null) {
-      return items
-      .map((item) => MarketActiveModel.fromJson(item))
-      .toList();
-    } else {
-      return <MarketActiveModel>[];
-    }
-  }
 }
