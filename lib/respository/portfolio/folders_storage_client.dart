@@ -3,26 +3,26 @@ import 'package:sma/helpers/database_helper.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/models/storage/portfolio_folder_storage.dart';
 
-class PortfolioFolderStorageClient {
+class PortfolioFoldersStorageClient {
 
-  final StoreRef<int, Map<String, dynamic>>  _store = intMapStoreFactory.store('portfolio_folder_storage_client');
+  final StoreRef<int, Map<String, dynamic>>  _store = intMapStoreFactory.store('portfolio_folders_storage_client');
 
   // Sembast Database.
   Future<Database> get _database async => await DatabaseManager.instance.database;
 
   // Gets all the names stored.
-  Future<List<PortfolioFolderStorageModel>> fetch() async {
+  Future<List<PortfolioFoldersStorageModel>> fetch() async {
 
     final Finder finder = Finder(sortOrders: [SortOrder(Field.key, false)]);
     final response = await _store.find(await _database, finder: finder);
     return response
-    .map((snapshot) => PortfolioFolderStorageModel.fromJson(snapshot.value))
+    .map((snapshot) => PortfolioFoldersStorageModel.fromJson(snapshot.value))
     .toList();
   }
 
   // Fetch all the stuff for a single folder
 
-  Future<PortfolioFolderModel> fetchPortfolio(PortfolioFolderStorageModel storageModel) async {
+  Future<PortfolioFolderModel> fetchPortfolio(PortfolioFoldersStorageModel storageModel) async {
     return PortfolioFolderModel (name: storageModel.name, exclude: storageModel.exclude);
   }
 
@@ -36,7 +36,7 @@ class PortfolioFolderStorageClient {
   }
 
   // Saves a name in the database.
-  Future<void> save({PortfolioFolderStorageModel storageModel}) async {
+  Future<void> save({PortfolioFoldersStorageModel storageModel}) async {
     
     final bool isSaved = await nameExists(name: storageModel.name);
 

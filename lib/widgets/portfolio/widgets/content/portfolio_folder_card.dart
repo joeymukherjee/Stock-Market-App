@@ -52,8 +52,8 @@ class PortfolioFolderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PortfolioFolderBloc, PortfolioFolderState> (
-      builder: (BuildContext context, PortfolioFolderState state) {
+    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
+      builder: (BuildContext context, PortfolioFoldersState state) {
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
@@ -73,12 +73,12 @@ class PortfolioFolderCard extends StatelessWidget {
             onPressed: () {
 
               // Trigger fetch event.
-              if (state is PortfolioFolderLoadedEditingState) {
+              if (state is PortfolioFoldersLoadedEditingState) {
                 print ("edit the properties!!");
               } else {
                 BlocProvider
-                  .of<PortfolioFolderBloc>(context)
-                  .add(FetchPortfolioFolderData());
+                  .of<PortfolioFoldersBloc>(context)
+                  .add(FetchPortfolioFoldersData());
               }
 
               // Go to portfolio folder contents.
@@ -91,9 +91,9 @@ class PortfolioFolderCard extends StatelessWidget {
   }
 
   Widget _buildFolderData() {
-    return BlocBuilder<PortfolioFolderBloc, PortfolioFolderState> (
-      builder: (BuildContext context, PortfolioFolderState state) {
-        if (state is PortfolioFolderLoadedEditingState) {
+    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
+      builder: (BuildContext context, PortfolioFoldersState state) {
+        if (state is PortfolioFoldersLoadedEditingState) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -113,7 +113,7 @@ class PortfolioFolderCard extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                         onPressed: () {
-                          BlocProvider.of<PortfolioFolderBloc>(context).add(DeleteFolder(name: data.name));
+                          BlocProvider.of<PortfolioFoldersBloc>(context).add(DeleteFolder(name: data.name));
                           Navigator.pop(context);
                         },
                         color: Colors.red,

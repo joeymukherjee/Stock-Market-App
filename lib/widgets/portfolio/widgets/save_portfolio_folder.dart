@@ -7,7 +7,7 @@ class SavePortfolioWidget extends StatefulWidget {
 
   final String name;
   final bool exclude;
-  final PortfolioFolderStorageModel storageModel;
+  final PortfolioFoldersStorageModel storageModel;
 
   SavePortfolioWidget({
     @required this.name,
@@ -47,13 +47,10 @@ class _SavePortfolioWidgetState extends State<SavePortfolioWidget> {
   }
 
   void onPressedHandler() {
-
-print (name);
-print (this.widget.name);
       changeState(name: this.widget.name, exclude: this.widget.exclude);
 
       BlocProvider
-      .of<PortfolioFolderBloc>(context)
+      .of<PortfolioFoldersBloc>(context)
       .add(SaveFolder(storageModel: this.widget.storageModel));
       Navigator.pop(context);
   }

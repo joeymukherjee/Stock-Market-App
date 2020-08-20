@@ -12,27 +12,27 @@ class PortfolioHeadingSection extends StatelessWidget {
 
   void reload (context) {
     BlocProvider
-        .of<PortfolioFolderBloc>(context)
-        .add(FetchPortfolioFolderData());
+        .of<PortfolioFoldersBloc>(context)
+        .add(FetchPortfolioFoldersData());
   } // TODO - figure out how to reload this folders list
 
-  void toggleEditing (BuildContext context, PortfolioFolderState state) {
-    if (state is PortfolioFolderLoadedEditingState) {
+  void toggleEditing (BuildContext context, PortfolioFoldersState state) {
+    if (state is PortfolioFoldersLoadedEditingState) {
       BlocProvider
-        .of<PortfolioFolderBloc>(context)
-        .add(FetchPortfolioFolderData());
+        .of<PortfolioFoldersBloc>(context)
+        .add(FetchPortfolioFoldersData());
     } else {
       BlocProvider
-        .of<PortfolioFolderBloc>(context)
-        .add(PortfolioFolderEditingEvent());
+        .of<PortfolioFoldersBloc>(context)
+        .add(PortfolioFoldersEditingEvent());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PortfolioFolderBloc, PortfolioFolderState> (
-      builder: (BuildContext context, PortfolioFolderState state) {
-        bool _isEditing = (state is PortfolioFolderLoadedEditingState);
+    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
+      builder: (BuildContext context, PortfolioFoldersState state) {
+        bool _isEditing = (state is PortfolioFoldersLoadedEditingState);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(

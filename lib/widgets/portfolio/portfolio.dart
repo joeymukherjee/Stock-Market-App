@@ -50,8 +50,8 @@ class PortfolioSection extends StatelessWidget {
       onRefresh: () async {
         // Reload folders section.
        BlocProvider
-        .of<PortfolioFolderBloc>(context)
-        .add(FetchPortfolioFolderData());
+        .of<PortfolioFoldersBloc>(context)
+        .add(FetchPortfolioFoldersData());
       },
     );
   }

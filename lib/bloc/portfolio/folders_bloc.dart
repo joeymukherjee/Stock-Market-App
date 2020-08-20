@@ -11,55 +11,55 @@ import 'package:sma/respository/portfolio/folder_storage_client.dart';
 part 'folder_event.dart';
 part 'folder_state.dart';
 
-class PortfolioFolderBloc extends Bloc<PortfolioFolderEvent, PortfolioFolderState> {
+class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersState> {
   
-  final _databaseRepository = PortfolioFolderStorageClient();
+  final _databaseRepository = PortfolioFoldersStorageClient();
 
   @override
-  PortfolioFolderState get initialState => PortfolioFolderInitial();
+  PortfolioFoldersState get initialState => PortfolioFoldersInitial();
 
   @override
-  Stream<PortfolioFolderState> mapEventToState(PortfolioFolderEvent event) async* {
+  Stream<PortfolioFoldersState> mapEventToState(PortfolioFoldersEvent event) async* {
 
-    if (event is PortfolioFolderEditingEvent) {
+    if (event is PortfolioFoldersEditingEvent) {
       yield* _loadContent(event);
     }
 
-    if (event is FetchPortfolioFolderData) {
-      yield PortfolioFolderLoading();
+    if (event is FetchPortfolioFoldersData) {
+      yield PortfolioFoldersLoading();
       yield* _loadContent(event);
     }
 
     if (event is SaveFolder) {
-      yield PortfolioFolderLoading();
+      yield PortfolioFoldersLoading();
       await this._databaseRepository.save(storageModel: event.storageModel);
       yield* _loadContent(event);
     }
 
     if (event is DeleteFolder) {
-      yield PortfolioFolderLoading();
+      yield PortfolioFoldersLoading();
       await this._databaseRepository.delete(name: event.name);
       yield* _loadContent(event);
     }
   }
 
-  Stream<PortfolioFolderState> _loadContent(PortfolioFolderEvent event) async* {
+  Stream<PortfolioFoldersState> _loadContent(PortfolioFoldersEvent event) async* {
 
     try {
       final foldersStored = await _databaseRepository.fetch();
       if (foldersStored.isNotEmpty) {
         
         final folders = await Future.wait (foldersStored.map((folder) async => await _databaseRepository.fetchPortfolio (folder)));
-        if (event is PortfolioFolderEditingEvent) {
-          yield PortfolioFolderLoadedEditingState(folders: folders);
+        if (event is PortfolioFoldersEditingEvent) {
+          yield PortfolioFoldersLoadedEditingState(folders: folders);
         } else {
-          yield PortfolioFolderLoaded(folders: folders);
+          yield PortfolioFoldersLoaded(folders: folders);
         }
       } else {
-        yield PortfolioFolderEmpty();
+        yield PortfolioFoldersEmpty();
       }
     } catch (e, stack) {
-      yield PortfolioFolderError(message: 'There was an unknown error. Please try again later.');
+      yield PortfolioFoldersError(message: 'There was an unknown error. Please try again later.');
       await SentryHelper(exception: e, stackTrace: stack).report();
     }
   }

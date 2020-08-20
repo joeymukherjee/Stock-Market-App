@@ -10,22 +10,22 @@ class PortfolioFoldersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PortfolioFolderBloc, PortfolioFolderState>(
-      builder: (BuildContext context, PortfolioFolderState state) {
-        if (state is PortfolioFolderInitial) {
+    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState>(
+      builder: (BuildContext context, PortfolioFoldersState state) {
+        if (state is PortfolioFoldersInitial) {
           BlocProvider
-          .of<PortfolioFolderBloc>(context)
-          .add(FetchPortfolioFolderData());
+          .of<PortfolioFoldersBloc>(context)
+          .add(FetchPortfolioFoldersData());
         }
 
-        if (state is PortfolioFolderError) {
+        if (state is PortfolioFoldersError) {
           return Padding(
             padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
             child: EmptyScreen(message: state.message),
           );
         }
 
-        if (state is PortfolioFolderEmpty) {
+        if (state is PortfolioFoldersEmpty) {
           return Column(
             children: <Widget>[              
               Padding(
@@ -33,13 +33,13 @@ class PortfolioFoldersSection extends StatelessWidget {
                   vertical: MediaQuery.of(context).size.height / 10,
                   horizontal: 4
                 ),
-                child: EmptyScreen(message: 'Looks like you don\'t have any portfolio folders.  Add one!'),
+                child: EmptyScreen(message: 'Looks like you don\'t have any saved portfolios.  Add one by clicking the "Edit" icon above!'),
               ),
             ],
           );
         }
 
-        if (state is PortfolioFolderLoaded) {
+        if (state is PortfolioFoldersLoaded) {
           return Column(
             children: <Widget>[
               _buildFoldersSection(folders: state.folders)              
@@ -47,7 +47,7 @@ class PortfolioFoldersSection extends StatelessWidget {
           );
         }
 
-        if (state is PortfolioFolderLoadedEditingState) {
+        if (state is PortfolioFoldersLoadedEditingState) {
           return Column(
             children: <Widget>[
               _buildFoldersSection(folders: state.folders)

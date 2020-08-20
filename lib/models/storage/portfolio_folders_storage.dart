@@ -1,18 +1,18 @@
 import 'package:meta/meta.dart';
 
-class PortfolioFolderStorageModel {
+class PortfolioFoldersStorageModel {
   
   final String name;
   final bool exclude;
 
-  PortfolioFolderStorageModel({
+  PortfolioFoldersStorageModel({
     @required this.name,
     @required this.exclude,
   });
 
-  static List<PortfolioFolderStorageModel> convertToList(List<dynamic> items) {
+  static List<PortfolioFoldersStorageModel> convertToList(List<dynamic> items) {
     return items
-    .map((item) => PortfolioFolderStorageModel.fromJson(item))
+    .map((item) => PortfolioFoldersStorageModel.fromJson(item))
     .toList();
   }
   
@@ -25,8 +25,8 @@ class PortfolioFolderStorageModel {
     return data;
   }
 
-  factory PortfolioFolderStorageModel.fromJson(Map<String, dynamic> json) {
-    return PortfolioFolderStorageModel(
+  factory PortfolioFoldersStorageModel.fromJson(Map<String, dynamic> json) {
+    return PortfolioFoldersStorageModel(
       name: json['name'],
       exclude: json['exclude']
     );

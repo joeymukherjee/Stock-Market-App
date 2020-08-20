@@ -30,7 +30,7 @@ class AddPortfolioHeadingSection extends StatelessWidget {
               ),
             SavePortfolioWidget (
               name: name, exclude: exclude, 
-              storageModel: PortfolioFolderStorageModel (
+              storageModel: PortfolioFoldersStorageModel (
                 name: name, exclude: exclude
               )
             ),

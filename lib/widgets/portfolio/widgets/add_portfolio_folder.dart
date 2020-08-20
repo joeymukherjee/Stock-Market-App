@@ -37,7 +37,7 @@ class _State extends State<AddPortfolioFolderSection> {
                   ),
                 SavePortfolioWidget (
                   name: name, exclude: exclude, 
-                  storageModel: PortfolioFolderStorageModel (
+                  storageModel: PortfolioFoldersStorageModel (
                     name: name, exclude: exclude
                   )
                 ),
