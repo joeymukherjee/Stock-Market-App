@@ -20,8 +20,8 @@ String compactText(dynamic text) {
 /// based on the [change].
 String determineTextBasedOnChange(double change) {
   return (change == null || change < 0)
-    ? formatText(change) 
-    : '+${formatText(change)}';
+    ? formatCurrencyText(change)
+    : '+${formatCurrencyText(change)}';
 }
 
 /// This function will add a + sign to an string
