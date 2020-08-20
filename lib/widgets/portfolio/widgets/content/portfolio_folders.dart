@@ -47,6 +47,14 @@ class PortfolioFoldersSection extends StatelessWidget {
           );
         }
 
+        if (state is PortfolioFolderLoadedEditingState) {
+          return Column(
+            children: <Widget>[
+              _buildFoldersSection(folders: state.folders)
+            ],
+          );
+        }
+
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
           child: LoadingIndicatorWidget(),
