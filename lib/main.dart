@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:sma/bloc/news/news_bloc.dart';
 import 'package:sma/bloc/watchlist/watchlist_bloc.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/bloc/profile/profile_bloc.dart';
 import 'package:sma/bloc/search/search_bloc.dart';
 import 'package:sma/bloc/sector_performance/sector_performance_bloc.dart';
@@ -22,8 +22,8 @@ void main() async {
         BlocProvider<WatchlistBloc>(
           create: (context) => WatchlistBloc(),
         ),
-        BlocProvider<PortfolioFolderBloc>(
-          create: (context) => PortfolioFolderBloc(),
+        BlocProvider<PortfolioFoldersBloc>(
+          create: (context) => PortfolioFoldersBloc(),
         ),
         BlocProvider<ProfileBloc>(
           create: (context) => ProfileBloc(),
