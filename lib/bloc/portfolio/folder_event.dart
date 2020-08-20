@@ -3,8 +3,14 @@ part of 'folder_bloc.dart';
 @immutable
 abstract class PortfolioFolderEvent {}
 
-class FetchPortfolioFolderData extends PortfolioFolderEvent {}
+class PortfolioFolderEditingEvent extends PortfolioFolderEvent {}
 
+class FetchPortfolioFolderData extends PortfolioFolderEvent {
+  FetchPortfolioFolderData ()
+  {
+    print ("FetchPortfolioFolderData");
+  }
+}
 class SaveFolder extends PortfolioFolderEvent {
 
   final PortfolioFolderStorageModel storageModel;

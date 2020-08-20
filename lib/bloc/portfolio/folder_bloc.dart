@@ -14,7 +14,6 @@ part 'folder_state.dart';
 class PortfolioFolderBloc extends Bloc<PortfolioFolderEvent, PortfolioFolderState> {
   
   final _databaseRepository = PortfolioFolderStorageClient();
-  //final _repository = PortfolioFolderClient();
 
   @override
   PortfolioFolderState get initialState => PortfolioFolderInitial();
@@ -22,36 +21,40 @@ class PortfolioFolderBloc extends Bloc<PortfolioFolderEvent, PortfolioFolderStat
   @override
   Stream<PortfolioFolderState> mapEventToState(PortfolioFolderEvent event) async* {
 
+    if (event is PortfolioFolderEditingEvent) {
+      yield* _loadContent(event);
+    }
+
     if (event is FetchPortfolioFolderData) {
       yield PortfolioFolderLoading();
-      yield* _loadContent();
+      yield* _loadContent(event);
     }
 
     if (event is SaveFolder) {
       yield PortfolioFolderLoading();
       await this._databaseRepository.save(storageModel: event.storageModel);
-      yield* _loadContent();
+      yield* _loadContent(event);
     }
 
     if (event is DeleteFolder) {
       yield PortfolioFolderLoading();
       await this._databaseRepository.delete(name: event.name);
-      yield* _loadContent();
+      yield* _loadContent(event);
     }
   }
 
-  Stream<PortfolioFolderState> _loadContent() async* {
+  Stream<PortfolioFolderState> _loadContent(PortfolioFolderEvent event) async* {
 
     try {
       final foldersStored = await _databaseRepository.fetch();
-      // final indexes = await _repository.fetchIndexes();
       if (foldersStored.isNotEmpty) {
         
         final folders = await Future.wait (foldersStored.map((folder) async => await _databaseRepository.fetchPortfolio (folder)));
-        yield PortfolioFolderLoaded(folders: folders);
-        
-        print ("loading folders");
-
+        if (event is PortfolioFolderEditingEvent) {
+          yield PortfolioFolderLoadedEditingState(folders: folders);
+        } else {
+          yield PortfolioFolderLoaded(folders: folders);
+        }
       } else {
         yield PortfolioFolderEmpty();
       }

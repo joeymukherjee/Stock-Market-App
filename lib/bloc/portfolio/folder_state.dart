@@ -14,6 +14,16 @@ class PortfolioFolderError extends PortfolioFolderState {
   });
 }
 
+class PortfolioFolderEditingState extends PortfolioFolderState {}
+class PortfolioFolderLoadedEditingState extends PortfolioFolderState {
+
+  final List<PortfolioFolderModel> folders;
+
+  PortfolioFolderLoadedEditingState({
+    @required this.folders,
+  });
+}
+
 class PortfolioFolderEmpty extends PortfolioFolderState {}
 
 class PortfolioFolderLoading extends PortfolioFolderState {}
