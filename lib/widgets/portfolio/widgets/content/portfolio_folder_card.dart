@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/shared/colors.dart';
@@ -51,33 +52,41 @@ class PortfolioFolderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6),
-      child: MaterialButton(
-        color: kTileColor,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(flex: 8, child: _buildFolderData()),
-            ],
+    return BlocBuilder<PortfolioFolderBloc, PortfolioFolderState> (
+      builder: (BuildContext context, PortfolioFolderState state) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 6),
+          child: MaterialButton(
+            color: kTileColor,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(flex: 8, child: _buildFolderData()),
+                ],
+              ),
+            ),
+
+            shape: RoundedRectangleBorder(borderRadius: kStandatBorder),
+            onPressed: () {
+
+              // Trigger fetch event.
+              if (state is PortfolioFolderLoadedEditingState) {
+                print ("edit the properties!!");
+              } else {
+                BlocProvider
+                  .of<PortfolioFolderBloc>(context)
+                  .add(FetchPortfolioFolderData());
+              }
+
+              // Go to portfolio folder contents.
+              //Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(name: data.name)));
+            },
           ),
-        ),
-
-        shape: RoundedRectangleBorder(borderRadius: kStandatBorder),
-        onPressed: () {
-
-          // Trigger fetch event.
-          BlocProvider
-            .of<PortfolioFolderBloc>(context)
-            .add(FetchPortfolioFolderData());
-
-          // Go to portfolio folder contents.
-          //Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(name: data.name)));
-        },
-      ),
+        );
+      }
     );
   }
 
@@ -89,9 +98,40 @@ class PortfolioFolderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Icon(Icons.highlight_off, color: Colors.red),
+              GestureDetector(
+                child: Icon(Icons.highlight_off, color: Colors.red),
+                onTap: () {
+                  Alert(
+                    context: context,
+                    type: AlertType.warning,
+                    title: "Delete Portfolio",
+                    desc: "Are you sure you wish to delete the portfolio " + data.name + "?",
+                    buttons: [
+                      DialogButton(
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () {
+                          BlocProvider.of<PortfolioFolderBloc>(context).add(DeleteFolder(name: data.name));
+                          Navigator.pop(context);
+                        },
+                        color: Colors.red,
+                      ),
+                      DialogButton(
+                        child: Text(
+                          "No",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        color: Colors.green
+                      ),
+                    ],
+                  ).show();
+                },
+              ),
               Text(data.name, style: _kFolderNameStyle),
-              Icon(Icons.menu)
+              Icon(Icons.menu) // TODO - figure out how to move rows in a list
             ],
           );
         } else {
