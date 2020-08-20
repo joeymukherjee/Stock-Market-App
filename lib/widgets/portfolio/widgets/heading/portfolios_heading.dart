@@ -32,7 +32,7 @@ class PortfolioHeadingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
       builder: (BuildContext context, PortfolioFoldersState state) {
-        bool _isEditing = (state is PortfolioFoldersLoadedEditingState);
+        bool _isEditing = (state is PortfolioFoldersLoadedEditingState) || (state is PortfolioFoldersEmpty);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(

@@ -33,7 +33,7 @@ class PortfolioFoldersSection extends StatelessWidget {
                   vertical: MediaQuery.of(context).size.height / 10,
                   horizontal: 4
                 ),
-                child: EmptyScreen(message: 'Looks like you don\'t have any saved portfolios.  Add one by clicking the "Edit" icon above!'),
+                child: EmptyScreen(message: 'Looks like you don\'t have any saved portfolios.  Add one by clicking the "Add" icon above!'),
               ),
             ],
           );
