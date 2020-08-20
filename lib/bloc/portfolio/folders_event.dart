@@ -1,4 +1,4 @@
-part of 'folder_bloc.dart';
+part of 'folders_bloc.dart';
 
 @immutable
 abstract class PortfolioFoldersEvent {}

@@ -4,7 +4,7 @@ import 'package:sma/models/portfolio/folder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/shared/colors.dart';
 import 'package:sma/shared/styles.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/helpers/color/color_helper.dart';
 

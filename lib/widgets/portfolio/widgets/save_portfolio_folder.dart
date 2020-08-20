@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
-import 'package:sma/models/storage/portfolio_folder_storage.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
+import 'package:sma/models/storage/portfolio_folders_storage.dart';
 
 class SavePortfolioWidget extends StatefulWidget {
 

@@ -5,11 +5,11 @@ import 'package:meta/meta.dart';
 import 'package:sma/helpers/sentry_helper.dart';
 
 import 'package:sma/models/portfolio/folder.dart';
-import 'package:sma/models/storage/portfolio_folder_storage.dart';
-import 'package:sma/respository/portfolio/folder_storage_client.dart';
+import 'package:sma/models/storage/portfolio_folders_storage.dart';
+import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
-part 'folder_event.dart';
-part 'folder_state.dart';
+part 'folders_event.dart';
+part 'folders_state.dart';
 
 class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersState> {
   

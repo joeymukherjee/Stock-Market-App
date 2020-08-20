@@ -1,7 +1,7 @@
 import 'package:sembast/sembast.dart';
 import 'package:sma/helpers/database_helper.dart';
 import 'package:sma/models/portfolio/folder.dart';
-import 'package:sma/models/storage/portfolio_folder_storage.dart';
+import 'package:sma/models/storage/portfolio_folders_storage.dart';
 
 class PortfolioFoldersStorageClient {
 

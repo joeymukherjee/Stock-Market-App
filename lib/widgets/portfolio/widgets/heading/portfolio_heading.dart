@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PortfolioHeadingSection extends StatelessWidget {

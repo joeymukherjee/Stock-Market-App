@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/models/portfolio/folder.dart';
-import 'package:sma/bloc/portfolio/folder_bloc.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/widgets/portfolio/widgets/content/portfolio_folder_card.dart';
 
 class PortfolioFoldersSection extends StatelessWidget {
