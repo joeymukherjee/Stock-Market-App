@@ -92,7 +92,7 @@ class IEXFetchClient extends FetchClient {
     json.forEach((key, value) =>
       retVal.add (MarketIndexModel (
         symbol: value ['quote']['symbol'],
-        change: value ['quote']['change'].toDouble (),
+        change: value ['quote']['change'] == null ? 0.0 : value ['quote']['change'].toDouble (),
         price: value ['quote']['latestPrice'].toDouble (),
         name: value ['quote']['companyName'])
       )
