@@ -46,7 +46,7 @@ class PortfolioFolderCard extends StatelessWidget {
 
   static const _kFolderNameStyle = const TextStyle(
     color: Color(0XFFc2c2c2),
-    fontSize: 18,
+    fontSize: 12,
     height: 1
   );
 
