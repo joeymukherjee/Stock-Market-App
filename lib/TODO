@@ -1,15 +1,13 @@
-Add an id to portfolio so we can overwrite them
 Portfolio Stuff
     Change Add to be stateless and use BLoC
-    Edit
     Store stocks in portfolio
 
-News for Watchlist/Portfolio
+News for Watchlist/Portfolio in separate tabs
 
 Optimize data coming from IEX Cloud?
 Use finnhub.io or Tiingo in addition to IEX Cloud
 
-use GlobalConfiguration to determine things like API keys and which one to use
+use GlobalConfiguration to save/retrieve things like which API provider to use?
    save this in SharedPreferences
 Integration with FireBase - cloud storage
 

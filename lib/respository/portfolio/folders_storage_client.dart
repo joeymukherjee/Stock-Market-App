@@ -10,7 +10,7 @@ class PortfolioFoldersStorageClient {
   // Sembast Database.
   Future<Database> get _database async => await DatabaseManager.instance.database;
 
-  // Gets all the names stored.
+  // Gets all the folders stored.
   Future<List<PortfolioFolderModel>> fetch() async {
 
     final Finder finder = Finder(sortOrders: [SortOrder('order', true), SortOrder(Field.key, true)]);
@@ -18,13 +18,6 @@ class PortfolioFoldersStorageClient {
     return response
     .map((snapshot) => PortfolioFolderModel.fromStorage(snapshot.key, snapshot.value))
     .toList();
-  }
-
-  // Fetch all the stuff for a single folder
-
-  Future<PortfolioFolderModel> fetchPortfolio(PortfolioFolderModel model) async
-  {
-    return PortfolioFolderModel (key: model.key, order: model.order, name: model.name, exclude: model.exclude);
   }
 
   // Checks if a name already exists in the Database.

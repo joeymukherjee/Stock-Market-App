@@ -46,9 +46,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
 
     try {
       final foldersStored = await _databaseRepository.fetch();  // gets all the folders
-      print (foldersStored);
       if (foldersStored.isNotEmpty) {
-        //final folders = await Future.wait (foldersStored.map((folder) async => await _databaseRepository.fetchPortfolio (folder)));
         if (event is PortfolioFoldersEditingEvent) {
           yield PortfolioFoldersLoadedEditingState(folders: foldersStored);
         } else {
