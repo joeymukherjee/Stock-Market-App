@@ -23,8 +23,6 @@ class _State extends State<ModifyPortfolioFolderSection> {
 
   void onPressedHandler(context)
   {
-    print ("onPressed");
-    print (_name);
       BlocProvider
       .of<PortfolioFoldersBloc>(context)
       .add(SaveFolder(storageModel: PortfolioFoldersStorageModel(name: _name, exclude: _exclude, order: _order)));
@@ -40,11 +38,9 @@ class _State extends State<ModifyPortfolioFolderSection> {
           decoration: InputDecoration (hintText: 'portfolio name', labelText: "Name *"),
           showCursor: true,
           onChanged: (String value) async {
-            print (value);
             setState(() {
-            _name = value;
+              _name = value;
             });
-            print (_name);
           }),
         Row(
           children: [
