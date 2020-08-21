@@ -10,7 +10,6 @@ import 'package:sma/bloc/sector_performance/sector_performance_bloc.dart';
 
 import 'package:sma/widgets/about/about.dart';
 import 'package:sma/widgets/home.dart';
-import 'package:sma/widgets/portfolio/widgets/add_portfolio_folder.dart';
 
 void main() async {
 
@@ -45,7 +44,6 @@ void main() async {
         debugShowCheckedModeBanner: false,
         routes: {
           '/about': (context) => AboutSection(),
-          '/add_portfolio_folder': (context) => AddPortfolioFolderSection(),
         },
       )
     )
