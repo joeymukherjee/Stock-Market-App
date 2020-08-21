@@ -2,7 +2,7 @@
 ios/Flutter/.last_build_id
 ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/
 ios/build/
-lib/keys/keys-private.dart
+.env
 
 # Miscellaneous
 *.class

@@ -10,9 +10,11 @@ import 'package:sma/bloc/sector_performance/sector_performance_bloc.dart';
 
 import 'package:sma/widgets/about/about.dart';
 import 'package:sma/widgets/home.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
 
+  await DotEnv().load('.env');
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
