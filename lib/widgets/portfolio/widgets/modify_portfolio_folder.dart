@@ -16,8 +16,15 @@ class ModifyPortfolioFolderSection extends StatefulWidget {
 }
 
 class _State extends State<ModifyPortfolioFolderSection> {
-  String _name = '';
-  bool _exclude = false;
+  String _name;
+  bool _exclude;
+
+  @override
+  void initState () {
+    super.initState();
+    _name = widget._data.name;
+    _exclude = widget._data.exclude;
+  }
 
   void onPressedHandler(context)
   {
@@ -43,7 +50,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
         Row(
           children: [
             Text("Exclude from Total:"),
-            Switch(value: widget._data.exclude,
+            Switch(value: _exclude,
               onChanged: (bool value) {
                setState(() {
                  _exclude = value;
