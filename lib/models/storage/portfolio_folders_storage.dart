@@ -2,10 +2,12 @@ import 'package:meta/meta.dart';
 
 class PortfolioFoldersStorageModel {
   
+  final int order;
   final String name;
   final bool exclude;
 
   PortfolioFoldersStorageModel({
+    @required this.order,
     @required this.name,
     @required this.exclude,
   });
@@ -18,7 +20,7 @@ class PortfolioFoldersStorageModel {
   
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-
+    data['order'] = this.order;
     data['name'] = this.name;
     data['exclude'] = this.exclude;
 
@@ -27,6 +29,7 @@ class PortfolioFoldersStorageModel {
 
   factory PortfolioFoldersStorageModel.fromJson(Map<String, dynamic> json) {
     return PortfolioFoldersStorageModel(
+      order: json ['order'],
       name: json['name'],
       exclude: json['exclude']
     );

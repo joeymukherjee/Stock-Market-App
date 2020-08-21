@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sma/widgets/portfolio/widgets/save_portfolio_folder.dart';
-import 'package:sma/models/storage/portfolio_folders_storage.dart';
 
-class AddPortfolioHeadingSection extends StatelessWidget {
-
-  final String name;
-  final bool exclude;
-
-  AddPortfolioHeadingSection(this.name, this.exclude);
+class ModifyPortfolioHeadingSection extends StatelessWidget {
+  final String _prefix;
+  final Function (BuildContext) _callback;
+  ModifyPortfolioHeadingSection(this._prefix, this._callback);
 
   @override
   Widget build(BuildContext context) {
@@ -22,18 +19,13 @@ class AddPortfolioHeadingSection extends StatelessWidget {
               child: Icon(Icons.arrow_back_ios),
               onTap: () => Navigator.pop(context) 
             ),
-            Text('Add Portfolio', 
+            Text(_prefix + ' Portfolio', 
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold
                 )
               ),
-            SavePortfolioWidget (
-              name: name, exclude: exclude, 
-              storageModel: PortfolioFoldersStorageModel (
-                name: name, exclude: exclude
-              )
-            ),
+            SavePortfolioWidget (_callback)
           ],
         ),
     );

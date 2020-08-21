@@ -23,7 +23,7 @@ class PortfolioFoldersStorageClient {
   // Fetch all the stuff for a single folder
 
   Future<PortfolioFolderModel> fetchPortfolio(PortfolioFoldersStorageModel storageModel) async {
-    return PortfolioFolderModel (name: storageModel.name, exclude: storageModel.exclude);
+    return PortfolioFolderModel (order: storageModel.order, name: storageModel.name, exclude: storageModel.exclude);
   }
 
   // Checks if a name already exists in the Database.

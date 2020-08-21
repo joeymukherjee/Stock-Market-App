@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sma/models/portfolio/folder.dart';
+import 'package:sma/widgets/portfolio/widgets/modify_portfolio_folder.dart';
 
 class PortfolioHeadingSection extends StatelessWidget {
 
@@ -44,7 +46,9 @@ class PortfolioHeadingSection extends StatelessWidget {
                 children: <Widget>[
                   GestureDetector(
                     child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.sync),
-                    onTap: () => _isEditing ? Navigator.pushNamed(context, '/add_portfolio_folder') : reload(context)
+                    onTap: () => _isEditing ?
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(exclude: false, name: '', order: 0)))) :
+                      reload(context)
                   ),
                   Expanded(child: Text('Portfolios', style: PortfolioHeadingSection.kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(

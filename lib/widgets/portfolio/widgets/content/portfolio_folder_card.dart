@@ -7,6 +7,7 @@ import 'package:sma/shared/styles.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/helpers/color/color_helper.dart';
+import 'package:sma/widgets/portfolio/widgets/modify_portfolio_folder.dart';
 
 class ChangeBox extends StatelessWidget {
   final String label;
@@ -74,7 +75,7 @@ class PortfolioFolderCard extends StatelessWidget {
 
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
-                print ("edit the properties!!");
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(order: data.order, exclude: data.exclude, name: data.name))));
               } else {
                 BlocProvider
                   .of<PortfolioFoldersBloc>(context)
