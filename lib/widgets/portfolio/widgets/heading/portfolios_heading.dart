@@ -47,7 +47,7 @@ class PortfolioHeadingSection extends StatelessWidget {
                   GestureDetector(
                     child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.sync),
                     onTap: () => _isEditing ?
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(exclude: false, name: '', order: 0)))) :
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0)))) :
                       reload(context)
                   ),
                   Expanded(child: Text('Portfolios', style: PortfolioHeadingSection.kPortfolioHeaderTitle, textAlign: TextAlign.center)),

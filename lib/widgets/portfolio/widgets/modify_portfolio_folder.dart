@@ -5,7 +5,6 @@ import 'package:sma/widgets/widgets/base_list.dart';
 import 'package:sma/widgets/portfolio/widgets/heading/modify_portfolio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
-import 'package:sma/models/storage/portfolio_folders_storage.dart';
 
 class ModifyPortfolioFolderSection extends StatefulWidget {
   final String _prefix;
@@ -17,7 +16,6 @@ class ModifyPortfolioFolderSection extends StatefulWidget {
 }
 
 class _State extends State<ModifyPortfolioFolderSection> {
-  final int _order = 0;
   String _name = '';
   bool _exclude = false;
 
@@ -25,7 +23,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
   {
       BlocProvider
       .of<PortfolioFoldersBloc>(context)
-      .add(SaveFolder(storageModel: PortfolioFoldersStorageModel(name: _name, exclude: _exclude, order: _order)));
+      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, order: widget._data.order)));
       Navigator.pop(context);
   }
   @override
@@ -45,7 +43,8 @@ class _State extends State<ModifyPortfolioFolderSection> {
         Row(
           children: [
             Text("Exclude from Total:"),
-            Switch(value: widget._data.exclude, onChanged: (bool value) {
+            Switch(value: widget._data.exclude,
+              onChanged: (bool value) {
                setState(() {
                  _exclude = value;
                 });

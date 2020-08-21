@@ -8,6 +8,7 @@ class FolderChange {
 }
 
 class PortfolioFolderModel {
+  final int key;
   final int order;
   final String name;
   final bool exclude;
@@ -15,13 +16,21 @@ class PortfolioFolderModel {
   final FolderChange overall = FolderChange ();
 
   PortfolioFolderModel({
+    @required this.key,
     @required this.order,
     @required this.name,
     @required this.exclude,
   });
 
-  factory PortfolioFolderModel.fromJson(Map<String, dynamic> json) {
+  @override
+  String toString ()
+  {
+    return "key: " + key.toString() + ", order: " + order.toString() + ", name: " + name + ", exclude: " + exclude.toString();
+  }
+
+  factory PortfolioFolderModel.fromStorage(int key, Map<String, dynamic> json) {
     return PortfolioFolderModel(
+      key: key,
       order: json['order'],
       name: json['name'],
       exclude: json['exclude'],

@@ -13,10 +13,10 @@ class FetchPortfolioFoldersData extends PortfolioFoldersEvent {
 }
 class SaveFolder extends PortfolioFoldersEvent {
 
-  final PortfolioFoldersStorageModel storageModel;
+  final PortfolioFolderModel model;
 
   SaveFolder({
-    @required this.storageModel
+    @required this.model
   });
 }
 

@@ -75,7 +75,7 @@ class PortfolioFolderCard extends StatelessWidget {
 
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(order: data.order, exclude: data.exclude, name: data.name))));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(key: data.key, order: data.order, exclude: data.exclude, name: data.name))));
               } else {
                 BlocProvider
                   .of<PortfolioFoldersBloc>(context)

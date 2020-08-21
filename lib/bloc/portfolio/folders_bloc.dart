@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:sma/helpers/sentry_helper.dart';
 
 import 'package:sma/models/portfolio/folder.dart';
-import 'package:sma/models/storage/portfolio_folders_storage.dart';
 import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
 part 'folders_event.dart';
@@ -32,7 +31,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
 
     if (event is SaveFolder) {
       yield PortfolioFoldersLoading();
-      await this._databaseRepository.save(storageModel: event.storageModel);
+      await this._databaseRepository.save(model: event.model);
       yield* _loadContent(event);
     }
 
@@ -46,14 +45,14 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
   Stream<PortfolioFoldersState> _loadContent(PortfolioFoldersEvent event) async* {
 
     try {
-      final foldersStored = await _databaseRepository.fetch();
+      final foldersStored = await _databaseRepository.fetch();  // gets all the folders
+      print (foldersStored);
       if (foldersStored.isNotEmpty) {
-        
-        final folders = await Future.wait (foldersStored.map((folder) async => await _databaseRepository.fetchPortfolio (folder)));
+        //final folders = await Future.wait (foldersStored.map((folder) async => await _databaseRepository.fetchPortfolio (folder)));
         if (event is PortfolioFoldersEditingEvent) {
-          yield PortfolioFoldersLoadedEditingState(folders: folders);
+          yield PortfolioFoldersLoadedEditingState(folders: foldersStored);
         } else {
-          yield PortfolioFoldersLoaded(folders: folders);
+          yield PortfolioFoldersLoaded(folders: foldersStored);
         }
       } else {
         yield PortfolioFoldersEmpty();
