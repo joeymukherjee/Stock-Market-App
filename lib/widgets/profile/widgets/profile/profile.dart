@@ -45,6 +45,12 @@ class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProvider
     _tabController.addListener(_handleTabChange);
   }
 
+  @override
+  void dispose() {
+     _tabController.dispose();
+    super.dispose();
+  }
+
   void _handleTabChange () async {
     if (!_tabController.indexIsChanging) {
       final String duration = cadences [_tabController.index].text;

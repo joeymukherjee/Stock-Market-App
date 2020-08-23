@@ -11,6 +11,7 @@ class FetchPortfolioFoldersData extends PortfolioFoldersEvent {
     print ("FetchPortfolioFoldersData");
   }
 }
+
 class SaveFolder extends PortfolioFoldersEvent {
 
   final PortfolioFolderModel model;

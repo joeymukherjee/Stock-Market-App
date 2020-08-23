@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/shared/colors.dart';
 import 'package:sma/shared/styles.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
+import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/helpers/color/color_helper.dart';
+import 'package:sma/widgets/portfolio/portfolio_folder.dart';
 import 'package:sma/widgets/portfolio/widgets/modify_portfolio_folder.dart';
 
 class ChangeBox extends StatelessWidget {
@@ -78,12 +80,10 @@ class PortfolioFolderCard extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(key: data.key, order: data.order, exclude: data.exclude, name: data.name))));
               } else {
                 BlocProvider
-                  .of<PortfolioFoldersBloc>(context)
-                  .add(FetchPortfolioFoldersData());
+                  .of<TradesBloc>(context)
+                  .add(PickedPortfolio(data.key));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(portfolioName: data.name, portfolioId: data.key)));
               }
-
-              // Go to portfolio folder contents.
-              //Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(name: data.name)));
             },
           ),
         );

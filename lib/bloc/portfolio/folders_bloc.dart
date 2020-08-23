@@ -23,12 +23,10 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
     if (event is PortfolioFoldersEditingEvent) {
       yield* _loadContent(event);
     }
-
     if (event is FetchPortfolioFoldersData) {
       yield PortfolioFoldersLoading();
       yield* _loadContent(event);
     }
-
     if (event is SaveFolder) {
       yield PortfolioFoldersLoading();
       await this._databaseRepository.save(model: event.model);

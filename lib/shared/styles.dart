@@ -19,3 +19,9 @@ const kCompanyNameHeading = const TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.w800
 );
+
+// Common header for portfolio section
+const kPortfolioHeaderTitle = const TextStyle(
+  fontSize: 28,
+  fontWeight: FontWeight.bold
+);

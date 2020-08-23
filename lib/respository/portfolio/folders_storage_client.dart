@@ -16,8 +16,8 @@ class PortfolioFoldersStorageClient {
     final Finder finder = Finder(sortOrders: [SortOrder('order', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     return response
-    .map((snapshot) => PortfolioFolderModel.fromStorage(snapshot.key, snapshot.value))
-    .toList();
+      .map((snapshot) => PortfolioFolderModel.fromStorage(snapshot.key, snapshot.value))
+      .toList();
   }
 
   // Checks if a name already exists in the Database.

@@ -14,8 +14,8 @@ class PortfolioFoldersSection extends StatelessWidget {
       builder: (BuildContext context, PortfolioFoldersState state) {
         if (state is PortfolioFoldersInitial) {
           BlocProvider
-          .of<PortfolioFoldersBloc>(context)
-          .add(FetchPortfolioFoldersData());
+            .of<PortfolioFoldersBloc>(context)
+            .add(FetchPortfolioFoldersData());
         }
 
         if (state is PortfolioFoldersError) {

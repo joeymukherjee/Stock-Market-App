@@ -41,7 +41,7 @@ class PortfolioSection extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           children: [
-            PortfolioHeadingSection(),
+            PortfoliosHeadingSection(),
             PortfolioFoldersSection()
           ]
         )
