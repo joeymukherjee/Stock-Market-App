@@ -83,6 +83,10 @@ class _AddTransactionContentsState extends State<AddTransactionContents> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double tabWidth = width / 5;
+    double labelPadding = tabWidth / 12;
+
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
         print ("AddTransaction: " + state.toString());
@@ -94,14 +98,17 @@ class _AddTransactionContentsState extends State<AddTransactionContents> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 35.0),
                 child: TabBar(
+                  isScrollable: true,
                   labelColor: Colors.black,
+                  labelPadding: EdgeInsets.symmetric(horizontal: labelPadding),
                   unselectedLabelColor: Colors.greenAccent,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.greenAccent),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.greenAccent),
                   tabs: [
                     Tab(child: Container(
+                          width: tabWidth,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               border: Border.all(color: Colors.greenAccent, width: 1)),
@@ -112,6 +119,7 @@ class _AddTransactionContentsState extends State<AddTransactionContents> {
                         ),
                       ),
                     Tab(child: Container(
+                          width: tabWidth,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               border: Border.all(color: Colors.greenAccent, width: 1)),
@@ -122,16 +130,18 @@ class _AddTransactionContentsState extends State<AddTransactionContents> {
                         ),
                       ),
                     Tab(child: Container(
+                          width: tabWidth,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               border: Border.all(color: Colors.greenAccent, width: 1)),
                           child: Align(
                             alignment: Alignment.center,
-                            child: Text("Dividend", textScaleFactor: 1.0),
+                            child: Text("Dividend", softWrap: false, overflow: TextOverflow.visible, textScaleFactor: 1.0),
                           ),
                         ),
                       ),
                     Tab(child: Container(
+                          width: tabWidth,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               border: Border.all(color: Colors.greenAccent, width: 1)),
@@ -164,7 +174,6 @@ class _AddTransactionContentsState extends State<AddTransactionContents> {
 }
 
 List<Widget> _buildCommonItems (context, widget) {
-  print (widget);
   return [
     Row (
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,6 +221,7 @@ List<Widget> _buildCommonBuySellItems (context, widget) {
         }
       ),
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._price, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'price paid', labelText: "Price"),
         showCursor: true,
@@ -223,6 +233,7 @@ List<Widget> _buildCommonBuySellItems (context, widget) {
         }
       ),
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._commission, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'commission paid', labelText: "Commission"),
         showCursor: true,
@@ -241,6 +252,7 @@ Widget _buildBuyItems (context, widget) {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: _buildCommonItems(context, widget) + _buildCommonBuySellItems (context, widget) + [
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'amount paid', labelText: "Paid"),
         showCursor: true,
@@ -259,6 +271,7 @@ Widget _buildSellItems (context, widget) {
   return Column (
     children: _buildCommonItems(context, widget) + _buildCommonBuySellItems (context, widget) + [
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'amount received', labelText: "Proceeds"),
         showCursor: true,
@@ -283,6 +296,7 @@ Widget _buildDividendItems (context, widget) {
         ],
       ),
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._amountPerShare, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'amount per share', labelText: "Amount per Share"),
         showCursor: true,
@@ -293,6 +307,7 @@ Widget _buildDividendItems (context, widget) {
         }
       ),
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._proceeds, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'dividend amount', labelText: "Dividend"),
         showCursor: true,
@@ -316,7 +331,7 @@ Widget _buildDividendItems (context, widget) {
         ),
     ];
   if (widget._didReinvest) allChildren = allChildren + _buildCommonBuySellItems(context, widget);
-  return Column (children: allChildren);
+  return Column (crossAxisAlignment: CrossAxisAlignment.start, children: allChildren);
 }
 
 Widget _buildSplitItems (context, widget) {
@@ -337,6 +352,7 @@ Widget _buildSplitItems (context, widget) {
         }
       ),
       TextFormField(
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._price, decimalSeparator: '.', thousandSeparator: ','),
         decoration: InputDecoration (hintText: 'price after split', labelText: "Price After"),
         showCursor: true,
@@ -389,14 +405,15 @@ class AddTransaction extends StatelessWidget {
     return Scaffold(
       backgroundColor: kScaffoldBackground,
       body: SafeArea(
-        child: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.start,
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        children: [
-            AddTransactionHeading (),
-            AddTransactionContents (portfolioName: portfolioName),
-        ]),
+        child: ListView (
+          physics: BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+       // crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+              AddTransactionHeading (),
+              AddTransactionContents (portfolioName: portfolioName),
+          ]
+        ),
       ),
     );
   }
