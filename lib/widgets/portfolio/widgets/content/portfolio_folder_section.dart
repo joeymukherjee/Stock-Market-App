@@ -49,11 +49,13 @@ class PortfolioFolderSection extends StatelessWidget {
   }
 
   Widget _buildFolderSection({List<Trade> trades}) {
+    print ("building folders");
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       itemCount: trades.length,
       itemBuilder: (BuildContext context, int index) {
+        // TODO - create portfolio stocks cards
         print (trades[index]);
         return Container (); // TradeCard(data: trades[index]);
       }

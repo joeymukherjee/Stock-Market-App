@@ -28,21 +28,29 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     if (event is PickedPortfolio) {
       yield* _mapPickedPortfolioToState(event);
     }
-    if (event is CreatedTransaction) {
-      yield* _mapCreatedTransactionToState();
+    if (event is AddedTransaction) {
+      yield* _mapAddedTransactionToState();
     }
+    if (event is FinishedTransaction) {
+      yield* _mapFinishedTransactionToState();
+    }
+    print ("mapEventToState: (event): " + event.toString());
   }
 
-  Stream<TradesState> _mapCreatedTransactionToState () async* {
-    yield TradeFinishedEditing ();
+  Stream<TradesState> _mapFinishedTransactionToState() async* {
+    yield TradesFinishedEditing ();
   }
-  
+  Stream<TradesState> _mapAddedTransactionToState() async* {
+    yield TradesAdding ();
+  }
+
   Stream<TradesState> _mapPickedPortfolioToState(PickedPortfolio event) async* {
-    try {
+   try {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else yield TradesLoadSuccess(trades);
-    } catch (_) {
+    } catch (e) {
+      print (e);
       yield TradesLoadFailure(message: "Can't load your transactions for this portfolio!");
     }
   }
@@ -58,11 +66,10 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   }
 
   Stream<TradesState> _mapDidTradeToState(DidTrade event) async* {
-    if (state is TradesLoadSuccess) {
-      final List<Trade> updatedTrades = List.from((state as TradesLoadSuccess).trades)..add(event.trade);
-      yield TradesLoadSuccess (updatedTrades);
-      _saveTrades(updatedTrades);
-    }
+    //final List<Trade> updatedTrades = List.from((state as TradesLoadSuccess).trades)..add(event.trade);
+    //yield TradesLoadSuccess (updatedTrades);
+    _saveTrades([event.trade]);
+    yield TradesSavedOkay ();
   }
 
   Future _saveTrades (List<Trade> trades)

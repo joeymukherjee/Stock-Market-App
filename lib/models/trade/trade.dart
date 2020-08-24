@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:equatable/equatable.dart';
 
@@ -20,8 +20,18 @@ abstract class Trade extends Equatable {
     @required this.transactionDate, 
     @required this.type, 
   }) : 
-    id = id == '' ? Uuid().v4 () : id,
+    id = id == null ? Uuid().v4 () : id,
     super ();
+
+  Trade.withId ({
+    @required this.id,
+    @required this.portfolioId,
+    @required this.ticker,
+    @required this.transactionDate,
+    @required this.type,
+  });
+
+  double getTotalReturn ();
 
   @override
   List<Object> get props => [id, portfolioId, ticker, transactionDate, type];
@@ -31,24 +41,27 @@ abstract class Trade extends Equatable {
 
   Map<String, dynamic> toJson()
   {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, String> data = new Map<String, dynamic>();
     data ['id'] = this.id;
-    data ['portfolioId'] = this.portfolioId;
+    data ['portfolioId'] = this.portfolioId.toString();
     data ['ticker'] = this.ticker;
-    data ['transactionDate'] = this.transactionDate;
+    data ['transactionDate'] = this.transactionDate.toString();
+    data ['type'] = this.type.toString();
     return data;
   }
   
   factory Trade.fromJson (Map<String, dynamic> json)
   {
     Trade trade;
-    // trade.id = json ['id'];
+    //trade.id = json ['id'];
     TransactionType type = json ['type'];
     switch (type) {
-      case TransactionType.split : trade = Split(json ['portfolioId'], json ['ticker'], json ['transactionDate'], json ['newPrice'], json ['sharesFrom'], json ['sharesTo']); break;
-      case TransactionType.purchase : trade = Common(type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
-      case TransactionType.sell : trade = Common(type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
-      case TransactionType.dividend : trade = Dividend(json ['portfolioId'], json ['ticker'], json ['transactionDate'], json ['sharesTransacted'], json ['price'], json ['commission'], json ['numberOfShares'], json ['amountPerShare'], json ['didReinvest'], json ['priceAtReinvest']); break;
+      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], sharesFrom: json ['sharesFrom'], sharesTo: json ['sharesTo']); break;
+      case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
+      case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
+      case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission'], numberOfShares: json ['numberOfShares'], amountPerShare: json ['amountPerShare'], didReinvest: json ['didReinvest'], priceAtReinvest: json ['priceAtReinvest']); break;
+      // TODO - we can remove this after we fix the database/delete stuff
+      default:trade = Common(type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: DateTime.tryParse(json ['transactionDate']), sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commision']); break;
     }
     return trade;
   }
@@ -64,22 +77,43 @@ class Common extends Trade {
   Common ({
     @required int portfolioId,
     @required String ticker,
+    @required DateTime transactionDate,
+    @required TransactionType type,
+    @required this.sharesTransacted,
+    @required this.price,
+    @required this.commission}) :
+    this.paid = price * sharesTransacted - commission,
+    super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: type);
+
+  Common.withId ({
+    @required String id,
+    @required int portfolioId,
+    @required String ticker,
     @required DateTime transactionDate, 
     @required TransactionType type, 
     @required this.sharesTransacted, 
     @required this.price, 
     @required this.commission}) : 
     this.paid = price * sharesTransacted - commission,
-    super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: type);
-  
+    super (id: id, portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: type);
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [id, portfolioId, ticker, type, sharesTransacted, price, commission, paid];
+
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, dynamic> data = super.toJson();
-    data ['sharesTransacted'] = this.sharesTransacted;
-    data ['price'] = this.price;
-    data ['commision'] = this.commission;
+    final Map<String, String> data = super.toJson();
+    data ['sharesTransacted'] = this.sharesTransacted.toString();
+    data ['price'] = this.price.toString();
+    data ['commission'] = this.commission.toString();
     return data;
+  }
+  double getTotalReturn () {
+    return this.price * this.sharesTransacted - this.commission;
   }
 }
 
@@ -93,34 +127,68 @@ class Dividend extends Common {
     this.proceeds = amountPerShare * numberOfShares,
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.dividend, sharesTransacted: sharesTransacted, price: price, commission: commission);
 
+  Dividend.withId ({
+    @required String id,
+    @required int portfolioId,
+    @required String ticker,
+    @required DateTime transactionDate,
+    @required double sharesTransacted,
+    @required double price,
+    @required double commission,
+    @required double numberOfShares,
+    @required this.amountPerShare,
+    @required this.didReinvest,
+    @required this.priceAtReinvest}) :
+    this.proceeds = amountPerShare * numberOfShares,
+    super.withId (id: id, portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.dividend, sharesTransacted: sharesTransacted, price: price, commission: commission);
+
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, dynamic> data = super.toJson();
+    final Map<String, String> data = super.toJson();
     
-    data ['amountPerShare'] = this.amountPerShare;
-    data ['proceeds'] = this.proceeds;
-    data ['didReinvest'] = this.didReinvest;
-    data ['priceAtReinvest'] = this.priceAtReinvest;
+    data ['amountPerShare'] = this.amountPerShare.toString();
+    data ['proceeds'] = this.proceeds.toString();
+    data ['didReinvest'] = this.didReinvest.toString();
+    data ['priceAtReinvest'] = this.priceAtReinvest.toString();
     return data;
+  }
+
+  double getTotalReturn () {
+    return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
   }
 }
 
 class Split extends Trade {
-  final double newPrice;
+  final double price;
   final double sharesTo;
   final double sharesFrom;
 
-  Split (int portfolioId, String ticker, DateTime transactionDate, this.newPrice, this.sharesFrom, this.sharesTo) :
+  Split (int portfolioId, String ticker, DateTime transactionDate, this.price, this.sharesFrom, this.sharesTo) :
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.split);
+
+  Split.withId ({
+    @required String id,
+    @required int portfolioId,
+    @required String ticker,
+    @required DateTime transactionDate,
+    @required double sharesTransacted,
+    @required this.price,
+    @required this.sharesFrom,
+    @required this.sharesTo}) :
+    super.withId (id: id, portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.split);
 
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, dynamic> data = super.toJson();
-    data ['newPrice'] = this.newPrice;
-    data ['sharesTo'] = this.sharesTo;
-    data ['sharesFrom'] = this.sharesFrom;
+    final Map<String, String> data = super.toJson();
+    data ['price'] = this.price.toString();
+    data ['sharesTo'] = this.sharesTo.toString();
+    data ['sharesFrom'] = this.sharesFrom.toString();
     return data;
+  }
+
+  double getTotalReturn () {
+    return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
   }
 }

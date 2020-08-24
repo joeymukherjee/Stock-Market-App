@@ -16,7 +16,8 @@ class PickedPortfolio extends TradeEvent {
   @override
   List<Object> get props => [portfolioId];
 }
-class CreatedTransaction extends TradeEvent {}
+class AddedTransaction extends TradeEvent {}
+class FinishedTransaction extends TradeEvent {}
 class DidTrade extends TradeEvent {
   final Trade trade;
 

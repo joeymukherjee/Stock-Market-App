@@ -24,14 +24,16 @@ class TradesLoadSuccess extends TradesState {
   }
 }
 class TradesEditing extends TradesState {}
-class TradeFinishedEditing extends TradesState {}
-class TradesAdding extends TradesState {
+class TradesAdding extends TradesState {}
+class TradesFinishedEditing extends TradesState {}
+class TradesValidTransaction extends TradesState {
   final Trade trade;
-  const TradesAdding(this.trade);
+  const TradesValidTransaction(this.trade);
 
   @override 
   List<Object> get props => [trade];
 }
+class TradesSavedOkay extends TradesState {}
 class TradesLoadFailure extends TradesState {
   final String message;
 

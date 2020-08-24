@@ -6,7 +6,6 @@ UI
 
 Trades
     Store trades in portfolio - highest priority
-    Only tab view should scroll on dividend, not head
 
 Portfolio Stuff
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong

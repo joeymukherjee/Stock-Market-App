@@ -43,8 +43,13 @@ class SembastTradesRepository implements TradesRepository {
 
   Future<List<Trade>> loadAllTradesForPortfolio (int portfolioId) async
   {
-    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    print ("portfolioId to find: " + portfolioId.toString());
+    //final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString())); // , sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    // TODO - remove after we fix database
+    final Finder finder = Finder(filter: Filter.equals('ticker','AAPL'), sortOrders: [SortOrder ('ticker', true), SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
+    print ("DB Contents:");
+    print (response);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))
       .toList();
@@ -55,7 +60,11 @@ class SembastTradesRepository implements TradesRepository {
     trades.forEach((trade) async {
       final finder = Finder(filter: Filter.matches('id', trade.id));
       final response = await _store.findFirst(await _database, finder: finder);
-      await _store.record(response.key).put(await _database, trade.toJson());
+      if (response == null) {
+        addTrade(trade);
+      } else {
+        await _store.record(response.key).put(await _database, trade.toJson());
+      }
     });
   }
 

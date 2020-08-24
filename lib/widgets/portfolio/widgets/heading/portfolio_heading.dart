@@ -11,6 +11,10 @@ class PortfolioHeadingSection extends StatelessWidget {
 
   PortfolioHeadingSection ({@required this.portfolioName, @required this.portfolioId});
 
+  void clickedAdd (BuildContext context, TradesState state) {
+    BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
+    Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId)));
+  }
   void toggleEditing (BuildContext context, TradesState state) {
     if (state is TradesEditing) {
       
@@ -35,8 +39,7 @@ class PortfolioHeadingSection extends StatelessWidget {
                 children: <Widget>[
                   GestureDetector(
                     child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(Icons.done),
-                    onTap: () => _isEditing ?
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId))) :
+                    onTap: () => _isEditing ? clickedAdd (context, state) :
                       Navigator.pop(context)
                   ),
                   Expanded(child: Text('Portfolio', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
