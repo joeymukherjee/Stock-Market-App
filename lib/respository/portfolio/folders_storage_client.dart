@@ -52,4 +52,14 @@ class PortfolioFoldersStorageClient {
     return await _store.delete(await _database, finder: deleteFinder);
   }
 
+  // Gets a portfolio name based on portfolio id
+  Future <String> getPortfolioName ({int portfolioId}) async {
+    final finder = Finder(filter: Filter.equals('portfolioId', portfolioId));
+    final response = await _store.findFirst(await _database, finder: finder);
+    if (response == null) {
+      return "Unknown!";
+    } else {
+      return response.value['name'];
+    }
+  }
 }

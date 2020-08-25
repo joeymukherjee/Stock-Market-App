@@ -16,6 +16,24 @@ class PickedPortfolio extends TradeEvent {
   @override
   List<Object> get props => [portfolioId];
 }
+
+class EditedTradeGroup extends TradeEvent {
+  final int portfolioId;
+
+  const EditedTradeGroup (this.portfolioId);
+  @override
+  List<Object> get props => [portfolioId];
+}
+
+class DeletedTradeGroup extends TradeEvent {
+  final String ticker;
+  final int portfolioId;
+
+  const DeletedTradeGroup ({this.ticker, this.portfolioId});
+  @override
+  List<Object> get props => [ticker, portfolioId];
+}
+
 class AddedTransaction extends TradeEvent {}
 class FinishedTransaction extends TradeEvent {}
 class DidTrade extends TradeEvent {

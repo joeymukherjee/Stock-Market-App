@@ -25,3 +25,10 @@ const kPortfolioHeaderTitle = const TextStyle(
   fontSize: 28,
   fontWeight: FontWeight.bold
 );
+
+// Common style for folder/card names
+const kFolderNameStyle = const TextStyle(
+    color: Color(0XFFc2c2c2),
+    fontSize: 12,
+    height: 1
+  );

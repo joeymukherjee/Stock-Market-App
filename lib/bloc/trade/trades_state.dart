@@ -9,21 +9,34 @@ abstract class TradesState extends Equatable {
 }
 class TradesInitial extends TradesState {}
 class TradesEmpty extends TradesState {}
-class TradesLoadInProgress extends TradesState {}
 class TradesLoadSuccess extends TradesState {
-  final List<Trade> trades;
+  final Map<String, TradeGroup> tradeGroups;
 
-  const TradesLoadSuccess([this.trades = const []]);
+  const TradesLoadSuccess(this.tradeGroups);
 
   @override 
-  List<Object> get props => [];
+  List<Object> get props => [tradeGroups];
 
   @override
   String toString() {
-    return 'TradesLoadSuccess { trades: $trades }';
+    return 'TradesLoadSuccess { trades: $tradeGroups }';
   }
 }
 class TradesEditing extends TradesState {}
+class TradeGroupLoadedEditing extends TradesState {
+  final Map<String, TradeGroup> tradeGroups;
+
+  const TradeGroupLoadedEditing(this.tradeGroups);
+
+  @override
+  List<Object> get props => [tradeGroups];
+
+  @override
+  String toString() {
+    return 'TradeGroupLoadedEditing { trades: $tradeGroups }';
+  }
+}
+
 class TradesAdding extends TradesState {}
 class TradesFinishedEditing extends TradesState {}
 class TradesValidTransaction extends TradesState {
@@ -34,10 +47,10 @@ class TradesValidTransaction extends TradesState {
   List<Object> get props => [trade];
 }
 class TradesSavedOkay extends TradesState {}
-class TradesLoadFailure extends TradesState {
+class TradesFailure extends TradesState {
   final String message;
 
-  TradesLoadFailure({
+  TradesFailure({
     @required this.message
   });
 }

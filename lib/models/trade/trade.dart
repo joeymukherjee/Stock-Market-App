@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 import 'package:equatable/equatable.dart';
 
@@ -41,7 +41,7 @@ abstract class Trade extends Equatable {
 
   Map<String, dynamic> toJson()
   {
-    final Map<String, String> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data ['id'] = this.id;
     data ['portfolioId'] = this.portfolioId.toString();
     data ['ticker'] = this.ticker;
@@ -53,15 +53,12 @@ abstract class Trade extends Equatable {
   factory Trade.fromJson (Map<String, dynamic> json)
   {
     Trade trade;
-    //trade.id = json ['id'];
-    TransactionType type = json ['type'];
+    TransactionType type = TransactionType.values.firstWhere((e) => e.toString() == json ['type']);
     switch (type) {
       case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], sharesFrom: json ['sharesFrom'], sharesTo: json ['sharesTo']); break;
-      case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
+      case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
       case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
       case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission'], numberOfShares: json ['numberOfShares'], amountPerShare: json ['amountPerShare'], didReinvest: json ['didReinvest'], priceAtReinvest: json ['priceAtReinvest']); break;
-      // TODO - we can remove this after we fix the database/delete stuff
-      default:trade = Common(type: TransactionType.purchase, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: DateTime.tryParse(json ['transactionDate']), sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commision']); break;
     }
     return trade;
   }
@@ -106,7 +103,7 @@ class Common extends Trade {
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, String> data = super.toJson();
+    final Map<String, dynamic> data = super.toJson();
     data ['sharesTransacted'] = this.sharesTransacted.toString();
     data ['price'] = this.price.toString();
     data ['commission'] = this.commission.toString();
@@ -145,7 +142,7 @@ class Dividend extends Common {
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, String> data = super.toJson();
+    final Map<String, dynamic> data = super.toJson();
     
     data ['amountPerShare'] = this.amountPerShare.toString();
     data ['proceeds'] = this.proceeds.toString();

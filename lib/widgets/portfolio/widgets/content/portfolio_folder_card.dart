@@ -47,12 +47,6 @@ class PortfolioFolderCard extends StatelessWidget {
     @required this.data
   });
 
-  static const _kFolderNameStyle = const TextStyle(
-    color: Color(0XFFc2c2c2),
-    fontSize: 12,
-    height: 1
-  );
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
@@ -131,7 +125,7 @@ class PortfolioFolderCard extends StatelessWidget {
                   ).show();
                 },
               ),
-              Text(data.name, style: _kFolderNameStyle),
+              Text(data.name, style: kFolderNameStyle),
               Icon(Icons.menu) // TODO - figure out how to move rows in a list
             ],
           );
@@ -140,7 +134,7 @@ class PortfolioFolderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              SizedBox(width: 100.0, child: Text(data.name, style: _kFolderNameStyle)),
+              SizedBox(width: 100.0, child: Text(data.name, style: kFolderNameStyle)),
               ChangeBox (label: 'Daily', data: data.daily),
               ChangeBox (label: 'Overall', data: data.overall)
             ],

@@ -47,7 +47,7 @@ class WatchlistStockCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(flex: 8, child: _buildCompanyData()),
-              Expanded(flex: 4,child: _buildPriceData())
+              Expanded(flex: 5, child: _buildPriceData())
             ],
           ),
         ),

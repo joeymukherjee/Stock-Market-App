@@ -15,11 +15,19 @@ class PortfolioHeadingSection extends StatelessWidget {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
     Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId)));
   }
+
   void toggleEditing (BuildContext context, TradesState state) {
-    if (state is TradesEditing) {
-      
-    } else {
+    if (state is TradesEmpty) {
       Navigator.pop(context);
+    }
+    if (state is TradeGroupLoadedEditing) {
+        BlocProvider
+        .of<TradesBloc>(context)
+        .add(PickedPortfolio(portfolioId));
+    } else {
+      BlocProvider
+        .of<TradesBloc>(context)
+        .add(EditedTradeGroup(portfolioId));
     }
   }
 
@@ -27,7 +35,9 @@ class PortfolioHeadingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        bool _isEditing = (state is TradesEditing) || (state is TradesEmpty);
+        //print ('PortfolioHeadingSection');
+        //print(state);
+        bool _isEditing = (state is TradeGroupLoadedEditing) || (state is TradesEmpty);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(
@@ -38,11 +48,11 @@ class PortfolioHeadingSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   GestureDetector(
-                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(Icons.done),
+                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(Icons.arrow_back_ios),
                     onTap: () => _isEditing ? clickedAdd (context, state) :
                       Navigator.pop(context)
                   ),
-                  Expanded(child: Text('Portfolio', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
+                  Expanded(child: Text(portfolioName, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(
                     child: _isEditing ? Icon(Icons.done) : Icon(FontAwesomeIcons.edit),
                     onTap: () => toggleEditing(context, state)

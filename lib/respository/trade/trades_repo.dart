@@ -24,6 +24,9 @@ abstract class TradesRepository {
 
   // Delete an existing trade(s)
   Future <void> deleteTrade (List<String> ids);
+
+  // Delete a bunch of trades by ticker from a portfolio
+  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, int portfolioId});
 }
 
 class SembastTradesRepository implements TradesRepository {
@@ -43,13 +46,10 @@ class SembastTradesRepository implements TradesRepository {
 
   Future<List<Trade>> loadAllTradesForPortfolio (int portfolioId) async
   {
-    print ("portfolioId to find: " + portfolioId.toString());
-    //final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString())); // , sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
-    // TODO - remove after we fix database
-    final Finder finder = Finder(filter: Filter.equals('ticker','AAPL'), sortOrders: [SortOrder ('ticker', true), SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
-    print ("DB Contents:");
-    print (response);
+    //print ("DB Contents:");
+    //print (response);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))
       .toList();
@@ -98,5 +98,13 @@ class SembastTradesRepository implements TradesRepository {
       final deleteFinder = Finder(filter: Filter.byKey(response));
       await _store.delete(await _database, finder: deleteFinder);
     }); 
+  }
+
+  // Deletes all trades for a stock in a portfolio from the database.
+  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, int portfolioId}) async
+  {
+    final finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()));
+    final response = await _store.find(await _database, finder: finder);
+    response.forEach((element) async { await _store.record(element.key).delete(await _database); });
   }
 }

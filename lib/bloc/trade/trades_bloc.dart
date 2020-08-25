@@ -3,7 +3,11 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:sma/models/trade/trade.dart';
+import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
+import 'package:sma/models/profile/stock_quote.dart';
+import 'package:sma/helpers/fetch_client.dart';
+import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
 part 'trades_event.dart';
 part 'trades_state.dart';
@@ -34,7 +38,38 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     if (event is FinishedTransaction) {
       yield* _mapFinishedTransactionToState();
     }
-    print ("mapEventToState: (event): " + event.toString());
+    if (event is EditedTradeGroup) {
+      yield* _mapEditedTradeGroupToState(event.portfolioId);
+    }
+    if (event is DeletedTradeGroup) {
+      yield* _mapDeletedTradeGroupToState(event);
+    }
+    //print ("mapEventToState: (event): " + event.toString());
+  }
+
+  Stream<TradesState> _mapDeletedTradeGroupToState(DeletedTradeGroup event) async* {
+    try {
+      await this.repository.deleteAllTradesByTickerAndPortfolio(ticker: event.ticker, portfolioId: event.portfolioId);
+      yield TradesSavedOkay ();
+    } catch (e) {
+      print ("Exception: _mapDeletedTradeGroupToState");
+      print (e);
+      yield TradesFailure(message: "Can't delete your transactions for this portfolio!");
+    }
+  }
+
+  Stream<TradesState> _mapEditedTradeGroupToState(int portfolioId) async* {
+     try {
+      final trades = await this.repository.loadAllTradesForPortfolio(portfolioId);
+      if (trades.length == 0) yield TradesEmpty();
+      else {
+        Map<String, TradeGroup> tradeGroups = await toTickerMapFromTrades (trades);
+        yield TradeGroupLoadedEditing(tradeGroups);
+      }
+    } catch (e) {
+      print (e);
+      yield TradesFailure(message: "Can't load your transactions for this portfolio!");
+    }
   }
 
   Stream<TradesState> _mapFinishedTransactionToState() async* {
@@ -45,24 +80,20 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   }
 
   Stream<TradesState> _mapPickedPortfolioToState(PickedPortfolio event) async* {
-   try {
+    try {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
-      else yield TradesLoadSuccess(trades);
+      else {
+        Map<String, TradeGroup> tradeGroups = await toTickerMapFromTrades (trades);
+        yield TradesLoadSuccess(tradeGroups);
+      }
     } catch (e) {
       print (e);
-      yield TradesLoadFailure(message: "Can't load your transactions for this portfolio!");
+      yield TradesFailure(message: "Can't load your transactions for this portfolio!");
     }
   }
 
   Stream<TradesState> _mapTradesLoadedToState() async* {
-    try {
-      final trades = await this.repository.loadAllTrades();
-      if (trades.length == 0) yield TradesEmpty();
-      else yield TradesLoadSuccess(trades);
-    } catch (_) {
-      yield TradesLoadFailure(message: "Can't load your transactions!");
-    }
   }
 
   Stream<TradesState> _mapDidTradeToState(DidTrade event) async* {

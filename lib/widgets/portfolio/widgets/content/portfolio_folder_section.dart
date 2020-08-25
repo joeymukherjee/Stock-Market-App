@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sma/models/trade/trade.dart';
+import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
+import 'package:sma/widgets/portfolio/widgets/content/porfolio_folder_stocks_card.dart';
 
 class PortfolioFolderSection extends StatelessWidget {
   final int portfolioId;
@@ -14,6 +15,11 @@ class PortfolioFolderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
+        if (state is TradesSavedOkay) {
+          BlocProvider
+            .of<TradesBloc>(context)
+            .add(PickedPortfolio(portfolioId));
+        }
         if (state is TradesEmpty) {
           return Column(
             children: <Widget>[              
@@ -27,16 +33,23 @@ class PortfolioFolderSection extends StatelessWidget {
             ],
           );
         }
-        if (state is TradesLoadFailure) {
+        if (state is TradesFailure) {
           return Padding(
             padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
             child: EmptyScreen(message: state.message),
           );
         }
+        if (state is TradeGroupLoadedEditing) {
+          return Column(
+            children: <Widget>[
+              _buildFolderSection(tradeGroups: state.tradeGroups)
+            ],
+          );
+        }
         if (state is TradesLoadSuccess) {
           return Column(
             children: <Widget>[
-              _buildFolderSection(trades: state.trades)              
+              _buildFolderSection(tradeGroups: state.tradeGroups)
             ],
           );
         }
@@ -48,16 +61,15 @@ class PortfolioFolderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildFolderSection({List<Trade> trades}) {
-    print ("building folders");
+  Widget _buildFolderSection({Map<String, TradeGroup> tradeGroups}) {
+    var keys = tradeGroups.keys.toList();
+
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
-      itemCount: trades.length,
+      itemCount: tradeGroups.length,
       itemBuilder: (BuildContext context, int index) {
-        // TODO - create portfolio stocks cards
-        print (trades[index]);
-        return Container (); // TradeCard(data: trades[index]);
+        return PortfolioFolderStocksCard (tradeGroup: tradeGroups[keys[index]]);
       }
     );
   }
