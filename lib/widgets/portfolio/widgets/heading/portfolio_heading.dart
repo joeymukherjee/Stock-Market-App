@@ -18,7 +18,7 @@ class PortfolioHeadingSection extends StatelessWidget {
 
   void toggleEditing(BuildContext context, TradesState state) {
     if (state is TradesEmpty) {
-      Navigator.pop(context);
+      clickedAdd(context, state);
     }
     if (state is TradeGroupLoadedEditing) {
         clickedAdd(context, state);
@@ -48,8 +48,9 @@ class PortfolioHeadingSection extends StatelessWidget {
                   GestureDetector(
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => {
-                      _isEditing ? BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId)) :
-                                  Navigator.pop(context)
+                      _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
+                                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId))
+                                  } : Navigator.pop(context)
                     }
                   ),
                   Expanded(child: Text(portfolioName, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
