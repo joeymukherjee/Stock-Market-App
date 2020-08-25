@@ -1,11 +1,13 @@
 UI
-    Missing standard iOS stuff in notch area
     Themeing
     Make it look like an iOS app
-    Add stuff on portfolio/trades looks bad
+    Transaction forms on portfolio/trades looks bad
 
 Trades
-    Store trades in portfolio - highest priority
+    Compute the total return for portfolios and change percentages
+    Compute the total return for portfolio/tickers and change percentages
+    Edit transactions
+    Add total return as first portfolio
 
 Portfolio Stuff
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong

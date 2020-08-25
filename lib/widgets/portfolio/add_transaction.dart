@@ -9,7 +9,9 @@ import 'package:sma/shared/styles.dart';
 import 'package:sma/shared/colors.dart';
 
 class AddTransactionHeading extends StatelessWidget {
- @override
+  final int portfolioId;
+  AddTransactionHeading (this.portfolioId);
+  @override
   Widget build(BuildContext context) {
     return BlocListener<TradesBloc, TradesState> (
       listener: (context, state) {
@@ -28,7 +30,10 @@ class AddTransactionHeading extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   child: Icon(Icons.arrow_back_ios),
-                  onTap: () => Navigator.pop(context)
+                  onTap: () => {
+                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId)),
+                    Navigator.pop(context)
+                  }
                 ),
                 Expanded(child: Text('Add Transaction', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                 GestureDetector(
@@ -522,7 +527,7 @@ class AddTransaction extends StatelessWidget {
         child: Column (
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              AddTransactionHeading (),
+              AddTransactionHeading (portfolioId),
               AddTransactionContents (portfolioId: portfolioId, portfolioName: portfolioName),
           ]
         ),
