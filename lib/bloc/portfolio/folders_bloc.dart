@@ -50,16 +50,15 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
     try {
       final foldersStored = await _databaseRepository.fetch();  // gets all the folders
       List<PortfolioFolderModel> updatedFolders = [];
-      foldersStored.forEach((folder) async {
-        FolderChange overallChange = await toTotalReturnFromPortfolioId (folder.key);
+      for (var folder in foldersStored) {
+        var changes = await toTotalReturnFromPortfolioId (folder.key);
+        PortfolioFolderModel updatedFolder = PortfolioFolderModel(
+          key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude,
+          daily: changes ['daily'], overall: changes ['overall']);
+          updatedFolders.add(updatedFolder);
+          _databaseRepository.save(model: folder);
+      }
 
-        // TODO - how do we calculate a daily change?
-        FolderChange dailyChange = FolderChange (change: 20, changePercentage: 0.2);
-
-        PortfolioFolderModel updatedFolder = PortfolioFolderModel(key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude, daily: dailyChange, overall: overallChange);
-        _databaseRepository.save(model: updatedFolder);
-        updatedFolders.add(updatedFolder);
-      });
       if (foldersStored.isNotEmpty) {
          yield PortfolioFoldersLoaded(folders: updatedFolders);
       } else {

@@ -12,23 +12,23 @@ class TradeGroup extends Equatable {
   final String companyName;
   final int portfolioId;
   final String portfolioName;
-  final double totalReturn;
-  final double changePercentage;
+  final FolderChange daily;
+  final FolderChange overall;
 
   TradeGroup({
     @required this.ticker,
     @required this.companyName,
     @required this.portfolioId,
     @required this.portfolioName,
-    @required this.totalReturn,
-    @required this.changePercentage
+    @required this.daily,
+    @required this.overall
   });
 
   @override
   bool get stringify => true;
 
   @override
-  List<Object> get props => [portfolioId, ticker, companyName, portfolioName, totalReturn, changePercentage];
+  List<Object> get props => [portfolioId, ticker, companyName, portfolioName, daily, overall];
 
 // TODO - move this somewhere
 // To compute the current return, we take the total number of shares of all the trades
@@ -69,19 +69,19 @@ class TradeGroup extends Equatable {
   }
 }
 
-Future<FolderChange> toTotalReturnFromPortfolioId (int portfolioId) async {
+Future<Map<String, FolderChange>> toTotalReturnFromPortfolioId (int portfolioId) async {
   final TradesRepository _tradesRepo = SembastTradesRepository ();
-  double totalReturn = 0.0;
-  double totalChangePct = 0.0;
+  FolderChange daily = FolderChange(change: 0.0, changePercentage: 0.0);
+  FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
   Future<List<Trade>> trades = _tradesRepo.loadAllTradesForPortfolio(portfolioId);
   Future<List<TradeGroup>> tradesList = toTickerMapFromTrades(await trades);
   Future.forEach(await tradesList, (trade) => {
-    totalReturn += trade.totalReturn,
-    totalChangePct += trade.changePercentage
+    daily += trade.daily,
+    overall += trade.overall
   });
 
-  return FolderChange (change: totalReturn, changePercentage: totalChangePct);
+  return {'daily': daily, 'overall': overall};
 }
 
 Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
@@ -91,11 +91,14 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
       StockQuote stockQuote = await globalFetchClient.getQuote(element.ticker);
       final _folderRepo = PortfolioFoldersStorageClient();
       String portfolioName = await _folderRepo.getPortfolioName(portfolioId: element.portfolioId);
-      var totalReturns = TradeGroup.computeTotalReturn(trades, element.ticker, stockQuote.price);
+      var overallReturns = TradeGroup.computeTotalReturn(trades, element.ticker, stockQuote.price);
+      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, element.ticker, stockQuote.previousClose.toDouble());
+      var dailyReturns = overallReturns - yesterdayReturns;
+
       tickerMap[element.ticker] = TradeGroup (ticker: element.ticker, companyName: stockQuote.name, portfolioName: portfolioName,
                                           portfolioId: element.portfolioId,
-                                          totalReturn: totalReturns.change,
-                                          changePercentage: totalReturns.changePercentage);
+                                          daily: dailyReturns,
+                                          overall: overallReturns);
     }
   }));
   List<TradeGroup> retVal = List();

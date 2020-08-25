@@ -51,20 +51,20 @@ class StocksBox extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
-            width: tradeGroup.changePercentage > 99.99 ? null : 100.0,
+            width: tradeGroup.overall.changePercentage > 99.99 ? null : 100.0,
             child: Text(
-              determineTextPercentageBasedOnChange(tradeGroup.changePercentage),
-              style: determineTextStyleBasedOnChange(tradeGroup.changePercentage),
+              determineTextPercentageBasedOnChange(tradeGroup.overall.changePercentage),
+              style: determineTextStyleBasedOnChange(tradeGroup.overall.changePercentage),
               textAlign: TextAlign.end
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text(determineTextBasedOnChange(tradeGroup.totalReturn),
+          child: Text(determineTextBasedOnChange(tradeGroup.overall.change),
             overflow: TextOverflow.visible,
             textAlign: TextAlign.end,
-            style: determineTextStyleBasedOnChange(tradeGroup.totalReturn)
+            style: determineTextStyleBasedOnChange(tradeGroup.overall.change)
           ),
         ),
       ],

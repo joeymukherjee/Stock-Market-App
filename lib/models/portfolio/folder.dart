@@ -1,8 +1,25 @@
 import 'package:meta/meta.dart';
+import 'package:equatable/equatable.dart';
 
-class FolderChange {
+class FolderChange extends Equatable {
   final double change;
   final double changePercentage;
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [change, changePercentage];
+
+  FolderChange operator - (FolderChange other) => FolderChange (
+    changePercentage: (changePercentage - other.changePercentage),
+    change: (change - other.change)
+  );
+
+  FolderChange operator + (FolderChange other) => FolderChange (
+    changePercentage: (changePercentage + other.changePercentage),
+    change: (change + other.change)
+  );
 
   FolderChange ({this.change, this.changePercentage});
   Map<String, dynamic> toJson() {
@@ -16,7 +33,7 @@ class FolderChange {
   }
 }
 
-class PortfolioFolderModel {
+class PortfolioFolderModel extends Equatable {
   final int key;
   final int order;
   final String name;
@@ -24,6 +41,12 @@ class PortfolioFolderModel {
   final FolderChange daily;
   final FolderChange overall;
   DateTime lastUpdated = DateTime.now();
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [key, order, name, exclude, daily, overall, lastUpdated];
 
   PortfolioFolderModel({
     @required this.key,
@@ -34,12 +57,6 @@ class PortfolioFolderModel {
     @required this.overall,
     lastUpdated
   });
-
-  @override
-  String toString ()
-  {
-    return "key: " + key.toString() + ", order: " + order.toString() + ", name: " + name + ", exclude: " + exclude.toString();
-  }
 
   factory PortfolioFolderModel.fromStorage(int key, Map<String, dynamic> json) {
     return PortfolioFolderModel(
