@@ -11,13 +11,13 @@ class PortfoliosHeadingSection extends StatelessWidget {
   void reload (context) {
     BlocProvider
         .of<PortfolioFoldersBloc>(context)
-        .add(FetchPortfolioFoldersData());
+        .add(ResyncPortfolioFoldersData());
   }
 
   void toggleEditing (BuildContext context, PortfolioFoldersState state) {
     if (state is PortfolioFoldersLoadedEditingState) {
         Navigator.push(context, MaterialPageRoute(
-          builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0))));
+          builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0, daily: FolderChange(), overall: FolderChange()))));
     } else {
       BlocProvider
         .of<PortfolioFoldersBloc>(context)
@@ -41,7 +41,7 @@ class PortfoliosHeadingSection extends StatelessWidget {
                 children: <Widget>[
                   GestureDetector(
                     child: _isEditing ? Icon(Icons.done) : Icon(FontAwesomeIcons.sync),
-                    onTap: () => _isEditing ? BlocProvider.of<PortfolioFoldersBloc>(context).add(FetchPortfolioFoldersData()) : reload(context)
+                    onTap: () => _isEditing ? BlocProvider.of<PortfolioFoldersBloc>(context).add(InitialLoadPortfolioFoldersData()) : reload(context)
                   ),
                   Expanded(child: Text('Portfolios', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(

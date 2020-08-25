@@ -5,25 +5,25 @@ import 'package:sma/models/trade/trade.dart';
 abstract class TradesRepository {
 
   // Return all trades
-  Future <List<Trade>> loadAllTrades ();
+  Future <List<Trade>> loadAllTrades();
 
   // Return all trades for a particular portfolio
-  Future <List<Trade>> loadAllTradesForPortfolio (int portfolioId);
+  Future <List<Trade>> loadAllTradesForPortfolio(int portfolioId);
 
   // Saves a list of trades (these may have updated!)
-  Future <void> saveTrades (List<Trade> trades);
+  Future <void> saveTrades(List<Trade> trades);
 
   // Load a single trade based on an id
-  Future <Trade> loadTrade (String id);
+  Future <Trade> loadTrade(String id);
 
   // Inserts a new trade (must not exist)
-  Future <void> addTrade (Trade trade);
+  Future <void> addTrade(Trade trade);
 
   // Updates an existing trade (must already exist)
-  Future <void> updateTrade (Trade trade);
+  Future <void> updateTrade(Trade trade);
 
   // Delete an existing trade(s)
-  Future <void> deleteTrade (List<String> ids);
+  Future <void> deleteTrade(List<String> ids);
 
   // Delete a bunch of trades by ticker from a portfolio
   Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, int portfolioId});
@@ -35,7 +35,7 @@ class SembastTradesRepository implements TradesRepository {
   // Sembast Database.
   Future<Database> get _database async => await DatabaseManager.instance.database;
 
-  Future<List<Trade>> loadAllTrades () async
+  Future<List<Trade>> loadAllTrades() async
   {
     final Finder finder = Finder(sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
@@ -44,7 +44,7 @@ class SembastTradesRepository implements TradesRepository {
       .toList();
   }
 
-  Future<List<Trade>> loadAllTradesForPortfolio (int portfolioId) async
+  Future<List<Trade>> loadAllTradesForPortfolio(int portfolioId) async
   {
     final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
@@ -55,7 +55,7 @@ class SembastTradesRepository implements TradesRepository {
       .toList();
   }
 
-  Future <void> saveTrades (List<Trade> trades) async
+  Future <void> saveTrades(List<Trade> trades) async
   {
     trades.forEach((trade) async {
       final finder = Finder(filter: Filter.matches('id', trade.id));
@@ -68,7 +68,7 @@ class SembastTradesRepository implements TradesRepository {
     });
   }
 
-  Future <Trade> loadTrade (String id) async
+  Future <Trade> loadTrade(String id) async
   {
     final finder = Finder(filter: Filter.matches('id', id));
     final response = await _store.findFirst(await _database, finder: finder);
@@ -76,13 +76,13 @@ class SembastTradesRepository implements TradesRepository {
   }
 
   // Inserts a new trade (must not exist)
-  Future <void> addTrade (Trade trade) async
+  Future <void> addTrade(Trade trade) async
   {
     await _store.add(await _database, trade.toJson());
   }
 
   // Updates an existing trade (must already exist)
-  Future <void> updateTrade (Trade trade) async
+  Future <void> updateTrade(Trade trade) async
   {
     final finder = Finder(filter: Filter.matches('id', trade.id));
     final response = await _store.findFirst(await _database, finder: finder);
@@ -90,7 +90,7 @@ class SembastTradesRepository implements TradesRepository {
   }
 
   // Delete an existing trade(s)
-  Future <void> deleteTrade (List<String> ids) async
+  Future <void> deleteTrade(List<String> ids) async
   {
     ids.forEach((id) async {
       final finder = Finder(filter: Filter.matches('id', id));

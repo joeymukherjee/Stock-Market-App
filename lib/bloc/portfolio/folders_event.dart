@@ -5,10 +5,17 @@ abstract class PortfolioFoldersEvent {}
 
 class PortfolioFoldersEditingEvent extends PortfolioFoldersEvent {}
 
-class FetchPortfolioFoldersData extends PortfolioFoldersEvent {
-  FetchPortfolioFoldersData ()
+class InitialLoadPortfolioFoldersData extends PortfolioFoldersEvent {
+  InitialLoadPortfolioFoldersData ()
   {
-    print ("FetchPortfolioFoldersData");
+    print ("InitialLoadPortfolioFoldersData");
+  }
+}
+
+class ResyncPortfolioFoldersData extends PortfolioFoldersEvent {
+  ResyncPortfolioFoldersData ()
+  {
+    print ("ResyncPortfolioFoldersData");
   }
 }
 

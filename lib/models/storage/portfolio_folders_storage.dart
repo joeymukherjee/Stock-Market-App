@@ -1,15 +1,22 @@
 import 'package:meta/meta.dart';
+import 'package:sma/models/portfolio/folder.dart';
 
 class PortfolioFoldersStorageModel {
   
   final int order;
   final String name;
   final bool exclude;
+  final FolderChange daily;
+  final FolderChange overall;
+  final DateTime lastUpdated;
 
   PortfolioFoldersStorageModel({
     @required this.order,
     @required this.name,
     @required this.exclude,
+    @required this.daily,
+    @required this.overall,
+    @required this.lastUpdated
   });
 
   static List<PortfolioFoldersStorageModel> convertToList(List<dynamic> items) {
@@ -23,7 +30,9 @@ class PortfolioFoldersStorageModel {
     data['order'] = this.order;
     data['name'] = this.name;
     data['exclude'] = this.exclude;
-
+    data['daily'] = this.daily.toJson();
+    data['overall'] = this.overall.toJson();
+    data['lastUpdated'] = this.lastUpdated.toString();
     return data;
   }
 
@@ -31,7 +40,10 @@ class PortfolioFoldersStorageModel {
     return PortfolioFoldersStorageModel(
       order: json ['order'],
       name: json['name'],
-      exclude: json['exclude']
+      exclude: json['exclude'],
+      daily: json['daily'],
+      overall: json['overall'],
+      lastUpdated: DateTime.parse(json ['lastUpdated'])
     );
   }
 }

@@ -30,7 +30,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
   {
       BlocProvider
       .of<PortfolioFoldersBloc>(context)
-      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, order: widget._data.order)));
+      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
       Navigator.pop(context);
   }
   @override

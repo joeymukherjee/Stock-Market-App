@@ -32,6 +32,8 @@ abstract class Trade extends Equatable {
   });
 
   double getTotalReturn ();
+  double getNumberOfShares ();
+  double getInvestment ();
 
   @override
   List<Object> get props => [id, portfolioId, ticker, transactionDate, type];
@@ -109,8 +111,17 @@ class Common extends Trade {
     data ['commission'] = this.commission.toString();
     return data;
   }
+
   double getTotalReturn () {
     return this.price * this.sharesTransacted - this.commission;
+  }
+
+  double getNumberOfShares () {
+    return this.type == TransactionType.purchase ? this.sharesTransacted : -this.sharesTransacted;
+  }
+
+  double getInvestment () {
+    return this.type == TransactionType.purchase ? this.paid : -this.paid;
   }
 }
 
@@ -154,6 +165,14 @@ class Dividend extends Common {
   double getTotalReturn () {
     return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
   }
+
+  double getNumberOfShares () {
+    return didReinvest ? this.sharesTransacted : 0.0;
+  }
+
+  double getInvestment () {
+    return -this.proceeds; // we received this money so it is negative!
+  }
 }
 
 class Split extends Trade {
@@ -187,5 +206,13 @@ class Split extends Trade {
 
   double getTotalReturn () {
     return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
+  }
+
+  double getNumberOfShares () {
+    return 0.0;  // TODO - how does this play into equation?
+  }
+
+  double getInvestment () {
+    return 0.0;  // TODO - how does this play into equation?
   }
 }

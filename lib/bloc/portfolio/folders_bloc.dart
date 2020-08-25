@@ -5,13 +5,14 @@ import 'package:meta/meta.dart';
 import 'package:sma/helpers/sentry_helper.dart';
 
 import 'package:sma/models/portfolio/folder.dart';
+import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
 part 'folders_event.dart';
 part 'folders_state.dart';
 
 class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersState> {
-  
+
   final _databaseRepository = PortfolioFoldersStorageClient();
 
   @override
@@ -23,9 +24,13 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
     if (event is PortfolioFoldersEditingEvent) {
       yield* _loadContent(event);
     }
-    if (event is FetchPortfolioFoldersData) {
+    if (event is InitialLoadPortfolioFoldersData) {
       yield PortfolioFoldersLoading();
       yield* _loadContent(event);
+    }
+    if (event is ResyncPortfolioFoldersData) {
+      yield PortfolioFoldersLoading();
+      yield* _updateContent(event);
     }
     if (event is SaveFolder) {
       yield PortfolioFoldersLoading();
@@ -40,8 +45,33 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
     }
   }
 
-  Stream<PortfolioFoldersState> _loadContent(PortfolioFoldersEvent event) async* {
+  Stream<PortfolioFoldersState> _updateContent(PortfolioFoldersEvent event) async* {
 
+    try {
+      final foldersStored = await _databaseRepository.fetch();  // gets all the folders
+      List<PortfolioFolderModel> updatedFolders = [];
+      foldersStored.forEach((folder) async {
+        FolderChange overallChange = await toTotalReturnFromPortfolioId (folder.key);
+
+        // TODO - how do we calculate a daily change?
+        FolderChange dailyChange = FolderChange (change: 20, changePercentage: 0.2);
+
+        PortfolioFolderModel updatedFolder = PortfolioFolderModel(key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude, daily: dailyChange, overall: overallChange);
+        _databaseRepository.save(model: updatedFolder);
+        updatedFolders.add(updatedFolder);
+      });
+      if (foldersStored.isNotEmpty) {
+         yield PortfolioFoldersLoaded(folders: updatedFolders);
+      } else {
+        yield PortfolioFoldersEmpty();
+      }
+    } catch (e, stack) {
+      yield PortfolioFoldersError(message: 'There was an unknown error. Please try again later.');
+      await SentryHelper(exception: e, stackTrace: stack).report();
+    }
+  }
+
+  Stream<PortfolioFoldersState> _loadContent(PortfolioFoldersEvent event) async* {
     try {
       final foldersStored = await _databaseRepository.fetch();  // gets all the folders
       if (foldersStored.isNotEmpty) {

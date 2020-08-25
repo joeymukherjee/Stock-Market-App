@@ -61,15 +61,15 @@ class PortfolioFolderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildFolderSection({Map<String, TradeGroup> tradeGroups}) {
-    var keys = tradeGroups.keys.toList();
+  Widget _buildFolderSection({List<TradeGroup> tradeGroups}) {
+
 
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       itemCount: tradeGroups.length,
       itemBuilder: (BuildContext context, int index) {
-        return PortfolioFolderStocksCard (tradeGroup: tradeGroups[keys[index]]);
+        return PortfolioFolderStocksCard (tradeGroup: tradeGroups[index]);
       }
     );
   }

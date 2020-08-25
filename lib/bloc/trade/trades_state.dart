@@ -10,7 +10,7 @@ abstract class TradesState extends Equatable {
 class TradesInitial extends TradesState {}
 class TradesEmpty extends TradesState {}
 class TradesLoadSuccess extends TradesState {
-  final Map<String, TradeGroup> tradeGroups;
+  final List<TradeGroup> tradeGroups;
 
   const TradesLoadSuccess(this.tradeGroups);
 
@@ -24,7 +24,7 @@ class TradesLoadSuccess extends TradesState {
 }
 class TradesEditing extends TradesState {}
 class TradeGroupLoadedEditing extends TradesState {
-  final Map<String, TradeGroup> tradeGroups;
+  final List<TradeGroup> tradeGroups;
 
   const TradeGroupLoadedEditing(this.tradeGroups);
 

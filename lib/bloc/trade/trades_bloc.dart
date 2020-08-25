@@ -60,7 +60,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       final trades = await this.repository.loadAllTradesForPortfolio(portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
-        Map<String, TradeGroup> tradeGroups = await toTickerMapFromTrades (trades);
+        var tradeGroups = await toTickerMapFromTrades (trades);
         yield TradeGroupLoadedEditing(tradeGroups);
       }
     } catch (e) {
@@ -81,7 +81,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
-        Map<String, TradeGroup> tradeGroups = await toTickerMapFromTrades (trades);
+        var tradeGroups = await toTickerMapFromTrades (trades);
         yield TradesLoadSuccess(tradeGroups);
       }
     } catch (e) {

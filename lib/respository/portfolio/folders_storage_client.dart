@@ -32,7 +32,13 @@ class PortfolioFoldersStorageClient {
   // Saves a name in the database.
   Future<void> save({PortfolioFolderModel model}) async
   {
-    PortfolioFoldersStorageModel storageModel = PortfolioFoldersStorageModel (name: model.name, exclude: model.exclude, order: model.order);
+    PortfolioFoldersStorageModel storageModel = PortfolioFoldersStorageModel (
+      name: model.name,
+      exclude: model.exclude,
+      order: model.order,
+      daily: model.daily,
+      overall: model.overall,
+      lastUpdated: model.lastUpdated);
     final bool nameAlreadyExists = await nameExists(name: model.name);
     final record = model.key > 0 ? _store.record(model.key) : null;  // if the key is greater than 0, look for it!
     if (record == null && !nameAlreadyExists) {
