@@ -63,7 +63,7 @@ class PortfolioFoldersSection extends StatelessWidget {
     );
   }
   
-  Widget _buildFoldersSection({List<PortfolioFolderModel> folders}) {
+   Widget _buildFoldersSection({List<PortfolioFolderModel> folders}) {
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),

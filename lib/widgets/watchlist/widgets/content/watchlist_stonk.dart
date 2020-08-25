@@ -19,21 +19,6 @@ class WatchlistStockCard extends StatelessWidget {
     @required this.data
   });
 
-  static const _kCompanyNameStyle = const TextStyle(
-    color: Color(0XFFc2c2c2),
-    fontSize: 13,
-    height: 1.5
-  );
-
-  static const _kStockTickerSymbol = const TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold
-  );
-
-  static const _kStockPriceStyle = const TextStyle(
-    fontWeight: FontWeight.bold
-  );
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -74,9 +59,9 @@ class WatchlistStockCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(data.symbol, style: _kStockTickerSymbol),
+        Text(data.symbol, style: kStockTickerSymbol),
         SizedBox(height: 4.0),
-        Text(data.name, style: _kCompanyNameStyle,)
+        Text(data.name, style: kCompanyNameStyle)
       ], 
     );
   }
@@ -111,7 +96,7 @@ class WatchlistStockCard extends StatelessWidget {
           child: Text(formatCurrencyText(data.price),
             overflow: TextOverflow.visible,
             textAlign: TextAlign.end, 
-            style: _kStockPriceStyle
+            style: kStockPriceStyle
           ),
         ),
       ],

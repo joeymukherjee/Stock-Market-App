@@ -11,19 +11,17 @@ class PortfolioHeadingSection extends StatelessWidget {
 
   PortfolioHeadingSection ({@required this.portfolioName, @required this.portfolioId});
 
-  void clickedAdd (BuildContext context, TradesState state) {
+  void clickedAdd(BuildContext context, TradesState state) {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
     Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId)));
   }
 
-  void toggleEditing (BuildContext context, TradesState state) {
+  void toggleEditing(BuildContext context, TradesState state) {
     if (state is TradesEmpty) {
       Navigator.pop(context);
     }
     if (state is TradeGroupLoadedEditing) {
-        BlocProvider
-        .of<TradesBloc>(context)
-        .add(PickedPortfolio(portfolioId));
+        clickedAdd(context, state);
     } else {
       BlocProvider
         .of<TradesBloc>(context)
@@ -48,13 +46,15 @@ class PortfolioHeadingSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   GestureDetector(
-                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(Icons.arrow_back_ios),
-                    onTap: () => _isEditing ? clickedAdd (context, state) :
-                      Navigator.pop(context)
+                    child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
+                    onTap: () => {
+                      _isEditing ? BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId)) :
+                                  Navigator.pop(context)
+                    }
                   ),
                   Expanded(child: Text(portfolioName, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(
-                    child: _isEditing ? Icon(Icons.done) : Icon(FontAwesomeIcons.edit),
+                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.edit),
                     onTap: () => toggleEditing(context, state)
                   ),
                 ],

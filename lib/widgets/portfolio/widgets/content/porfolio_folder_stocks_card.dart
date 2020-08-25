@@ -16,24 +16,59 @@ class StocksBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Expanded(flex: 8, child: _buildCompanyData()),
+        Expanded(flex: 8, child: _buildPriceData())
+      ],
+    );
+  }
+  /// This method is in charge of rendering the stock company data.
+  /// This is the left side in the card.
+  /// It renders the [ticker] and the company [name] from [tradeGroup].
+  Widget _buildCompanyData() {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          // Company Name
-          Text (tradeGroup.companyName,
-            style: TextStyle (
-              fontSize: 12,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(tradeGroup.ticker, style: kStockTickerSymbol),
+        SizedBox(height: 4.0),
+        Text(tradeGroup.companyName, style: kCompanyNameStyle)
+      ],
+    );
+  }
+
+  /// This method is in charge of rendering the stock company data.
+  /// This is the right side in the card.
+  /// It renders the [change] and the stock's [price] from [tradeGroup].
+  Widget _buildPriceData() {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Container(
+            width: tradeGroup.changePercentage > 99.99 ? null : 100.0, // TODO - based on size of font
+            child: Text(
+              determineTextPercentageBasedOnChange(tradeGroup.changePercentage),
+              style: determineTextStyleBasedOnChange(tradeGroup.changePercentage),
+              textAlign: TextAlign.end
             ),
           ),
-
-          // Change Amount
-          tradeGroup.totalReturn != null ? Text(determineTextBasedOnChange(tradeGroup.totalReturn), style: determineTextStyleBasedOnChange(tradeGroup.totalReturn)) : Text (''),
-          // Change percentage.
-          SizedBox(height: 5),
-          tradeGroup.changePercentage != null ? Text(determineTextPercentageBasedOnChange(tradeGroup.changePercentage), style: determineTextStyleBasedOnChange(tradeGroup.changePercentage)) : Text (''),
-        ],
-      );
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text(determineTextBasedOnChange(tradeGroup.totalReturn),
+            overflow: TextOverflow.visible,
+            textAlign: TextAlign.end,
+            style: determineTextStyleBasedOnChange(tradeGroup.totalReturn)
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -126,14 +161,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
             ],
           );
         } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              SizedBox(width: 100.0, child: Text(tradeGroup.ticker, style: kFolderNameStyle)),
-              StocksBox (tradeGroup: tradeGroup),
-            ],
-          );
+          return StocksBox (tradeGroup: tradeGroup);
         }
       }
     );

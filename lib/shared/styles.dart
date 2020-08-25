@@ -28,7 +28,22 @@ const kPortfolioHeaderTitle = const TextStyle(
 
 // Common style for folder/card names
 const kFolderNameStyle = const TextStyle(
-    color: Color(0XFFc2c2c2),
-    fontSize: 12,
-    height: 1
+  color: Color(0XFFc2c2c2),
+  fontSize: 12,
+  height: 1
   );
+
+const kCompanyNameStyle = const TextStyle(
+  color: Color(0XFFc2c2c2),
+  fontSize: 13,
+  height: 1.5
+);
+
+const kStockTickerSymbol = const TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.bold
+);
+
+const kStockPriceStyle = const TextStyle(
+  fontWeight: FontWeight.bold
+);
