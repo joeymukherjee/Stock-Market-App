@@ -7,7 +7,7 @@ class FetchWatchlistData extends WatchlistEvent {}
 
 class SaveProfile extends WatchlistEvent {
 
-  final StorageModel storageModel;
+  final WatchListStorageModel storageModel;
 
   SaveProfile({
     @required this.storageModel

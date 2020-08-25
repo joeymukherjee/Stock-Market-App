@@ -1,6 +1,6 @@
 import 'package:sembast/sembast.dart';
 import 'package:sma/helpers/database_helper.dart';
-import 'package:sma/models/storage/storage.dart';
+import 'package:sma/models/storage/watchlist_storage.dart';
 
 class WatchlistStorageClient {
 
@@ -10,13 +10,13 @@ class WatchlistStorageClient {
   Future<Database> get _database async => await DatabaseManager.instance.database;
 
   // Gets all the symbols stored.
-  Future<List<StorageModel>> fetch() async {
+  Future<List<WatchListStorageModel>> fetch() async {
 
     final Finder finder = Finder(sortOrders: [SortOrder(Field.key, false)]);
     final response = await _store.find(await _database, finder: finder);
 
     return response
-    .map((snapshot) => StorageModel.fromJson(snapshot.value))
+    .map((snapshot) => WatchListStorageModel.fromJson(snapshot.value))
     .toList();
   }
 
@@ -30,7 +30,7 @@ class WatchlistStorageClient {
   }
 
   // Saves a symbol in the database.
-  Future<void> save({StorageModel storageModel}) async {
+  Future<void> save({WatchListStorageModel storageModel}) async {
     
     final bool isSaved = await symbolExists(symbol: storageModel.symbol);
 

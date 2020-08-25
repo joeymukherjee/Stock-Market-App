@@ -1,18 +1,18 @@
 import 'package:meta/meta.dart';
 
-class StorageModel {
+class WatchListStorageModel {
   
   final String symbol;
   final String companyName;
 
-  StorageModel({
+  WatchListStorageModel({
     @required this.symbol,
     @required this.companyName,
   });
 
-  static List<StorageModel> convertToList(List<dynamic> items) {
+  static List<WatchListStorageModel> convertToList(List<dynamic> items) {
     return items
-    .map((item) => StorageModel.fromJson(item))
+    .map((item) => WatchListStorageModel.fromJson(item))
     .toList();
   }
   
@@ -25,8 +25,8 @@ class StorageModel {
     return data;
   }
 
-  factory StorageModel.fromJson(Map<String, dynamic> json) {
-    return StorageModel(
+  factory WatchListStorageModel.fromJson(Map<String, dynamic> json) {
+    return WatchListStorageModel(
       symbol: json['symbol'],
       companyName: json['companyName'],
     );

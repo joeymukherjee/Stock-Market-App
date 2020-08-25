@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sma/bloc/watchlist/watchlist_bloc.dart';
-import 'package:sma/models/storage/storage.dart';
+import 'package:sma/models/storage/watchlist_storage.dart';
 
 class WatchlistButtonWidget extends StatefulWidget {
 
   final Color color;
   final bool isSaved;
-  final StorageModel storageModel;
+  final WatchListStorageModel storageModel;
 
   WatchlistButtonWidget({
     @required this.color,
