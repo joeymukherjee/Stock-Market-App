@@ -12,13 +12,12 @@ class PortfoliosHeadingSection extends StatelessWidget {
     BlocProvider
         .of<PortfolioFoldersBloc>(context)
         .add(FetchPortfolioFoldersData());
-  } // TODO - figure out how to reload this folders list
+  }
 
   void toggleEditing (BuildContext context, PortfolioFoldersState state) {
     if (state is PortfolioFoldersLoadedEditingState) {
-      BlocProvider
-        .of<PortfolioFoldersBloc>(context)
-        .add(FetchPortfolioFoldersData());
+        Navigator.push(context, MaterialPageRoute(
+          builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0))));
     } else {
       BlocProvider
         .of<PortfolioFoldersBloc>(context)
@@ -41,14 +40,12 @@ class PortfoliosHeadingSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   GestureDetector(
-                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.sync),
-                    onTap: () => _isEditing ?
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0)))) :
-                      reload(context)
+                    child: _isEditing ? Icon(Icons.done) : Icon(FontAwesomeIcons.sync),
+                    onTap: () => _isEditing ? BlocProvider.of<PortfolioFoldersBloc>(context).add(FetchPortfolioFoldersData()) : reload(context)
                   ),
                   Expanded(child: Text('Portfolios', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(
-                    child: _isEditing ? Icon(Icons.done) : Icon(FontAwesomeIcons.edit),
+                    child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.edit),
                     onTap: () => toggleEditing(context, state)
                   ),
                 ],
