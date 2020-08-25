@@ -5,9 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
-import 'package:sma/models/profile/stock_quote.dart';
-import 'package:sma/helpers/fetch_client.dart';
-import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
 part 'trades_event.dart';
 part 'trades_state.dart';

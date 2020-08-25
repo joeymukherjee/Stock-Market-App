@@ -22,7 +22,7 @@ class MarketMovers extends StatelessWidget {
       padding: EdgeInsets.only(right: 14),
       child: Container(
         child: _buildContent(context),
-        width: 150, // TODO - should be based on font size
+        width: 150,
         decoration: BoxDecoration(
           borderRadius: kStandatBorder,
           color: color,

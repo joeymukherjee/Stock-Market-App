@@ -51,7 +51,7 @@ class StocksBox extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
-            width: tradeGroup.changePercentage > 99.99 ? null : 100.0, // TODO - based on size of font
+            width: tradeGroup.changePercentage > 99.99 ? null : 100.0,
             child: Text(
               determineTextPercentageBasedOnChange(tradeGroup.changePercentage),
               style: determineTextStyleBasedOnChange(tradeGroup.changePercentage),

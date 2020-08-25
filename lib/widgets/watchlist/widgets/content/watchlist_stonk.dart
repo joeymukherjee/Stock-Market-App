@@ -79,7 +79,7 @@ class WatchlistStockCard extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
-            width: data.changesPercentage > 99.99 ? null : 100.0, // TODO - based on size of font
+            width: data.changesPercentage > 99.99 ? null : 100.0,
 
             decoration: BoxDecoration(
               borderRadius: kSharpBorder,

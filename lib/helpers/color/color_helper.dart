@@ -8,19 +8,17 @@ Color determineColorBasedOnChange(double change) {
 }
 
 TextStyle determineTextStyleBasedOnChange(double change) {
+  var fontSize = 12.0;
+  if (change.abs() > 100000) {
+    fontSize = 10.0;
+  }
   return change < 0 
-    ?  kNegativeChange
-    : kPositiveChange;
+    ?  kChange (kNegativeColor, fontSize)
+    : kChange (kPositiveColor, fontSize);
 }
 
-const TextStyle kPositiveChange = const TextStyle(
-  color: kPositiveColor,
-  fontSize: 16,
-  fontWeight: FontWeight.w800
-);
-
-const TextStyle kNegativeChange = const TextStyle(
-  color: kNegativeColor,
-  fontSize: 16,
+TextStyle kChange (Color color, double fontSize) => TextStyle(
+  color: color,
+  fontSize: fontSize,
   fontWeight: FontWeight.w800
 );

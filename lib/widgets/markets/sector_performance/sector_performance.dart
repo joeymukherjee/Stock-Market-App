@@ -31,8 +31,7 @@ class SectorPerformance extends StatelessWidget {
 
     final changeString = sectorPerformance.change.replaceFirst(RegExp('%'), ''); 
     final change = double.parse(changeString);
-    final width = change > 9.99 ? null : 100.0; // TODO - should be based on font size
-
+    final width = change > 9.99 ? null : 100.0;
     return Column(
       children: <Widget>[
         Divider(height: 2),

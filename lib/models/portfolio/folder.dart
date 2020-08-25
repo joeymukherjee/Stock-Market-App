@@ -4,7 +4,7 @@ class FolderChange {
   final double change;
   final double changePercentage;
 
-  FolderChange ({this.change = 0.0, this.changePercentage = 0.0});
+  FolderChange ({this.change = 0.0, this.changePercentage});
 }
 
 class PortfolioFolderModel {
@@ -12,8 +12,8 @@ class PortfolioFolderModel {
   final int order;
   final String name;
   final bool exclude;
-  final FolderChange daily = FolderChange ();
-  final FolderChange overall = FolderChange ();
+  final FolderChange daily = FolderChange (change: 20000.0, changePercentage:2);
+  final FolderChange overall = FolderChange (change: 250000, changePercentage:.2);
 
   PortfolioFolderModel({
     @required this.key,
