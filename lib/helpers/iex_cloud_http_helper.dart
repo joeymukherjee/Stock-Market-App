@@ -129,12 +129,12 @@ class IEXFetchClient extends FetchClient {
     });
     // print ("iex_cloud_http_helper - " + uri.toString());
     Response response = await Dio().getUri(uri);
-    return fromIEXCloudIndexes (response.data);
+    return fromIEXCloudIndexes(response.data);
   }
 
   @override
   Future<Response> getChart (String symbol, String duration) {
-    return iexCloudRequest ('/stable/stock/$symbol/chart/$duration/');
+    return iexCloudRequest('/stable/stock/$symbol/chart/$duration/');
   }
 
   @override
@@ -145,14 +145,14 @@ class IEXFetchClient extends FetchClient {
   @override
   Future <StockQuote> getQuote (String symbol) async {
     Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
-    return fromIEXCloudQuote (jsonQuote.data, null);
+    return fromIEXCloudQuote(jsonQuote.data, null);
   }
 
   @override
   Future <StockQuote> getQuoteFull (String symbol) async {
     Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
     Response jsonStats = await iexCloudRequest('/stable/stock/$symbol/stats');
-    return fromIEXCloudQuote (jsonQuote.data, jsonStats.data);
+    return fromIEXCloudQuote(jsonQuote.data, jsonStats.data);
   }
 
   @override
@@ -167,7 +167,7 @@ class IEXFetchClient extends FetchClient {
     Response json = await iexCloudRequest('/stable/stock/market/list/mostactive');
     return fromIEXCloudActives(json.data);
   }
-  
+
   @override
   Future<List<MarketActiveModel>> getMarketGainers () async {
     Response json = await iexCloudRequest('/stable/stock/market/list/gainers');

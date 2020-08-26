@@ -40,7 +40,7 @@ class PortfolioFolderModel extends Equatable {
   final bool exclude;
   final FolderChange daily;
   final FolderChange overall;
-  DateTime lastUpdated = DateTime.now();
+  final DateTime lastUpdated = DateTime.now();
 
   @override
   bool get stringify => true;
