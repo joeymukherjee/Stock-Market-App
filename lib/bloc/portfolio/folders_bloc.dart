@@ -56,7 +56,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
           key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude,
           daily: changes ['daily'], overall: changes ['overall']);
           updatedFolders.add(updatedFolder);
-          _databaseRepository.save(model: folder);
+          _databaseRepository.save(model: updatedFolder);
       }
 
       if (foldersStored.isNotEmpty) {
