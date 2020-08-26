@@ -103,11 +103,11 @@ class PortfolioFolderStocksCard extends StatelessWidget {
               if (state is TradesEditing) {
               //  Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyTradesSection ('Edit', TradesGroup())));
               } else {
-                /*
+
                 BlocProvider
                   .of<TradesBloc>(context)
-                  .add(PickedTradeGroup(tradeGroup.key));
-                */
+                  .add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+
                 Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
               }
             },

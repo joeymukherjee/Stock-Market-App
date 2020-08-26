@@ -2,12 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sma/shared/styles.dart';
+import 'package:sma/models/trade/trade.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/widgets/portfolio/add_transaction.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+class TradeCard extends StatelessWidget {
+  final Trade trade;
+  TradeCard ({@required this.trade});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child:
+      Row(
+        children: [
+          Text (trade.transactionDate.toString()),
+        ],
+      )
+    );
+  }
+}
 
 class TradeGroupHeader extends StatelessWidget {
   final TradeGroup tradeGroup;
@@ -28,7 +46,7 @@ class TradeGroupHeader extends StatelessWidget {
     } else {
       BlocProvider
         .of<TradesBloc>(context)
-        .add(EditedTradeGroup(tradeGroup.portfolioId));
+        .add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
     }
   }
 
@@ -36,9 +54,9 @@ class TradeGroupHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        //print ('PortfolioHeadingSection');
-        //print(state);
-        bool _isEditing = (state is TradeGroupLoadedEditing) || (state is TradesEmpty);
+        print ("TradeGroupHeader");
+        print (state);
+        bool _isEditing = (state is TradesLoadedEditing) || (state is TradesEmpty);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(
@@ -52,8 +70,11 @@ class TradeGroupHeader extends StatelessWidget {
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => {
                       _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
-                                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId))
-                                  } : Navigator.pop(context)
+                                    BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker))
+                                  } : {
+                                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId)),
+                                    Navigator.pop(context)
+                                  }
                     }
                   ),
                   Expanded(child: Text(tradeGroup.ticker, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
@@ -77,9 +98,10 @@ class TradesFolderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
+        print ("TradesFolderSection");
+        print (state);
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
@@ -90,7 +112,7 @@ class TradesFolderSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                 // Expanded(flex: 8, child: _buildTradeGroupData()),
+                  // Expanded(flex: 8, child: _buildTradeGroupData()),
                 ],
               ),
             ),
@@ -107,7 +129,7 @@ class TradesFolderSection extends StatelessWidget {
                   .of<TradesBloc>(context)
                   .add(PickedTradeGroup(tradeGroup.key));
                 */
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => TradesGroup(tradeGroup)));
+                //Navigator.push(context, MaterialPageRoute(builder: (_) => TradesGroup(tradeGroup)));
               }
             },
           ),
@@ -125,11 +147,8 @@ class TradeGroupSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
-        if (state is TradesInitial) {
-          BlocProvider
-            .of<TradesBloc>(context)
-            .add(TradesLoaded());
-        }
+        print ("TradeGroupSection");
+        print (state);
 
         if (state is TradesFailure) {
           return Padding(
@@ -141,7 +160,7 @@ class TradeGroupSection extends StatelessWidget {
         if (state is TradeGroupLoaded) {
           return Column(
             children: <Widget>[
-              _buildTradeGroupData(state.tradeGroup)              
+              _buildTradeGroupData(state.tradeGroup)
             ],
           );
         }
@@ -154,6 +173,14 @@ class TradeGroupSection extends StatelessWidget {
           );
         }
 
+        if (state is TradesLoaded) {
+          return Column(
+            children: <Widget>[
+              _buildTrades(state.trades)
+            ],
+          );
+        }
+
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
           child: LoadingIndicatorWidget(),
@@ -161,9 +188,21 @@ class TradeGroupSection extends StatelessWidget {
       },
     );
   }
+  Widget _buildTrades(List<Trade> trades) {
+    return  ListView.builder(
+      shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
+      itemCount: trades.length,
+      itemBuilder: (BuildContext context, int index) {
+        return TradeCard (trade: trades[index]);
+      }
+    );
+  }
   Widget _buildTradeGroupData(TradeGroup tradeGroup) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
+        print ("_buildTradeGroupData");
+        print (state);
         if (state is TradeGroupsLoadedEditing) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,8 +244,12 @@ class TradeGroupSection extends StatelessWidget {
               Icon(Icons.menu) // TODO - figure out how to move rows in a list
             ],
           );
-        } else {
+        }
+        if (state is TradeGroupLoaded) {
           return TradesFolderSection (tradeGroup);
+        }
+        if (state is TradesLoaded) {
+
         }
       }
     );
@@ -244,4 +287,4 @@ class TradeGroupFolder extends StatelessWidget {
       ),
     );
   }
-} 
+}

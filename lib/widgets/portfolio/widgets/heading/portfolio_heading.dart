@@ -33,9 +33,7 @@ class PortfolioHeadingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        //print ('PortfolioHeadingSection');
-        //print(state);
-        bool _isEditing = (state is TradeGroupLoadedEditing) || (state is TradesEmpty);
+        bool _isEditing = (state is TradeGroupsLoadedEditing) || (state is TradesEmpty);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(

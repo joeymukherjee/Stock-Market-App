@@ -10,6 +10,9 @@ abstract class TradesRepository {
   // Return all trades for a particular portfolio
   Future <List<Trade>> loadAllTradesForPortfolio(int portfolioId);
 
+  // Return all trades for a particular portfolio
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId);
+
   // Saves a list of trades (these may have updated!)
   Future <void> saveTrades(List<Trade> trades);
 
@@ -50,6 +53,15 @@ class SembastTradesRepository implements TradesRepository {
     final response = await _store.find(await _database, finder: finder);
     //print ("DB Contents:");
     //print (response);
+    return response
+      .map((snapshot) => Trade.fromJson(snapshot.value))
+      .toList();
+  }
+
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId) async
+  {
+    final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    final response = await _store.find(await _database, finder: finder);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))
       .toList();

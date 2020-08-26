@@ -62,8 +62,6 @@ class PortfolioFolderSection extends StatelessWidget {
   }
 
   Widget _buildFolderSection({List<TradeGroup> tradeGroups}) {
-
-
     return ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
