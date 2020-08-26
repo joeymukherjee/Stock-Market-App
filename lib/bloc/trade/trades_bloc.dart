@@ -27,6 +27,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       yield* _mapDidTradeToState(event);
     }
     if (event is PickedPortfolio) {
+      yield TradesLoading();
       yield* _mapPickedPortfolioToState(event);
     }
     if (event is AddedTransaction) {

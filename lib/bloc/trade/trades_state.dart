@@ -36,7 +36,7 @@ class TradeGroupLoadedEditing extends TradesState {
     return 'TradeGroupLoadedEditing { trades: $tradeGroups }';
   }
 }
-
+class TradesLoading extends TradesState {}
 class TradesAdding extends TradesState {}
 class TradesFinishedEditing extends TradesState {}
 class TradesValidTransaction extends TradesState {
