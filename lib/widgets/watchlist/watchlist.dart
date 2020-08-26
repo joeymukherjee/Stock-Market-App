@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 
 import 'package:sma/bloc/watchlist/watchlist_bloc.dart';
-import 'package:sma/shared/colors.dart';
 import 'package:sma/widgets/watchlist/watchlist_stonks.dart';
 
 import 'package:sma/widgets/watchlist/widgets/heading/watchlist_heading.dart';
@@ -14,7 +13,6 @@ class WatchlistSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kScaffoldBackground,
       body: OfflineBuilder(
         child: Container(),
         connectivityBuilder: ( context,  connectivity, child,  ) {

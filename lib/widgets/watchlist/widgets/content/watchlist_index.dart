@@ -7,7 +7,6 @@ import 'package:sma/models/profile/market_index.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/widgets/profile/profile.dart';
 import 'package:sma/bloc/profile/profile_bloc.dart';
-import 'package:sma/shared/colors.dart';
 import 'package:sma/shared/styles.dart';
 
 class WatchlistIndexWidget extends StatelessWidget {
@@ -21,11 +20,6 @@ class WatchlistIndexWidget extends StatelessWidget {
   static const _indexNameStyle = const TextStyle(
    fontWeight: FontWeight.bold,
    fontSize: 16
-  );
-
-  static const _indexPriceStyle = const TextStyle(
-    fontSize: 14,
-    color: kLightGray
   );
 
   static const _indexPriceChange = const TextStyle(
@@ -55,7 +49,7 @@ class WatchlistIndexWidget extends StatelessWidget {
           children: [
 
             Text(index.name, style: _indexNameStyle, maxLines: 1),
-            Text(formatCurrencyText(index.price), style: _indexPriceStyle),
+            Text(formatCurrencyText(index.price), style: TextStyle (color: Theme.of(context).splashColor)),
 
             Container(
               decoration: BoxDecoration(

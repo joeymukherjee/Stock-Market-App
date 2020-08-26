@@ -62,7 +62,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       if (trades.length == 0) yield TradesEmpty();
       else {
         var tradeGroups = await toTickerMapFromTrades (trades);
-        yield TradeGroupLoadedEditing(tradeGroups);
+        yield TradeGroupsLoadedEditing(tradeGroups);
       }
     } catch (e) {
       print (e);
@@ -83,7 +83,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       if (trades.length == 0) yield TradesEmpty();
       else {
         var tradeGroups = await toTickerMapFromTrades (trades);
-        yield TradesLoadSuccess(tradeGroups);
+        yield TradeGroupsLoadSuccess(tradeGroups);
       }
     } catch (e) {
       print (e);

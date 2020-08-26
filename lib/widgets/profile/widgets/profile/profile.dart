@@ -10,7 +10,6 @@ import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/widgets/profile/widgets/profile/profile_graph.dart';
 import 'package:sma/widgets/profile/widgets/profile/profile_summary.dart';
 
-import 'package:sma/widgets/profile/widgets/styles.dart';
 import 'package:sma/respository/profile/client.dart'; 
 
 class ChartSwitcher extends StatefulWidget {
@@ -77,10 +76,20 @@ class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProvider
               color: widget.color
             )
           ),
-          TabBar (
-            tabs: cadences,
-            controller: _tabController,
-            isScrollable: true,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TabBar (
+              tabs: cadences,
+              controller: _tabController,
+              labelColor: Theme.of(context).splashColor,
+              unselectedLabelColor: Theme.of(context).highlightColor,
+              labelStyle: TextStyle (fontSize: 8),
+              isScrollable: true,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Theme.of(context).highlightColor,
+              ),
+            ),
           ),
           Text (
             'Quotes provided by ' + globalFetchClient.getAttribution(),
@@ -116,9 +125,9 @@ class Profile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(this.stockQuote.name ?? '-', style: kProfileCompanyName),
+            Text(this.stockQuote.name ?? '-', style: Theme.of(context).textTheme.headline5),
 
-            _buildPrice(),
+            _buildPrice(context),
             ChartSwitcher(ticker: this.stockQuote.symbol, color: this.color, stockChart: this.stockChart),
             StatisticsWidget(
               quote: stockQuote,
@@ -130,14 +139,14 @@ class Profile extends StatelessWidget {
     );
   }
 
-  Widget _buildPrice() {
+  Widget _buildPrice(context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('\$${formatCurrencyText(stockQuote.price)}', style: priceStyle),
+          Text('\$${formatCurrencyText(stockQuote.price)}', style: Theme.of(context).textTheme.headline5),
           SizedBox(height: 8),
           Text('${determineTextBasedOnChange(stockQuote.change)}  (${determineTextPercentageBasedOnChange(stockQuote.changesPercentage)})', 
             style: determineTextStyleBasedOnChange(stockQuote.change)

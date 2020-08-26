@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/models/trade/trade_group.dart';
-import 'package:sma/shared/colors.dart';
+
 import 'package:sma/shared/styles.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/helpers/color/color_helper.dart';
@@ -9,6 +9,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
+import 'package:sma/widgets/portfolio/trades_group.dart';
 
 class StocksBox extends StatelessWidget {
   final TradeGroup tradeGroup;
@@ -20,7 +21,7 @@ class StocksBox extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Expanded(flex: 8, child: _buildCompanyData()),
+        Expanded(flex: 5, child: _buildCompanyData(context)),
         Expanded(flex: 8, child: _buildPriceData())
       ],
     );
@@ -28,13 +29,13 @@ class StocksBox extends StatelessWidget {
   /// This method is in charge of rendering the stock company data.
   /// This is the left side in the card.
   /// It renders the [ticker] and the company [name] from [tradeGroup].
-  Widget _buildCompanyData() {
+  Widget _buildCompanyData(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(tradeGroup.ticker, style: kStockTickerSymbol),
         SizedBox(height: 4.0),
-        Text(tradeGroup.companyName, style: kCompanyNameStyle)
+        Text(tradeGroup.companyName, style: Theme.of(context).textTheme.bodyText2)
       ],
     );
   }
@@ -51,10 +52,10 @@ class StocksBox extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
-            width: tradeGroup.overall.changePercentage > 99.99 ? null : 100.0,
             child: Text(
               determineTextPercentageBasedOnChange(tradeGroup.overall.changePercentage),
               style: determineTextStyleBasedOnChange(tradeGroup.overall.changePercentage),
+              overflow: TextOverflow.visible,
               textAlign: TextAlign.end
             ),
           ),
@@ -83,7 +84,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
-            color: kTileColor,
+            color: Theme.of (context).accentColor,
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Row(
@@ -95,7 +96,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
               ),
             ),
 
-            shape: RoundedRectangleBorder(borderRadius: kStandatBorder),
+            shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
             onPressed: () {
 
               // Trigger fetch event.
@@ -106,8 +107,8 @@ class PortfolioFolderStocksCard extends StatelessWidget {
                 BlocProvider
                   .of<TradesBloc>(context)
                   .add(PickedTradeGroup(tradeGroup.key));
-                Navigator.push(context, MaterialPageRoute(builder: (_) => TradesGroup()));
                 */
+                Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
               }
             },
           ),
@@ -119,7 +120,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
   Widget _buildTradeGroupData() {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        if (state is TradeGroupLoadedEditing) {
+        if (state is TradeGroupsLoadedEditing) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -156,7 +157,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
                   ).show();
                 },
               ),
-              Text(tradeGroup.ticker, style: kFolderNameStyle),
+              Text(tradeGroup.ticker, style: Theme.of(context).textTheme.bodyText2),
               Icon(Icons.menu) // TODO - figure out how to move rows in a list
             ],
           );

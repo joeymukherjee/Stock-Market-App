@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:sma/shared/colors.dart';
 
 import 'package:sma/widgets/markets/markets_section.dart';
 import 'package:sma/widgets/news/news_section.dart';
@@ -29,7 +28,6 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kScaffoldBackground,
       body: tabs.elementAt(_selectedIndex),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -40,7 +38,7 @@ class _StockMarketAppHomeState extends State<StockMarketAppHome> {
             iconSize: 24,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             duration: Duration(milliseconds: 800),
-            tabBackgroundColor: Colors.white30,
+            tabBackgroundColor: Theme.of(context).highlightColor,
             selectedIndex: _selectedIndex,
             tabs: _bottomNavigationBarItemItems(),
             onTabChange: _onItemTapped

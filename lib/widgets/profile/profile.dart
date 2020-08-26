@@ -28,7 +28,6 @@ class Profile extends StatelessWidget {
               backgroundColor: kNegativeColor,
               title: Text(':('),
             ),
-            backgroundColor: kScaffoldBackground,
             body: Center(child: EmptyScreen(message: state.error))
 
           );
@@ -43,7 +42,6 @@ class Profile extends StatelessWidget {
         }
 
         return Scaffold(
-          backgroundColor: kScaffoldBackground,
           body: LoadingIndicatorWidget()
         );
       }

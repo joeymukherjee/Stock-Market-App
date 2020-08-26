@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:sma/bloc/news/news_bloc.dart';
-import 'package:sma/shared/colors.dart';
 
 import 'package:sma/widgets/news/news.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
@@ -13,7 +12,6 @@ class NewsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kScaffoldBackground,
       body: OfflineBuilder(
         child: Container(),
         connectivityBuilder: ( context,  connectivity, child,  ) {

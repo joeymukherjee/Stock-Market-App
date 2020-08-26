@@ -6,7 +6,6 @@ import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:sma/shared/styles.dart';
-import 'package:sma/shared/colors.dart';
 
 class AddTransactionHeading extends StatelessWidget {
   final int portfolioId;
@@ -521,7 +520,6 @@ class AddTransaction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kScaffoldBackground,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column (

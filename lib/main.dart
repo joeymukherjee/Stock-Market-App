@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sma/shared/styles.dart';
 
 import 'package:sma/bloc/news/news_bloc.dart';
+import 'package:sma/bloc/settings/settings_bloc.dart';
 import 'package:sma/bloc/watchlist/watchlist_bloc.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/bloc/profile/profile_bloc.dart';
@@ -11,6 +13,7 @@ import 'package:sma/bloc/trade/trades_bloc.dart';
 
 import 'package:sma/widgets/about/about.dart';
 import 'package:sma/widgets/home.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
@@ -21,6 +24,9 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider<SettingsBloc>(
+          create: (context) => SettingsBloc()
+        ),
         BlocProvider<WatchlistBloc>(
           create: (context) => WatchlistBloc(),
         ),
@@ -43,14 +49,18 @@ void main() async {
           create: (context) => TradesBloc(),
         ),
       ],
-      child: MaterialApp(
-        title: 'Stock Market App',
-        theme: ThemeData(brightness: Brightness.dark),
-        home: StockMarketAppHome(),
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/about': (context) => AboutSection(),
-        },
+      child: BlocBuilder <SettingsBloc, SettingsState> (
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Stonks',
+            theme: state.isNight ? darkMode : lightMode,
+            home: StockMarketAppHome(),
+            debugShowCheckedModeBanner: true,
+            routes: {
+              '/about': (context) => AboutSection(),
+            },
+          );
+        }
       )
     )
   );

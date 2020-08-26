@@ -4,8 +4,6 @@ import 'package:sma/helpers/text/text_helper.dart';
 
 import 'package:sma/models/profile/stock_profile.dart';
 import 'package:sma/models/profile/stock_quote.dart';
-import 'package:sma/shared/colors.dart';
-import 'package:sma/widgets/profile/widgets/styles.dart';
 
 class StatisticsWidget extends StatelessWidget {
   
@@ -26,7 +24,8 @@ class StatisticsWidget extends StatelessWidget {
   }
   
 
-  List<Widget> _leftColumn() {
+  List<Widget> _leftColumn(TextStyle summaryStyle) {
+
     return [
       ListTile(
         contentPadding: EdgeInsets.zero,
@@ -62,7 +61,7 @@ class StatisticsWidget extends StatelessWidget {
     ];
   }
 
-  List<Widget> _rightColumn() {
+  List<Widget> _rightColumn(TextStyle summaryStyle) {
     return [
       ListTile(
         contentPadding: EdgeInsets.zero,
@@ -99,30 +98,30 @@ class StatisticsWidget extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    TextStyle subtitleStyle = Theme.of(context).textTheme.subtitle2;
+    TextStyle headlineStyle = Theme.of(context).textTheme.headline5.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor);
+    TextStyle summaryStyle = Theme.of(context).textTheme.caption.copyWith(fontSize: 10);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: 16),
-
-        Text('Summary',style: kProfileScreenSectionTitle),
+        Text('Summary', style: headlineStyle),
         SizedBox(height: 8),
 
         Row(
           children: <Widget>[
             Expanded(
-              child: Column(children: _leftColumn()),
+              child: Column(children: _leftColumn(summaryStyle)),
             ),
 
             SizedBox(width: 40),
 
             Expanded(
-              child: Column(children: _rightColumn()),
+              child: Column(children: _rightColumn(summaryStyle)),
             )
           ],
         ),
         Divider(),
-
-        
 
         ListTile(
           contentPadding: EdgeInsets.zero,
@@ -145,15 +144,11 @@ class StatisticsWidget extends StatelessWidget {
         ),
         Divider(),
 
-        Text('About ${profile.companyName ?? '-'} ',style: kProfileScreenSectionTitle),
+        Text('About ${profile.companyName ?? '-'} ', style: headlineStyle),
         SizedBox(height: 8),
 
         Text(profile.description ?? '-',
-          style: TextStyle(
-            fontSize: 16,
-            color: kLighterGray,
-            height: 1.75
-          ),
+          style: Theme.of(context).textTheme.caption,
         ),
         Divider(),
         

@@ -5,7 +5,6 @@ import 'package:sma/bloc/sector_performance/sector_performance_bloc.dart';
 import 'package:sma/models/markets/market_active/market_active_model.dart';
 
 import 'package:sma/shared/colors.dart';
-import 'package:sma/shared/styles.dart';
 
 import 'package:sma/widgets/markets/market_movers/market_movers.dart';
 import 'package:sma/widgets/markets/sector_performance/sector_performance.dart';
@@ -33,6 +32,11 @@ class MarketsPerformance extends StatelessWidget {
         }
 
         if (state is SectorPerformanceLoaded) {
+          TextStyle kSubtitleStyling = TextStyle(
+            color: Theme.of(context).highlightColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w800
+          );
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -42,7 +46,7 @@ class MarketsPerformance extends StatelessWidget {
                 padding: EdgeInsets.only(top: 16, bottom: 8),
                 child: Text('Most Active', style: kSubtitleStyling),
               ),
-              _buildMarketMovers(stonks: state.marketActive, color: Color(0xFF263497)),
+              _buildMarketMovers(stonks: state.marketActive, color: Color(0xff40b3fb)),
 
               // Section title
               Padding(

@@ -17,7 +17,7 @@ class EmptyScreen extends StatelessWidget {
         height: 1.5,
         fontSize: 20, 
         fontWeight: FontWeight.bold,
-        color: kGray
+        // color: kGray
       ),
       textAlign: TextAlign.start,
     );

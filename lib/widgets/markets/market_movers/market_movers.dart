@@ -24,7 +24,7 @@ class MarketMovers extends StatelessWidget {
         child: _buildContent(context),
         width: 150,
         decoration: BoxDecoration(
-          borderRadius: kStandatBorder,
+          borderRadius: kStandardBorder,
           color: color,
         ),
       )
@@ -52,6 +52,7 @@ class MarketMovers extends StatelessWidget {
           // Company Name
           Text (data.companyName, 
             style: TextStyle (
+              color: Theme.of(context).textTheme.headline1.color,
               fontSize: 8,
             ),
             softWrap: false,
@@ -60,13 +61,18 @@ class MarketMovers extends StatelessWidget {
 
           // Ticker Symbol.
           Text(data.ticker, style: TextStyle(
+            color: Theme.of(context).textTheme.headline1.color,
             fontWeight: FontWeight.bold,
             fontSize: 12.5
           )),
 
           // Change percentage.
           SizedBox(height: 5),
-          Text(fmt.format (data.changesPercentage)),
+          Text(fmt.format (data.changesPercentage), style: TextStyle(
+            color: Theme.of(context).textTheme.headline1.color,
+            fontWeight: FontWeight.bold,
+            fontSize: 12.5
+          )),
         ],
       ),
     );

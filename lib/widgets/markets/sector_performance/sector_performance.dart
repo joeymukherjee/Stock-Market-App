@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:sma/helpers/color/color_helper.dart';
 import 'package:sma/models/markets/sector_performance/sector_performance_model.dart';
-import 'package:sma/shared/colors.dart';
 import 'package:sma/shared/styles.dart';
 
 class SectorPerformance extends StatelessWidget {
@@ -22,12 +21,13 @@ class SectorPerformance extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       itemCount: performanceData.performanceModelToday.sectors.length,
       itemBuilder: (BuildContext context, int index) => _buildListTile(
+        context: context,
         sectorPerformance: performanceData.performanceModelToday.sectors[index]
       )
     );
   }
   
-  Widget _buildListTile({SingleSectorPerformance sectorPerformance}) {
+  Widget _buildListTile({BuildContext context, SingleSectorPerformance sectorPerformance}) {
 
     final changeString = sectorPerformance.change.replaceFirst(RegExp('%'), ''); 
     final change = double.parse(changeString);
@@ -37,7 +37,7 @@ class SectorPerformance extends StatelessWidget {
         Divider(height: 2),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text(sectorPerformance.name, style: TextStyle(color: kLighterGray)),
+          title: Text(sectorPerformance.name, style: Theme.of(context).textTheme.caption),
 
           trailing: Container(
             decoration: BoxDecoration(
@@ -47,7 +47,7 @@ class SectorPerformance extends StatelessWidget {
             
             width: width,
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Text(sectorPerformance.change, textAlign: TextAlign.center,),
+            child: Text(sectorPerformance.change, style: Theme.of(context).textTheme.caption, textAlign: TextAlign.center),
           ),
         )
       ],

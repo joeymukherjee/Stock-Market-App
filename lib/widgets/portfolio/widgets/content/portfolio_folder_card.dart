@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sma/shared/colors.dart';
 import 'package:sma/shared/styles.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
@@ -54,7 +53,7 @@ class PortfolioFolderCard extends StatelessWidget {
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
-            color: kTileColor,
+            color: Theme.of (context).accentColor,
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Row(
@@ -66,7 +65,7 @@ class PortfolioFolderCard extends StatelessWidget {
               ),
             ),
 
-            shape: RoundedRectangleBorder(borderRadius: kStandatBorder),
+            shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
             onPressed: () {
 
               // Trigger fetch event.
@@ -125,7 +124,7 @@ class PortfolioFolderCard extends StatelessWidget {
                   ).show();
                 },
               ),
-              Text(data.name, style: kFolderNameStyle),
+              Text(data.name, style: Theme.of(context).textTheme.bodyText2),
               Icon(Icons.menu) // TODO - figure out how to move rows in a list
             ],
           );
@@ -134,7 +133,7 @@ class PortfolioFolderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              SizedBox(width: 100.0, child: Text(data.name, style: kFolderNameStyle)),
+              SizedBox(width: 100.0, child: Text(data.name, style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 10))),
               ChangeBox (label: 'Daily', data: data.daily),
               ChangeBox (label: 'Overall', data: data.overall)
             ],

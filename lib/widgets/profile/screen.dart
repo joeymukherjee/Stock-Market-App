@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sma/models/profile/profile.dart';
 import 'package:sma/models/storage/watchlist_storage.dart';
 
-import 'package:sma/shared/colors.dart';
 import 'package:sma/widgets/profile/widgets/profile/profile.dart';
 import 'package:sma/widgets/profile/widgets/widget/save_button.dart';
 
@@ -26,7 +25,6 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: color,
         centerTitle: true,
         title: Text(this.profile.stockQuote.symbol),
-        
 
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
@@ -44,8 +42,6 @@ class ProfileScreen extends StatelessWidget {
           )
         ],
       ),
-      
-      backgroundColor: kScaffoldBackground,
       body: SafeArea(
         child: Profile(
           color: color,

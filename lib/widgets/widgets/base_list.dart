@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sma/shared/colors.dart';
 
 class BaseList extends StatelessWidget {
 
@@ -12,7 +11,6 @@ class BaseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kScaffoldBackground,
       body: SafeArea(
         child: ListView(
           physics: BouncingScrollPhysics(),

@@ -39,14 +39,14 @@ class PortfolioFolderSection extends StatelessWidget {
             child: EmptyScreen(message: state.message),
           );
         }
-        if (state is TradeGroupLoadedEditing) {
+        if (state is TradeGroupsLoadedEditing) {
           return Column(
             children: <Widget>[
               _buildFolderSection(tradeGroups: state.tradeGroups)
             ],
           );
         }
-        if (state is TradesLoadSuccess) {
+        if (state is TradeGroupsLoadSuccess) {
           return Column(
             children: <Widget>[
               _buildFolderSection(tradeGroups: state.tradeGroups)

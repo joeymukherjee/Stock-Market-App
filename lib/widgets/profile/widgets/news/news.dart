@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sma/helpers/url/url.dart';
 import 'package:sma/models/profile/news/stock_news.dart';
-import 'package:sma/shared/colors.dart';
-import 'package:sma/widgets/profile/widgets/styles.dart';
 
 class ProfileNewsScreen extends StatelessWidget {
 
@@ -17,19 +15,19 @@ class ProfileNewsScreen extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.only(left: 26, right: 26, top: 26),
       children: <Widget>[
-        Text('Latest News', style: kProfileCompanyName),
+        Text('Latest News', style: Theme.of(context).textTheme.headline5),
         SizedBox(height: 16),
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           itemCount: news.length,
-          itemBuilder: (BuildContext context, int i) => _buildNewsCard(news[i])
+          itemBuilder: (BuildContext context, int i) => _buildNewsCard(context, news[i])
         )
       ],
     );
   }
 
-  Widget _buildNewsCard(StockNews singleNew) {
+  Widget _buildNewsCard(BuildContext context, StockNews singleNew) {
     return GestureDetector(
       onTap: () => launchUrl(singleNew.url),
       child: Column(
@@ -38,7 +36,7 @@ class ProfileNewsScreen extends StatelessWidget {
           Text(
             singleNew.source,
             style: TextStyle( 
-              color: kLighterGray,
+              color: Theme.of(context).highlightColor,
               fontWeight: FontWeight.w600
             ),
           ),  
@@ -55,7 +53,7 @@ class ProfileNewsScreen extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             singleNew.summary, style: TextStyle(
-              color:  kLighterGray,
+              color:  Theme.of(context).highlightColor,
               height: 1.8,
               fontWeight: FontWeight.w600,
             ),
