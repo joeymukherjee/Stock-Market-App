@@ -6,7 +6,7 @@ import 'package:sma/models/profile/stock_profile.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 
 class StatisticsWidget extends StatelessWidget {
-  
+
   final StockQuote quote;
   final StockProfile profile;
 
@@ -16,13 +16,13 @@ class StatisticsWidget extends StatelessWidget {
   });
 
   static Text _renderText(dynamic text, bool isCurrency) {
-    return text != null 
-    ? isCurrency ? 
+    return text != null
+    ? isCurrency ?
         Text(formatCurrencyText(text), style: TextStyle (fontSize: 12),)
       : Text(compactText(text), style: TextStyle (fontSize: 12),)
     : Text('-');
   }
-  
+
 
   List<Widget> _leftColumn(TextStyle summaryStyle) {
 
@@ -95,7 +95,7 @@ class StatisticsWidget extends StatelessWidget {
       ),
     ];
   }
-  
+
   @override
   Widget build(BuildContext context) {
     TextStyle subtitleStyle = Theme.of(context).textTheme.subtitle2;
@@ -151,7 +151,7 @@ class StatisticsWidget extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Divider(),
-        
+
         SizedBox(height: 30),
       ],
     );
