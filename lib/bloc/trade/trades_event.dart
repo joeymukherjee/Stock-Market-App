@@ -8,7 +8,7 @@ abstract class TradeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class TradesLoaded extends TradeEvent {}
+// class TradesLoaded extends TradeEvent {}
 class PickedPortfolio extends TradeEvent {
   final int portfolioId;
 
@@ -56,4 +56,11 @@ class SavedTrade extends TradeEvent {
   SavedTrade({
     @required this.trade
   });
+}
+
+class EditedTrades extends TradeEvent {
+  final int portfolioId;
+  final String ticker;
+
+  EditedTrades ({@required this.portfolioId, @required this.ticker});
 }

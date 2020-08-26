@@ -17,8 +17,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final _httpClient = ProfileClient(globalFetchClient);
   final _storageClient = WatchlistStorageClient();
 
-  @override
-  ProfileState get initialState => ProfileInitial();
+  ProfileBloc () : super (ProfileInitial());
 
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {

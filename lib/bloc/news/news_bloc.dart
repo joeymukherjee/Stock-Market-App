@@ -17,8 +17,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final  _newsRepository = NewsRepository(); 
   final  _databaseRepository = WatchlistStorageClient();
 
-  @override
-  NewsState get initialState => NewsInitial();
+  NewsBloc () : super (NewsInitial());
 
   @override
   Stream<NewsState> mapEventToState( NewsEvent event ) async* {

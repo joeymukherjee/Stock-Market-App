@@ -13,10 +13,9 @@ part 'folders_state.dart';
 
 class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersState> {
 
-  final _databaseRepository = PortfolioFoldersStorageClient();
+  PortfolioFoldersBloc () : super (PortfolioFoldersInitial());
 
-  @override
-  PortfolioFoldersState get initialState => PortfolioFoldersInitial();
+  final _databaseRepository = PortfolioFoldersStorageClient();
 
   @override
   Stream<PortfolioFoldersState> mapEventToState(PortfolioFoldersEvent event) async* {

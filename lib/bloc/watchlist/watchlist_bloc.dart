@@ -20,8 +20,7 @@ class WatchlistBloc extends Bloc<WatchlistEvent, WatchlistState> {
   final _databaseRepository = WatchlistStorageClient();
   final _repository = WatchlistClient(globalFetchClient);
 
-  @override
-  WatchlistState get initialState => WatchlistInitial();
+  WatchlistBloc () : super (WatchlistInitial());
 
   @override
   Stream<WatchlistState> mapEventToState(WatchlistEvent event) async* {

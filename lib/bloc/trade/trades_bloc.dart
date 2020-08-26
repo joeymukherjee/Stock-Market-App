@@ -12,10 +12,7 @@ part 'trades_state.dart';
 class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   final TradesRepository repository = SembastTradesRepository ();
-  TradesBloc () : super ();
-
-  @override
-  TradesState get initialState => TradesInitial();
+  TradesBloc () : super (TradesInitial());
 
   @override
   Stream<TradesState> mapEventToState(TradeEvent event) async*
@@ -42,7 +39,15 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     if (event is DeletedTradeGroup) {
       yield* _mapDeletedTradeGroupToState(event);
     }
-    //print ("mapEventToState: (event): " + event.toString());
+    if (event is EditedTrades) {
+      yield TradesLoading ();
+      yield* _mapEditedTradesToState(event);
+    }
+    print ("mapEventToState: (event): " + event.toString());
+  }
+  Stream<TradesState> _mapEditedTradesToState (EditedTrades event) async* {
+    List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    yield TradesLoaded (trades);
   }
 
   Stream<TradesState> _mapDeletedTradeGroupToState(DeletedTradeGroup event) async* {

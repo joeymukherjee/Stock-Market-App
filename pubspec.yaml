@@ -17,7 +17,7 @@ dependencies:
   path_provider: ^1.6.7
   sembast: ^2.4.0
   sentry: ^3.0.1
-  flutter_bloc: ^3.2.0
+  flutter_bloc: ^6.0.2
   flutter_spinkit: "^4.1.2"
   font_awesome_flutter: ^8.8.1
   google_nav_bar: ^2.2.0

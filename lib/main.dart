@@ -10,6 +10,7 @@ import 'package:sma/bloc/profile/profile_bloc.dart';
 import 'package:sma/bloc/search/search_bloc.dart';
 import 'package:sma/bloc/sector_performance/sector_performance_bloc.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sma/widgets/about/about.dart';
 import 'package:sma/widgets/home.dart';
@@ -21,11 +22,14 @@ void main() async {
   await DotEnv().load('.env');
   WidgetsFlutterBinding.ensureInitialized();
 
+  final prefs = await SharedPreferences.getInstance();
+  bool initialTheme = prefs.getBool('theme');
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider<SettingsBloc>(
-          create: (context) => SettingsBloc()
+          create: (context) => SettingsBloc(initialTheme)
         ),
         BlocProvider<WatchlistBloc>(
           create: (context) => WatchlistBloc(),

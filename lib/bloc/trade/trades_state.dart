@@ -19,7 +19,7 @@ class TradeGroupsLoadSuccess extends TradesState {
 
   @override
   String toString() {
-    return 'TradesLoadSuccess { trades: $tradeGroups }';
+    return 'TradeGroupsLoadSuccess { trades: $tradeGroups }';
   }
 }
 class TradesEditing extends TradesState {}
@@ -79,6 +79,34 @@ class TradeGroupLoaded extends TradesState {
 
   @override
   String toString() {
-    return 'TradeGroup { tradeGroup: $tradeGroup }';
+    return 'TradeGroupLoaded { tradeGroup: $tradeGroup }';
+  }
+}
+
+class TradesLoaded extends TradesState {
+  final List<Trade> trades;
+
+  const TradesLoaded (this.trades);
+
+  @override
+  List<Object> get props => [trades];
+
+  @override
+  String toString() {
+    return 'TradesLoaded { trades: $trades }';
+  }
+}
+
+class TradesLoadedEditing extends TradesState {
+  final List<Trade> trades;
+
+  const TradesLoadedEditing (this.trades);
+
+  @override
+  List<Object> get props => [trades];
+
+  @override
+  String toString() {
+    return 'TradesLoadedEditing { trades: $trades }';
   }
 }

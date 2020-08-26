@@ -15,8 +15,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   final _client = SearchClient();
 
-  @override
-  SearchState get initialState => SearchInitial();
+  SearchBloc () : super (SearchInitial());
 
   @override
   Stream<SearchState> mapEventToState(SearchEvent event) async* {

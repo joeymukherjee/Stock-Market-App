@@ -6,10 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 @immutable
 abstract class SettingsEvent extends Equatable {}
 class ToggledThemeEvent extends SettingsEvent {
-  /*
-  final bool isNight;
-  ToggledThemeEvent (this.isNight);
-  */
   @override
   List<Object> get props => [];
 }
@@ -17,22 +13,23 @@ class ToggledThemeEvent extends SettingsEvent {
 @immutable
 abstract class SettingsState extends Equatable {
   final bool isNight;
-  const SettingsState({this.isNight = false});
+  const SettingsState(this.isNight);
 
-  @override 
+  @override
   List<Object> get props => [isNight];
 }
 
-class SettingsInitial extends SettingsState {}
+class SettingsInitial extends SettingsState {
+  const SettingsInitial (bool isNight) : super (isNight);
+}
 class SettingsToggleTheme extends SettingsState {
-  const SettingsToggleTheme (bool isNight) : super (isNight: isNight);
+  const SettingsToggleTheme (bool isNight) : super (isNight);
 }
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  bool _isNight = true;
+  bool _isNight;
 
-  @override
-  SettingsState get initialState => SettingsInitial();
+  SettingsBloc(this._isNight) : super(SettingsInitial(_isNight));
 
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
@@ -51,11 +48,5 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   void _setTheme() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('theme', _isNight);
-  }
-
-  Future<bool> _getTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool value = prefs.getBool('theme');
-    return value;
   }
 }

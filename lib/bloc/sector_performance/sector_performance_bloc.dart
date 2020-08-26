@@ -14,8 +14,7 @@ part 'sector_performance_state.dart';
 
 class SectorPerformanceBloc extends Bloc<SectorPerformanceEvent, SectorPerformanceState> {
 
-  @override
-  SectorPerformanceState get initialState => SectorPerformanceInitial();
+  SectorPerformanceBloc () : super (SectorPerformanceInitial());
 
   @override
   Stream<SectorPerformanceState> mapEventToState(SectorPerformanceEvent event) async* {
