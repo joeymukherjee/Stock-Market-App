@@ -106,7 +106,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
 
                 BlocProvider
                   .of<TradesBloc>(context)
-                  .add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+                  .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
 
                 Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
               }

@@ -4,7 +4,7 @@ part of 'trades_bloc.dart';
 abstract class TradeEvent extends Equatable {
   const TradeEvent();
 
-  @override 
+  @override
   List<Object> get props => [];
 }
 
@@ -41,7 +41,7 @@ class DidTrade extends TradeEvent {
 
   const DidTrade (this.trade);
 
-  @override 
+  @override
   List<Object> get props => [trade];
 
   @override
@@ -57,10 +57,48 @@ class SavedTrade extends TradeEvent {
     @required this.trade
   });
 }
+class SelectedTrades extends TradeEvent {
+  final int portfolioId;
+  final String ticker;
+
+  @override
+  List<Object> get props => [portfolioId, ticker];
+
+  @override
+  String toString() {
+    return 'SelectedTrades { portfolioId: $portfolioId, ticker: $ticker }';
+  }
+
+  SelectedTrades ({@required this.portfolioId, @required this.ticker});
+}
 
 class EditedTrades extends TradeEvent {
   final int portfolioId;
   final String ticker;
 
+  @override
+  List<Object> get props => [portfolioId, ticker];
+
+  @override
+  String toString() {
+    return 'EditedTrades { portfolioId: $portfolioId, ticker: $ticker }';
+  }
+
   EditedTrades ({@required this.portfolioId, @required this.ticker});
+}
+
+class DeletedTrade extends TradeEvent {
+  final String id;
+  final int portfolioId;
+  final String ticker;
+
+  @override
+  List<Object> get props => [id, portfolioId, ticker];
+
+  @override
+  String toString() {
+    return 'DeletedTrade { id: $id, portfolioId: $portfolioId, ticker: $ticker }';
+  }
+
+  DeletedTrade ({@required this.id, @required this.portfolioId, @required this.ticker});
 }

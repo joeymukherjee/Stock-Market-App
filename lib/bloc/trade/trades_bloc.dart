@@ -39,15 +39,42 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     if (event is DeletedTradeGroup) {
       yield* _mapDeletedTradeGroupToState(event);
     }
+    if (event is SelectedTrades) {
+      yield TradesLoading ();
+      yield* _mapSelectedTradesToState(event);
+    }
     if (event is EditedTrades) {
       yield TradesLoading ();
       yield* _mapEditedTradesToState(event);
     }
+    if (event is DeletedTrade) {
+      yield TradesLoading ();
+      yield* _mapDeletedTradeToState (event);
+    }
     print ("mapEventToState: (event): " + event.toString());
   }
-  Stream<TradesState> _mapEditedTradesToState (EditedTrades event) async* {
+
+  Stream<TradesState> _mapDeletedTradeToState(DeletedTrade event) async* {
+    try {
+      await this.repository.deleteTrade([event.id]);
+      yield TradesSavedOkay ();
+      List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+      yield TradesLoadedEditing (trades);
+    } catch (e) {
+      print ("Exception: _mapDeletedTradeToState");
+      print (e);
+      yield TradesFailure(message: "Can't delete this transactions!");
+    }
+  }
+
+  Stream<TradesState> _mapSelectedTradesToState(SelectedTrades event) async* {
     List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
     yield TradesLoaded (trades);
+  }
+
+  Stream<TradesState> _mapEditedTradesToState(EditedTrades event) async* {
+    List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    yield TradesLoadedEditing (trades);
   }
 
   Stream<TradesState> _mapDeletedTradeGroupToState(DeletedTradeGroup event) async* {

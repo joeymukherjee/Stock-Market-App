@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sma/shared/styles.dart';
+import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/models/trade/trade_group.dart';
@@ -16,13 +18,51 @@ class TradeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:
-      Row(
-        children: [
-          Text (trade.transactionDate.toString()),
-        ],
-      )
+    return BlocBuilder<TradesBloc, TradesState> (
+      builder: (BuildContext context, TradesState state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            (state is TradesLoadedEditing) ?
+              GestureDetector(
+                child: Icon(Icons.highlight_off, color: Colors.red),
+                onTap: () {
+                  Alert(
+                    context: context,
+                    type: AlertType.warning,
+                    title: "Delete Trade",
+                    desc: "Are you sure you wish to delete the trade on " + DateFormat.yMMMMd().format (trade.transactionDate) + "?",
+                    buttons: [
+                      DialogButton(
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () {
+                          BlocProvider.of<TradesBloc>(context).add(DeletedTrade(id: trade.id, portfolioId: trade.portfolioId, ticker: trade.ticker));
+                          Navigator.pop(context);
+                        },
+                        color: Colors.red,
+                      ),
+                      DialogButton(
+                        child: Text(
+                          "No",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        color: Colors.green
+                      ),
+                    ],
+                  ).show();
+                },
+              )
+              : Container (),
+            Text (DateFormat.yMMMMd().format (trade.transactionDate)),
+            Text (trade.getNumberOfShares().toString()),
+            Text (formatCurrencyText (trade.getTotalReturn()))
+          ],
+        );
+      }
     );
   }
 }
@@ -38,15 +78,20 @@ class TradeGroupHeader extends StatelessWidget {
   }
 
   void toggleEditing(BuildContext context, TradesState state) {
-    if (state is TradesEmpty) {
+     if (state is TradesEmpty) {
       clickedAdd(context, state);
     }
     if (state is TradeGroupLoadedEditing) {
         clickedAdd(context, state);
-    } else {
+    }
+    if (state is TradesLoaded) {
       BlocProvider
         .of<TradesBloc>(context)
         .add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+    } else {
+      BlocProvider
+        .of<TradesBloc>(context)
+        .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
     }
   }
 
@@ -54,9 +99,7 @@ class TradeGroupHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        print ("TradeGroupHeader");
-        print (state);
-        bool _isEditing = (state is TradesLoadedEditing) || (state is TradesEmpty);
+       bool _isEditing = (state is TradesLoadedEditing) || (state is TradesEmpty);
         return Padding(
           padding: const EdgeInsets.only(bottom: 20.0),
           child: Column(
@@ -70,6 +113,7 @@ class TradeGroupHeader extends StatelessWidget {
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => {
                       _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
+                                    (state is TradesLoadedEditing) ? BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker)) :
                                     BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker))
                                   } : {
                                     BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId)),
@@ -100,8 +144,6 @@ class TradesFolderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        print ("TradesFolderSection");
-        print (state);
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
@@ -147,9 +189,6 @@ class TradeGroupSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
-        print ("TradeGroupSection");
-        print (state);
-
         if (state is TradesFailure) {
           return Padding(
             padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
@@ -180,7 +219,13 @@ class TradeGroupSection extends StatelessWidget {
             ],
           );
         }
-
+        if (state is TradesLoadedEditing) {
+          return Column(
+            children: <Widget>[
+              _buildTrades(state.trades)
+            ],
+          );
+        }
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
           child: LoadingIndicatorWidget(),
@@ -201,8 +246,6 @@ class TradeGroupSection extends StatelessWidget {
   Widget _buildTradeGroupData(TradeGroup tradeGroup) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        print ("_buildTradeGroupData");
-        print (state);
         if (state is TradeGroupsLoadedEditing) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -47,7 +47,9 @@ class PortfolioHeadingSection extends StatelessWidget {
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => {
                       _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
-                                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId))
+                                    {
+                                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId))
+                                    }
                                   } : Navigator.pop(context)
                     }
                   ),

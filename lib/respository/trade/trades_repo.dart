@@ -104,12 +104,11 @@ class SembastTradesRepository implements TradesRepository {
   // Delete an existing trade(s)
   Future <void> deleteTrade(List<String> ids) async
   {
-    ids.forEach((id) async {
-      final finder = Finder(filter: Filter.matches('id', id));
+    for (var idx = 0; idx < ids.length; idx++) {
+      final finder = Finder(filter: Filter.matches('id', ids[idx]));
       final response = await _store.findFirst(await _database, finder: finder);
-      final deleteFinder = Finder(filter: Filter.byKey(response));
-      await _store.delete(await _database, finder: deleteFinder);
-    }); 
+      await _store.record(response.key).delete(await _database);
+    }
   }
 
   // Deletes all trades for a stock in a portfolio from the database.

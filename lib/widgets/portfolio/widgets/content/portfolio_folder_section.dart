@@ -15,6 +15,7 @@ class PortfolioFolderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
+
         if (state is TradesSavedOkay) {
           BlocProvider
             .of<TradesBloc>(context)
@@ -22,7 +23,7 @@ class PortfolioFolderSection extends StatelessWidget {
         }
         if (state is TradesEmpty) {
           return Column(
-            children: <Widget>[              
+            children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(
                   vertical: MediaQuery.of(context).size.height / 10,

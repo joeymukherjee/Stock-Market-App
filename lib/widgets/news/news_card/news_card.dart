@@ -16,7 +16,6 @@ class NewsCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print (MediaQuery.textScaleFactorOf(context));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

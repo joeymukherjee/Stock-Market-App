@@ -25,11 +25,10 @@ class PortfolioFolder extends StatelessWidget {
           )
         ),
 
-        onRefresh: () async {
-          // Reload folders section.
-        BlocProvider
-          .of<TradesBloc>(context)
-          .add(PickedPortfolio(portfolioId));
+        onRefresh: () async {  // Reload folders section.
+          BlocProvider
+            .of<TradesBloc>(context)
+            .add(PickedPortfolio(portfolioId));
         },
       ),
     );
