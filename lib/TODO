@@ -1,7 +1,5 @@
 UI
-    Themeing
     Make it look like an iOS app
-    Redo stock card to make it better
     Transaction forms on portfolio/trades looks bad
 
 Math
@@ -9,11 +7,8 @@ Math
        Given either a list of trades or a trade group
 
 Trades
-    Compute the total return for portfolios and change percentages
-    Compute the total return for portfolio/tickers and change percentages
     Edit transactions
     Add total return as first portfolio
-    View transactions per ticker
 
 Portfolio Stuff
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong
