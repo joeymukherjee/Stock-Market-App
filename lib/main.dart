@@ -23,7 +23,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
-  bool initialTheme = prefs.getBool('theme');
+  bool initialTheme = prefs.getBool('theme') == null ? true : prefs.getBool('theme');
 
   runApp(
     MultiBlocProvider(
