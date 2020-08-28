@@ -33,6 +33,7 @@ ThemeData lightMode = ThemeData(
     primaryIconTheme: IconThemeData(color: Color(0xFF3A3A3A)),
     ////// Card
     cardTheme: CardTheme(shadowColor: Color(0xff73c7fc).withOpacity(0.3),color: Color(0xffFAFDFF)),
+    tabBarTheme: TabBarTheme(labelColor: Colors.white, unselectedLabelColor: Colors.black),
 //    dialogBackgroundColor: Color(0xFF332F39),
     ////// FAB //////
     floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -75,6 +76,7 @@ ThemeData lightMode = ThemeData(
     ////// Card //////
     cardTheme: CardTheme(shadowColor: Color(0xFF36323B),color: Color(0xFF302E3F)),
     dialogBackgroundColor: Color(0xFF302E3F),
+    tabBarTheme: TabBarTheme(labelColor: Colors.white, unselectedLabelColor: Colors.white),
     ////// FAB //////
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       foregroundColor: textColorDark,
@@ -84,11 +86,11 @@ ThemeData lightMode = ThemeData(
     ////// Input Decoration //////
     cursorColor: primaryColorDark,
     inputDecorationTheme: InputDecorationTheme(
-      hintStyle: TextStyle(color: Colors.white24,fontSize: 20),
-      filled: true,
-      fillColor: Color(0xFF313142),
-      enabledBorder: inputBorder,
-      focusedBorder: inputBorder,
+      //hintStyle: TextStyle(color: Colors.white24,fontSize: 20),
+      //filled: false,
+      //fillColor: Color(0xFF313142),
+      //enabledBorder: inputBorder,
+      //focusedBorder: inputBorder,
     ),
   );
 ///////////////////////////////////

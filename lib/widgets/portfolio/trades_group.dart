@@ -78,11 +78,15 @@ class TradeGroupHeader extends StatelessWidget {
   }
 
   void toggleEditing(BuildContext context, TradesState state) {
-     if (state is TradesEmpty) {
+    print (state);
+    if (state is TradesEmpty) {
       clickedAdd(context, state);
     }
     if (state is TradeGroupLoadedEditing) {
-        clickedAdd(context, state);
+      clickedAdd(context, state);
+    }
+    if (state is TradesLoadedEditing) {
+      clickedAdd(context, state);
     }
     if (state is TradesLoaded) {
       BlocProvider

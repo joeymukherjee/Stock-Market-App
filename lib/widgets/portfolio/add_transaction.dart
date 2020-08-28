@@ -8,8 +8,9 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:sma/shared/styles.dart';
 
 class AddTransactionHeading extends StatelessWidget {
+  final String portfolioName;
   final int portfolioId;
-  AddTransactionHeading (this.portfolioId);
+  AddTransactionHeading ({@required this.portfolioName, @required this.portfolioId});
   @override
   Widget build(BuildContext context) {
     return BlocListener<TradesBloc, TradesState> (
@@ -19,7 +20,7 @@ class AddTransactionHeading extends StatelessWidget {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 20.0),
+        padding: const EdgeInsets.only(bottom: 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -43,6 +44,13 @@ class AddTransactionHeading extends StatelessWidget {
                 ),
               ],
             ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 15.0), // space below portfolio name, above tab bar
+                child: Row (
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text (portfolioName)]
+                ),
+            ),
           ],
         )
       ),
@@ -62,7 +70,7 @@ class AddTransactionContents extends StatefulWidget {
 class _AddTransactionContentsState extends State<AddTransactionContents> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   TabController _tabController;
-  String _portfolioName;
+
   int _portfolioId;
   final moneyEditController = MoneyMaskedTextController();
   String _ticker = 'AAPL';
@@ -84,7 +92,6 @@ class _AddTransactionContentsState extends State<AddTransactionContents> with Ti
 
   @override
   void initState () {
-    _portfolioName = widget.portfolioName;
     _portfolioId = widget.portfolioId;
     _tabController = new TabController(length: 4, vsync: this);
     super.initState();
@@ -127,70 +134,68 @@ class _AddTransactionContentsState extends State<AddTransactionContents> with Ti
         return Form(
           key: _formKey,
           child: Column (
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 35.0),
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  labelColor: Colors.black,
-                  labelPadding: EdgeInsets.symmetric(horizontal: labelPadding),
-                  unselectedLabelColor: Colors.greenAccent,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.greenAccent),
-                  tabs: [
-                    Tab(child: Container(
-                          width: tabWidth,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.greenAccent, width: 1)),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Buy", textScaleFactor: 1.0),
-                          ),
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                labelColor: Theme.of(context).tabBarTheme.labelColor,
+                labelPadding: EdgeInsets.symmetric(horizontal: labelPadding),
+                unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                indicatorSize: TabBarIndicatorSize.label,
+                //indicatorPadding: EdgeInsets.all(10.0),
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Theme.of(context).primaryColor),
+                tabs: [
+                  Tab(child: Container(
+                        width: tabWidth,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("Buy", textScaleFactor: 1.0),
                         ),
                       ),
-                    Tab(child: Container(
-                          width: tabWidth,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.greenAccent, width: 1)),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Sell", textScaleFactor: 1.0),
-                          ),
+                    ),
+                  Tab(child: Container(
+                        width: tabWidth,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("Sell", textScaleFactor: 1.0),
                         ),
                       ),
-                    Tab(child: Container(
-                          width: tabWidth,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.greenAccent, width: 1)),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Dividend", softWrap: false, overflow: TextOverflow.visible, textScaleFactor: 1.0),
-                          ),
+                    ),
+                  Tab(child: Container(
+                        width: tabWidth,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("Dividend", softWrap: false, overflow: TextOverflow.visible, textScaleFactor: 1.0),
                         ),
                       ),
-                    Tab(child: Container(
-                          width: tabWidth,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.greenAccent, width: 1)),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Split", textScaleFactor: 1.0)
-                          ),
+                    ),
+                  Tab(child: Container(
+                        width: tabWidth,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("Split", textScaleFactor: 1.0)
                         ),
                       ),
-                  ]
-                ),
+                    ),
+                ]
               ),
               Container(
-                height: MediaQuery.of(context).size.height - MediaQuery.of(context).viewInsets.bottom - 300,
+                height: MediaQuery.of(context).size.height - MediaQuery.of(context).viewInsets.bottom - 305,
                 child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -211,9 +216,10 @@ class _AddTransactionContentsState extends State<AddTransactionContents> with Ti
 
 List<Widget> _buildCommonItems (context, widget) {
   return [
-    Row (
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [Text ("Portfolio"), Text (widget._portfolioName)]),
+    Padding(
+      padding: const EdgeInsets.all(8.0),  // without this extra, Ticker Name was up under the tabs??
+      child: Container(),
+    ),
     TextFormField(
       initialValue: widget._ticker,
       textCapitalization: TextCapitalization.characters,
@@ -313,7 +319,7 @@ List<Widget> _buildCommonBuySellItems (context, widget) {
 Widget _buildBuyItems (context, widget) {
   return ListView (
     shrinkWrap: true,
-    children: _buildCommonItems(context, widget) + _buildCommonBuySellItems (context, widget) + [
+    children: _buildCommonItems(context, widget) + _buildCommonBuySellItems(context, widget) + [
       TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ','),
@@ -523,9 +529,10 @@ class AddTransaction extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column (
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              AddTransactionHeading (portfolioId),
+              AddTransactionHeading (portfolioId: portfolioId, portfolioName: portfolioName),
               AddTransactionContents (portfolioId: portfolioId, portfolioName: portfolioName),
           ]
         ),
