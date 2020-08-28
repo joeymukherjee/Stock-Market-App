@@ -11,9 +11,10 @@ class PortfolioHeadingSection extends StatelessWidget {
 
   PortfolioHeadingSection ({@required this.portfolioName, @required this.portfolioId});
 
-  void clickedAdd(BuildContext context, TradesState state) {
+  void clickedAdd(BuildContext context, TradesState state) async {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
-    Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId, previousState: state)));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: portfolioName, portfolioId: portfolioId)));
+    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId));
   }
 
   void toggleEditing(BuildContext context, TradesState state) {

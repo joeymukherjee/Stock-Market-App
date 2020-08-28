@@ -8,7 +8,6 @@ abstract class TradeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// class TradesLoaded extends TradeEvent {}
 class PickedPortfolio extends TradeEvent {
   final int portfolioId;
 

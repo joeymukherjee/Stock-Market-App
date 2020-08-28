@@ -72,13 +72,15 @@ class TradeGroupHeader extends StatelessWidget {
 
   TradeGroupHeader ({@required this.tradeGroup});
 
-  void clickedAdd(BuildContext context, TradesState state) {
+  void clickedAdd(BuildContext context, TradesState state) async {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
-    Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.portfolioName, portfolioId: tradeGroup.portfolioId, previousState: state)));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.portfolioName, portfolioId: tradeGroup.portfolioId)));
+    if (state is TradesSavedOkay) {
+      BlocProvider.of<TradesBloc>(context).add(EditedTrades (portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+    }
   }
 
   void toggleEditing(BuildContext context, TradesState state) {
-    print (state);
     if (state is TradesEmpty) {
       clickedAdd(context, state);
     }
@@ -99,6 +101,28 @@ class TradeGroupHeader extends StatelessWidget {
     }
   }
 
+  void clickedDoneOrBack (context, state, isEditing) {
+    if (isEditing) {
+      if (state is TradesEmpty) {
+        Navigator.pop(context);
+      } else {
+        if (state is TradesLoadedEditing) {
+          BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        } else {
+          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        }
+      }
+    } else {
+      if (state is TradesLoadedEditing) {
+        BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+      }
+      if (state is TradesLoaded) {
+        BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId));
+      }
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
@@ -115,15 +139,7 @@ class TradeGroupHeader extends StatelessWidget {
                 children: <Widget>[
                   GestureDetector(
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
-                    onTap: () => {
-                      _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
-                                    (state is TradesLoadedEditing) ? BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker)) :
-                                    BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker))
-                                  } : {
-                                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId)),
-                                    Navigator.pop(context)
-                                  }
-                    }
+                    onTap: () => clickedDoneOrBack(context, state, _isEditing)
                   ),
                   Expanded(child: Text(tradeGroup.ticker, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                   GestureDetector(
@@ -193,13 +209,15 @@ class TradeGroupSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
+        if (state is TradesSavedOkay) {
+          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        }
         if (state is TradesFailure) {
           return Padding(
             padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
             child: EmptyScreen(message: state.message),
           );
         }
-
         if (state is TradeGroupLoaded) {
           return Column(
             children: <Widget>[
@@ -207,7 +225,6 @@ class TradeGroupSection extends StatelessWidget {
             ],
           );
         }
-
         if (state is TradeGroupLoadedEditing) {
           return Column(
             children: <Widget>[
@@ -215,7 +232,6 @@ class TradeGroupSection extends StatelessWidget {
             ],
           );
         }
-
         if (state is TradesLoaded) {
           return Column(
             children: <Widget>[
@@ -230,6 +246,15 @@ class TradeGroupSection extends StatelessWidget {
             ],
           );
         }
+        /*
+        if (state is TradesGroupsLoadSuccess) {
+          return Column(
+            children: <Widget>[
+              _buildTrades(state.trades)
+            ],
+          );
+        }
+        */
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
           child: LoadingIndicatorWidget(),
@@ -296,8 +321,9 @@ class TradeGroupSection extends StatelessWidget {
           return TradesFolderSection (tradeGroup);
         }
         if (state is TradesLoaded) {
-
+          print ("TradesLoaded - but not doing anything");
         }
+        return Container(child: Text ("Here but we shouldn't be!"));
       }
     );
   }

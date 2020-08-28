@@ -15,7 +15,7 @@ dependencies:
   charts_flutter: ^0.9.0
   cupertino_icons: ^0.1.2
   path_provider: ^1.6.7
-  sembast: ^2.4.0
+  sembast: ^2.4.7
   sentry: ^3.0.1
   flutter_bloc: ^6.0.2
   flutter_spinkit: "^4.1.2"

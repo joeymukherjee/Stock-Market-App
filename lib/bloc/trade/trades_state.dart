@@ -56,19 +56,6 @@ class TradesFailure extends TradesState {
 }
 
 class TradeEditing extends TradesState {}
-class TradeGroupLoadedEditing extends TradesState {
-  final TradeGroup tradeGroup;
-
-  const TradeGroupLoadedEditing (this.tradeGroup);
-
-  @override
-  List<Object> get props => [tradeGroup];
-
-  @override
-  String toString() {
-    return 'TradeGroupLoadedEditing { tradeGroup: $tradeGroup }';
-  }
-}
 class TradeGroupLoaded extends TradesState {
   final TradeGroup tradeGroup;
 
@@ -82,7 +69,19 @@ class TradeGroupLoaded extends TradesState {
     return 'TradeGroupLoaded { tradeGroup: $tradeGroup }';
   }
 }
+class TradeGroupLoadedEditing extends TradesState {
+  final TradeGroup tradeGroup;
 
+  const TradeGroupLoadedEditing (this.tradeGroup);
+
+  @override
+  List<Object> get props => [tradeGroup];
+
+  @override
+  String toString() {
+    return 'TradeGroupLoadedEditing { tradeGroup: $tradeGroup }';
+  }
+}
 class TradesLoaded extends TradesState {
   final List<Trade> trades;
 
@@ -96,7 +95,6 @@ class TradesLoaded extends TradesState {
     return 'TradesLoaded { trades: $trades }';
   }
 }
-
 class TradesLoadedEditing extends TradesState {
   final List<Trade> trades;
 

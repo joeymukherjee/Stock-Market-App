@@ -37,6 +37,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       yield* _mapEditedTradeGroupToState(event.portfolioId);
     }
     if (event is DeletedTradeGroup) {
+      yield TradesLoading ();
       yield* _mapDeletedTradeGroupToState(event);
     }
     if (event is SelectedTrades) {
@@ -127,8 +128,6 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   }
 
   Stream<TradesState> _mapDidTradeToState(DidTrade event) async* {
-    //final List<Trade> updatedTrades = List.from((state as TradesLoadSuccess).trades)..add(event.trade);
-    //yield TradesLoadSuccess (updatedTrades);
     _saveTrades([event.trade]);
     yield TradesSavedOkay ();
   }
