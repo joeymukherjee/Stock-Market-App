@@ -15,7 +15,6 @@ class PortfolioFolderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
-
         if (state is TradesSavedOkay) {
           BlocProvider
             .of<TradesBloc>(context)
