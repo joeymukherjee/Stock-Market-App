@@ -58,14 +58,14 @@ class PortfolioFoldersStorageClient {
     return await _store.delete(await _database, finder: deleteFinder);
   }
 
-  // Gets a portfolio name based on portfolio id
+  // Gets a portfolio name based on portfolio id, which is also the database key
   Future <String> getPortfolioName ({int portfolioId}) async {
-    final finder = Finder(filter: Filter.equals('portfolioId', portfolioId));
-    final response = await _store.findFirst(await _database, finder: finder);
+
+    final response = await _store.record(portfolioId).get(await _database);
     if (response == null) {
-      return "Unknown!";
+      return "Unknown portfolioId: $portfolioId!";
     } else {
-      return response.value['name'];
+      return response.values.elementAt(1);
     }
   }
 }

@@ -8,9 +8,18 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:sma/shared/styles.dart';
 
 class AddTransactionHeading extends StatelessWidget {
+
+  void clickedBack (BuildContext context, TradesState state) {
+    print (state);
+    if (state is TradeGroupsLoadedEditing) {
+      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId));
+    }
+  }
+
+  final TradesState previousState;
   final String portfolioName;
   final int portfolioId;
-  AddTransactionHeading ({@required this.portfolioName, @required this.portfolioId});
+  AddTransactionHeading ({@required this.portfolioName, @required this.portfolioId, @required this.previousState});
   @override
   Widget build(BuildContext context) {
     return BlocListener<TradesBloc, TradesState> (
@@ -31,7 +40,7 @@ class AddTransactionHeading extends StatelessWidget {
                 GestureDetector(
                   child: Icon(Icons.arrow_back_ios),
                   onTap: () => {
-                    BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(portfolioId)),
+                    clickedBack (context, previousState),
                     Navigator.pop(context)
                   }
                 ),
@@ -519,10 +528,11 @@ Widget _buildSplitItems (context, widget) {
 }
 
 class AddTransaction extends StatelessWidget {
+  final TradesState previousState;
   final int portfolioId;
   final String portfolioName;
 
-  AddTransaction ({@required this.portfolioName, @required this.portfolioId});
+  AddTransaction ({@required this.portfolioName, @required this.portfolioId, @required this.previousState});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -532,7 +542,7 @@ class AddTransaction extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              AddTransactionHeading (portfolioId: portfolioId, portfolioName: portfolioName),
+              AddTransactionHeading (portfolioId: portfolioId, portfolioName: portfolioName, previousState: previousState),
               AddTransactionContents (portfolioId: portfolioId, portfolioName: portfolioName),
           ]
         ),
