@@ -81,9 +81,9 @@ class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProvider
             child: TabBar (
               tabs: cadences,
               controller: _tabController,
-              labelColor: Theme.of(context).splashColor,
-              unselectedLabelColor: Theme.of(context).highlightColor,
-              labelStyle: TextStyle (fontSize: 8),
+              labelColor: Theme.of(context).tabBarTheme.labelColor,
+              unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+              labelStyle:  TextStyle (fontSize: 10),
               isScrollable: true,
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),

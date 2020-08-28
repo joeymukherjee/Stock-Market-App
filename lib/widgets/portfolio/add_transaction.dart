@@ -155,7 +155,7 @@ class _AddTransactionContentsState extends State<AddTransactionContents> with Ti
                 //indicatorPadding: EdgeInsets.all(10.0),
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: Theme.of(context).primaryColor),
+                  color: Theme.of(context).highlightColor),
                 tabs: [
                   Tab(child: Container(
                         width: tabWidth,

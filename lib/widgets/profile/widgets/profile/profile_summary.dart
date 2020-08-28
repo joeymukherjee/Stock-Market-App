@@ -100,7 +100,7 @@ class StatisticsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle subtitleStyle = Theme.of(context).textTheme.subtitle2;
     TextStyle headlineStyle = Theme.of(context).textTheme.headline5.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor);
-    TextStyle summaryStyle = Theme.of(context).textTheme.caption.copyWith(fontSize: 10);
+    TextStyle summaryStyle = Theme.of(context).textTheme.caption.copyWith(fontSize: 8);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
