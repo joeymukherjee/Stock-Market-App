@@ -40,13 +40,13 @@ class MarketsPerformance extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
+
               // Section title.
               Padding(
                 padding: EdgeInsets.only(top: 16, bottom: 8),
                 child: Text('Most Active', style: kSubtitleStyling),
               ),
-              _buildMarketMovers(stonks: state.marketActive, color: Color(0xff40b3fb)),
+              _buildMarketMovers(stonks: state.marketActive, color: Color(0xFF263497)),
 
               // Section title
               Padding(
@@ -66,7 +66,7 @@ class MarketsPerformance extends StatelessWidget {
             ]
           );
         }
-        
+
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
           child: LoadingIndicatorWidget(),

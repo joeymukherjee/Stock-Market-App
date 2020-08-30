@@ -34,7 +34,7 @@ class MarketMovers extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     var fmt = NumberFormat.decimalPercentPattern(locale: "en_US", decimalDigits: 2);
     return GestureDetector(
-      
+
       onTap: () {
         // Trigger fetch event.
         BlocProvider
@@ -50,26 +50,31 @@ class MarketMovers extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           // Company Name
-          Text (data.companyName, 
-            style: TextStyle (
-              color: Theme.of(context).textTheme.headline1.color,
-              fontSize: 8,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text (data.companyName,
+              style: TextStyle (
+                color: Colors.white,
+                fontSize: 8,
+              ),
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
             ),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
           ),
 
           // Ticker Symbol.
-          Text(data.ticker, style: TextStyle(
-            color: Theme.of(context).textTheme.headline1.color,
-            fontWeight: FontWeight.bold,
-            fontSize: 12.5
-          )),
+          Text(data.ticker,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12.5
+            )
+          ),
 
           // Change percentage.
           SizedBox(height: 5),
           Text(fmt.format (data.changesPercentage), style: TextStyle(
-            color: Theme.of(context).textTheme.headline1.color,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 12.5
           )),

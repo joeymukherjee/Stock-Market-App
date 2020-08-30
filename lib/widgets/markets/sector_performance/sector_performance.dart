@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:sma/helpers/color/color_helper.dart';
 import 'package:sma/models/markets/sector_performance/sector_performance_model.dart';
-import 'package:sma/shared/styles.dart';
 
 class SectorPerformance extends StatelessWidget {
 
@@ -26,10 +25,10 @@ class SectorPerformance extends StatelessWidget {
       )
     );
   }
-  
+
   Widget _buildListTile({BuildContext context, SingleSectorPerformance sectorPerformance}) {
 
-    final changeString = sectorPerformance.change.replaceFirst(RegExp('%'), ''); 
+    final changeString = sectorPerformance.change.replaceFirst(RegExp('%'), '');
     final change = double.parse(changeString);
     final width = change > 9.99 ? null : 100.0;
     return Column(
@@ -38,16 +37,10 @@ class SectorPerformance extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(sectorPerformance.name, style: Theme.of(context).textTheme.caption),
-
           trailing: Container(
-            decoration: BoxDecoration(
-              borderRadius: kSharpBorder,
-              color: determineColorBasedOnChange(change),
-            ),
-            
             width: width,
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Text(sectorPerformance.change, style: Theme.of(context).textTheme.caption, textAlign: TextAlign.center),
+            child: Text(sectorPerformance.change, style: TextStyle (color: determineColorBasedOnChange(change), fontWeight: FontWeight.w500), textAlign: TextAlign.center),
           ),
         )
       ],

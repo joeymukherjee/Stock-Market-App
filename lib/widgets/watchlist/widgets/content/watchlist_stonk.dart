@@ -52,7 +52,7 @@ class WatchlistStockCard extends StatelessWidget {
   }
 
   /// This method is in charge of rendering the stock company data.
-  /// This is the left side in the card. 
+  /// This is the left side in the card.
   /// It renders the  [symbol] and the company [name] from [data].
   Widget _buildCompanyData(context) {
     return Column(
@@ -61,12 +61,12 @@ class WatchlistStockCard extends StatelessWidget {
         Text(data.symbol, style: kStockTickerSymbol),
         SizedBox(height: 4.0),
         Text(data.name, style: Theme.of(context).textTheme.bodyText2)
-      ], 
+      ],
     );
   }
-  
+
   /// This method is in charge of rendering the stock company data.
-  /// This is the right side in the card. 
+  /// This is the right side in the card.
   /// It renders the [change] and the stock's [price] from [data].
   Widget _buildPriceData() {
 
@@ -74,24 +74,19 @@ class WatchlistStockCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        
         Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: kSharpBorder,
-              color: determineColorBasedOnChange(data.change)
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-            child: Text(determineTextBasedOnChange(data.change), textAlign: TextAlign.end),
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            determineTextBasedOnChange(data.change),
+            style: TextStyle (color: determineColorBasedOnChange(data.change)),
+            textAlign: TextAlign.end
           ),
         ),
-        
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(formatCurrencyText(data.price),
             overflow: TextOverflow.visible,
-            textAlign: TextAlign.end, 
+            textAlign: TextAlign.end,
             style: kStockPriceStyle
           ),
         ),
