@@ -37,8 +37,8 @@ class Company extends Equatable {
     return Company(
       ticker: json ['ticker'],
       companyName: json['companyName'],
-      previousClose: json ['previousClose'],
-      lastClose: json ['lastClose'],
+      previousClose: json ['previousClose'] == null ? 0.0 : json ['previousClose'],
+      lastClose: json ['lastClose'] == null ? 0.0 : json ['lastClose'],
       lastUpdated: DateTime.parse(json ['lastUpdated'])
     );
   }

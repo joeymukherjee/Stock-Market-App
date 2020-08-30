@@ -7,12 +7,13 @@ import 'package:sma/models/trade/trade.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:sma/shared/styles.dart';
 
-class AddTransactionHeading extends StatelessWidget {
+class TransactionHeading extends StatelessWidget {
 
+  final String prefix;
   final String portfolioName;
   final int portfolioId;
 
-  AddTransactionHeading ({@required this.portfolioName, @required this.portfolioId});
+  TransactionHeading ({@required this.prefix, @required this.portfolioName, @required this.portfolioId});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class AddTransactionHeading extends StatelessWidget {
                   child: Icon(Icons.arrow_back_ios),
                   onTap: () => { Navigator.pop(context) }
                 ),
-                Expanded(child: Text('Add Transaction', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
+                Expanded(child: Text(prefix + ' Transaction', style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
                 GestureDetector(
                   child: Icon(Icons.done),
                   onTap: () => {
@@ -58,43 +59,71 @@ class AddTransactionHeading extends StatelessWidget {
   }
 }
 
-class AddTransactionContents extends StatefulWidget {
+class TransactionContents extends StatefulWidget {
   final String portfolioName;
   final int portfolioId;
-  AddTransactionContents ({@required this.portfolioName, @required this.portfolioId});
+  final Trade trade;
+  TransactionContents ({@required this.portfolioName, @required this.portfolioId, @required this.trade});
 
   @override
-  _AddTransactionContentsState createState() => _AddTransactionContentsState();
+  _TransactionContentsState createState() => _TransactionContentsState();
 }
 
-class _AddTransactionContentsState extends State<AddTransactionContents> with TickerProviderStateMixin {
+class _TransactionContentsState extends State<TransactionContents> with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  TabController _tabController;
 
+  TabController _tabController;
+  String _tradeId;
   int _portfolioId;
+
   final moneyEditController = MoneyMaskedTextController();
-  String _ticker = 'AAPL';
-  DateTime _transactionDate = DateTime.parse('2011-03-11 00:00:00');
+  String _ticker = '';
+  DateTime _transactionDate = DateTime.now();
   // These quantities are money
-  double _price = 454.12;
+  double _price = 0.0;
   double _commission = 0.0;
-  double _paid = 5449.44;
+  double _paid = 0.0;
   double _amountPerShare = 0.0;
   double _proceeds = 0.0;
   bool _didReinvest = true;
   double _priceAtReinvest = 0.0;
   // These quantities are strings since we have to parse them ourselves into doubles
-  String _sharesTransacted = "12.0";
-  String _sharesFrom = "0.0";
-  String _sharesTo = "0.0";
+  String _sharesTransacted = "";
+  String _sharesFrom = "";
+  String _sharesTo = "";
 
   double _totalNumberOfShares = 0.0;  // These are for dividends, should be computed somehow from DB?
 
   @override
   void initState () {
+    super.initState();
+    if (widget.trade != null) {
+      _tradeId = widget.trade.id;
+      _ticker = widget.trade.ticker;
+      _transactionDate = widget.trade.transactionDate;
+      if (widget.trade.type != TransactionType.split) {
+        Common c = widget.trade as Common;
+        _price = c.price;
+        _commission = c.commission;
+        _paid = c.paid;
+        _sharesTransacted = c.sharesTransacted.toString();
+      } else {
+        Split s = widget.trade as Split;
+        _price = s.price;
+        _sharesFrom = s.sharesFrom.toString();
+        _sharesTo = s.sharesTo.toString();
+      }
+      if (widget.trade.type == TransactionType.dividend) {
+        Dividend d = widget.trade as Dividend;
+        _amountPerShare = d.amountPerShare;
+        _priceAtReinvest = d.priceAtReinvest;
+        _didReinvest = d.didReinvest;
+        _proceeds = d.proceeds;
+      }
+    }
     _portfolioId = widget.portfolioId;
     _tabController = new TabController(length: 4, vsync: this);
-    super.initState();
+
   }
 
   @override
@@ -109,10 +138,10 @@ class _AddTransactionContentsState extends State<AddTransactionContents> with Ti
       Trade trade;
       final int index = _tabController.index;
       switch (index) {
-        case 0 : trade = Common(type: TransactionType.purchase, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission); break;
-        case 1 : trade = Common(type: TransactionType.sell, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: -(double.parse(this._sharesTransacted)), price: this._price, commission: this._commission); break;
-        case 2 : trade = Dividend(this._portfolioId, this._ticker, this._transactionDate, double.parse(this._sharesTransacted), this._price, this._commission, this._totalNumberOfShares, this._amountPerShare, this._didReinvest, this._priceAtReinvest); break;
-        case 3 : trade = Split(this._portfolioId, this._ticker, this._transactionDate, this._price, double.parse(this._sharesFrom), double.parse(this._sharesTo)); break;
+        case 0 : trade = Common.withId(id: this._tradeId, type: TransactionType.purchase, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission); break;
+        case 1 : trade = Common.withId(id: this._tradeId, type: TransactionType.sell, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: -(double.parse(this._sharesTransacted)), price: this._price, commission: this._commission); break;
+        case 2 : trade = Dividend.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission, numberOfShares: this._totalNumberOfShares, amountPerShare: this._amountPerShare, didReinvest: this._didReinvest, priceAtReinvest: this._priceAtReinvest); break;
+        case 3 : trade = Split.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, sharesFrom: double.parse(this._sharesFrom), sharesTo: double.parse(this._sharesTo)); break;
       }
       BlocProvider.of<TradesBloc>(context).add(DidTrade(trade));
     } else {
@@ -221,6 +250,7 @@ List<Widget> _buildCommonItems (context, widget) {
       child: Container(),
     ),
     TextFormField(
+      autocorrect: false,
       initialValue: widget._ticker,
       textCapitalization: TextCapitalization.characters,
       decoration: InputDecoration (hintText: 'ticker name', labelText: "Ticker Name"),
@@ -255,63 +285,105 @@ List<Widget> _buildCommonItems (context, widget) {
 }
 
 List<Widget> _buildCommonBuySellItems (context, widget) {
+  double _price = widget._price;
+  double _commission = widget._commission;
+  
+  var priceController = MoneyMaskedTextController(initialValue: widget._price, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
+  priceController.afterChange = (String masked, double raw) {
+    _price = raw;
+  };
+  var commissionController = MoneyMaskedTextController(initialValue: widget._commission, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
+  commissionController.afterChange = (String masked, double raw) {
+    _commission = raw;
+  };
   return [
-      TextFormField(
-        initialValue: widget._sharesTransacted,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp('[\\.0-9]*'))
-        ],
-        decoration: InputDecoration (hintText: 'number of shares', labelText: "Shares"),
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the number of shares for this transaction');
+      Focus(
+        child: TextFormField(
+          initialValue: widget._sharesTransacted,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp('[\\.0-9]*'))
+          ],
+          decoration: InputDecoration (hintText: 'number of shares', labelText: "Shares"),
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the number of shares for this transaction');
+            }
+            if (double.tryParse(value) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          showCursor: true,
+          onChanged: (String value) {
+            widget._sharesTransacted = value;
+          },
+          onSaved: (String value) async {
+            widget._sharesTransacted = value;
           }
-          if (double.tryParse(value) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            var value = widget._sharesTransacted;
+            if (double.tryParse(value.replaceAll (',\$', '')) != null) {
+              widget.setState (() { widget._paid = widget._price * double.parse(value) - widget._commission; });
+            }
           }
-          return null;
         },
-        showCursor: true,
-        onSaved: (String value) async {
-          widget._sharesTransacted = value;
-        }
       ),
-      TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._price, decimalSeparator: '.', thousandSeparator: ','),
-        decoration: InputDecoration (hintText: 'price of share', labelText: "Price"),
-        showCursor: true,
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the cost of the stock when this transaction occurred');
+      Focus(
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: priceController,
+          decoration: InputDecoration (hintText: 'price of share', labelText: "Price"),
+          showCursor: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the cost of the stock when this transaction occurred');
+            }
+            if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          onSaved: (String value) async {
+            widget._price = priceController.numberValue;
           }
-          if (double.tryParse(value) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            if (double.tryParse(widget._sharesTransacted) != null) {
+              widget.setState (() { widget._price = _price; widget._paid = _price * double.parse(widget._sharesTransacted) - widget._commission; });
+            }
           }
-          return null;
         },
-        onSaved: (String value) async {
-          widget._price = double.parse(value);
-        }
       ),
-      TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._commission, decimalSeparator: '.', thousandSeparator: ','),
-        decoration: InputDecoration (hintText: 'commission paid', labelText: "Commission"),
-        showCursor: true,
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the number of amount you paid in commission for this transaction');
+      Focus(
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: commissionController,
+          decoration: InputDecoration (hintText: 'commission paid', labelText: "Commission"),
+          showCursor: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the number of amount you paid in commission for this transaction');
+            }
+            if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          onSaved: (String value) async {
+            widget._commission = commissionController.numberValue;
           }
-          if (double.tryParse(value) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            if (double.tryParse(widget._sharesTransacted) != null) {
+              widget.setState (() { widget._commission = _commission; widget._paid = widget._price * double.parse(widget._sharesTransacted) - widget._commission; });
+            }
           }
-          return null;
         },
-        onSaved: (String value) async {
-          widget._commission = double.parse(value);
-        }
       )
   ];
 }
@@ -322,20 +394,20 @@ Widget _buildBuyItems (context, widget) {
     children: _buildCommonItems(context, widget) + _buildCommonBuySellItems(context, widget) + [
       TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ','),
+        controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ',', leftSymbol: '\$'),
         decoration: InputDecoration (hintText: 'amount paid', labelText: "Paid"),
         showCursor: true,
         validator: (value) {
           if (value.isEmpty) {
             return ('enter the number of amount you received for this transaction');
           }
-          if (double.tryParse(value.replaceAll (',', '')) == null) {
+          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
             return ('must be a valid number!');
           }
           return null;
         },
         onSaved: (String value) async {
-          widget._paid = double.parse (value.replaceAll (',', '')); // widget._price * double.parse(widget._sharesTransacted) - widget._commission;
+          widget._paid = double.parse (value.replaceAll (RegExp('[,\$]'), '')); // widget._price * double.parse(widget._sharesTransacted) - widget._commission;
         }
       )
     ],
@@ -532,8 +604,32 @@ class AddTransaction extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              AddTransactionHeading (portfolioId: portfolioId, portfolioName: portfolioName),
-              AddTransactionContents (portfolioId: portfolioId, portfolioName: portfolioName),
+              TransactionHeading (prefix: "Add", portfolioId: portfolioId, portfolioName: portfolioName),
+              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: null),
+          ]
+        ),
+      ),
+    );
+  }
+}
+
+class EditTransaction extends StatelessWidget {
+  final int portfolioId;
+  final String portfolioName;
+  final Trade trade;
+
+  EditTransaction ({@required this.portfolioName, @required this.portfolioId, @required this.trade});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Column (
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+              TransactionHeading (prefix: "Edit", portfolioId: portfolioId, portfolioName: portfolioName),
+              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: trade),
           ]
         ),
       ),

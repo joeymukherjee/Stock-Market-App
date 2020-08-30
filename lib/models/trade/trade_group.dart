@@ -127,7 +127,18 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
     if (!tickerMap.containsKey(trade.ticker)) {
       final _folderRepo = PortfolioFoldersStorageClient();
       final _companiesRepo = LocalCompaniesRepository ();
-      final Company company = await _companiesRepo.loadCompany (trade.ticker);
+      Company company = await _companiesRepo.loadCompany (trade.ticker);
+      if (company == null) {
+        StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
+        company = Company (
+          ticker: trade.ticker,
+          companyName: stockQuote.name,
+          previousClose: stockQuote.previousClose.toDouble(),
+          lastClose: stockQuote.price,
+          lastUpdated: DateTime.now()
+        );
+        _companiesRepo.saveCompanies([company]);
+      }
       String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
       var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
       var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);

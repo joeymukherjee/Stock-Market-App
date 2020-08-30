@@ -21,7 +21,11 @@ class LocalCompaniesRepository implements CompaniesRepository {
   {
     final finder = Finder(filter: Filter.matches('ticker', ticker));
     final response = await _store.findFirst(await _database, finder: finder);
-    return Company.fromJson(response.value);
+    if (response != null) {
+      return Company.fromJson(response.value);
+    } else {
+      return null;
+    }
   }
 
   Future <void> saveCompanies(List<Company> companies) async

@@ -14,15 +14,36 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TradeCard extends StatelessWidget {
   final Trade trade;
-  TradeCard ({@required this.trade});
+  final String portfolioName;
+
+  TradeCard ({@required this.portfolioName, @required this.trade});
+
+  void clickedEdit(BuildContext context, TradesState state) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => EditTransaction(portfolioName: portfolioName, portfolioId: trade.portfolioId, trade: trade)));
+    if (state is TradesSavedOkay) {
+      BlocProvider.of<TradesBloc>(context).add(EditedTrades (portfolioId: trade.portfolioId, ticker: trade.ticker));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget> [
+            (state is TradesLoadedEditing) ?
+              GestureDetector(
+                child: Icon(Icons.edit),
+                onTap: () { clickedEdit(context, state); },
+              )
+              : GestureDetector(
+                child: Icon(FontAwesomeIcons.eye),
+                onTap: () {},
+              ),
+            Text (DateFormat.yMMMMd().format (trade.transactionDate)),
+            Text (trade.getNumberOfShares().toString()),
+            Text (formatCurrencyText (trade.getTotalReturn())),
             (state is TradesLoadedEditing) ?
               GestureDetector(
                 child: Icon(Icons.highlight_off, color: Colors.red),
@@ -56,11 +77,8 @@ class TradeCard extends StatelessWidget {
                   ).show();
                 },
               )
-              : Container (),
-            Text (DateFormat.yMMMMd().format (trade.transactionDate)),
-            Text (trade.getNumberOfShares().toString()),
-            Text (formatCurrencyText (trade.getTotalReturn()))
-          ],
+              : Container(),
+          ]
         );
       }
     );
@@ -156,9 +174,11 @@ class TradeGroupHeader extends StatelessWidget {
   }
 }
 
-class TradesFolderSection extends StatelessWidget {
+/*
+UNUSED??
+class xTradesFolderSection extends StatelessWidget {
   final TradeGroup tradeGroup;
-  TradesFolderSection (this.tradeGroup);
+  xTradesFolderSection (this.tradeGroup);
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +220,7 @@ class TradesFolderSection extends StatelessWidget {
     );
   }
 }
+*/
 
 class TradeGroupSection extends StatelessWidget {
   final TradeGroup tradeGroup;
@@ -235,26 +256,17 @@ class TradeGroupSection extends StatelessWidget {
         if (state is TradesLoaded) {
           return Column(
             children: <Widget>[
-              _buildTrades(state.trades)
+              _buildTrades(tradeGroup.portfolioName, state.trades)
             ],
           );
         }
         if (state is TradesLoadedEditing) {
           return Column(
             children: <Widget>[
-              _buildTrades(state.trades)
+              _buildTrades(tradeGroup.portfolioName, state.trades)
             ],
           );
         }
-        /*
-        if (state is TradesGroupsLoadSuccess) {
-          return Column(
-            children: <Widget>[
-              _buildTrades(state.trades)
-            ],
-          );
-        }
-        */
         return Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
           child: LoadingIndicatorWidget(),
@@ -262,13 +274,13 @@ class TradeGroupSection extends StatelessWidget {
       },
     );
   }
-  Widget _buildTrades(List<Trade> trades) {
+  Widget _buildTrades(String portfolioName, List<Trade> trades) {
     return  ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       itemCount: trades.length,
       itemBuilder: (BuildContext context, int index) {
-        return TradeCard (trade: trades[index]);
+        return TradeCard (portfolioName: portfolioName, trade: trades[index]);
       }
     );
   }
@@ -317,9 +329,11 @@ class TradeGroupSection extends StatelessWidget {
             ],
           );
         }
+        /*
         if (state is TradeGroupLoaded) {
-          return TradesFolderSection (tradeGroup);
+          return xTradesFolderSection (tradeGroup);
         }
+        */
         if (state is TradesLoaded) {
           print ("TradesLoaded - but not doing anything");
         }

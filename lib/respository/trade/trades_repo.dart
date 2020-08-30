@@ -40,7 +40,7 @@ class SembastTradesRepository implements TradesRepository {
 
   Future<List<Trade>> loadAllTrades() async
   {
-    final Finder finder = Finder(sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    final Finder finder = Finder(sortOrders: [SortOrder('transactionDate', false), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))
@@ -49,7 +49,7 @@ class SembastTradesRepository implements TradesRepository {
 
   Future<List<Trade>> loadAllTradesForPortfolio(int portfolioId) async
   {
-    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', false), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     //print ("DB Contents:");
     //print (response);
@@ -60,7 +60,7 @@ class SembastTradesRepository implements TradesRepository {
 
   Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId) async
   {
-    final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
+    final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', false), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))
