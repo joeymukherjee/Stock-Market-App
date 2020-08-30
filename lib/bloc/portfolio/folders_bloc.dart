@@ -28,6 +28,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       yield* _loadContent(event);
     }
     if (event is ResyncPortfolioFoldersData) {
+      print ("Called Resync!");
       yield PortfolioFoldersLoading();
       yield* _updateContent(event);
     }
@@ -50,7 +51,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       final foldersStored = await _databaseRepository.fetch();  // gets all the folders
       List<PortfolioFolderModel> updatedFolders = [];
       for (var folder in foldersStored) {
-        var changes = await toTotalReturnFromPortfolioId (folder.key);
+        var changes = await toTotalReturnFromPortfolioIdUpdate (folder.key);
         PortfolioFolderModel updatedFolder = PortfolioFolderModel(
           key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude,
           daily: changes ['daily'], overall: changes ['overall']);

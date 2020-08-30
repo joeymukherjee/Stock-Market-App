@@ -3,9 +3,11 @@ import 'package:equatable/equatable.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/trade/trade.dart';
+import 'package:sma/models/trade/company.dart';
 import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/respository/portfolio/folders_storage_client.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
+import 'package:sma/respository/trade/companies_repo.dart';
 
 class TradeGroup extends Equatable {
   final String ticker;
@@ -69,13 +71,13 @@ class TradeGroup extends Equatable {
   }
 }
 
-Future<Map<String, FolderChange>> toTotalReturnFromPortfolioId (int portfolioId) async {
+Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (int portfolioId) async {
   final TradesRepository _tradesRepo = SembastTradesRepository ();
   FolderChange daily = FolderChange(change: 0.0, changePercentage: 0.0);
   FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
   Future<List<Trade>> trades = _tradesRepo.loadAllTradesForPortfolio(portfolioId);
-  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades(await trades);
+  Future<List<TradeGroup>> tradesList = toTickerMapFromTradesUpdate (await trades);
   Future.forEach(await tradesList, (trade) => {
     daily += trade.daily,
     overall += trade.overall
@@ -84,20 +86,54 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioId (int portfolioId)
   return {'daily': daily, 'overall': overall};
 }
 
-// this fetches the latest quote from the internet.  We need to change this to a saved version of the close.
+// this updates the trades by fetching the latest quote from the internet.
 
-Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
+Future <List<TradeGroup>> toTickerMapFromTradesUpdate (List<Trade> trades) async {
   var tickerMap = Map <String, TradeGroup> ();
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
       StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
       final _folderRepo = PortfolioFoldersStorageClient();
+      final _companiesRepo = LocalCompaniesRepository ();
+      Company company = Company (
+        ticker: trade.ticker,
+        companyName: stockQuote.name,
+        previousClose: stockQuote.previousClose.toDouble(),
+        lastClose: stockQuote.price,
+        lastUpdated: DateTime.now()
+      );
+      _companiesRepo.saveCompanies([company]);
       String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
-      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, stockQuote.price);
-      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, stockQuote.previousClose.toDouble());
+      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
+      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
       var dailyReturns = overallReturns - yesterdayReturns;
 
-      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: stockQuote.name, portfolioName: portfolioName,
+      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: company.companyName, portfolioName: portfolioName,
+                                          portfolioId: trade.portfolioId,
+                                          daily: dailyReturns,
+                                          overall: overallReturns);
+    }
+  }));
+  List<TradeGroup> retVal = List();
+  tickerMap.forEach((key, value) => retVal.add(value));
+  return retVal;
+}
+
+// This gets the ticker map based on previously saved data
+
+Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
+  var tickerMap = Map <String, TradeGroup> ();
+  await Future.forEach (trades, ((trade) async {
+    if (!tickerMap.containsKey(trade.ticker)) {
+      final _folderRepo = PortfolioFoldersStorageClient();
+      final _companiesRepo = LocalCompaniesRepository ();
+      final Company company = await _companiesRepo.loadCompany (trade.ticker);
+      String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
+      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
+      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
+      var dailyReturns = overallReturns - yesterdayReturns;
+
+      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: company.companyName, portfolioName: portfolioName,
                                           portfolioId: trade.portfolioId,
                                           daily: dailyReturns,
                                           overall: overallReturns);
