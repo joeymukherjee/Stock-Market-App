@@ -54,7 +54,8 @@ class Attributions extends StatelessWidget {
           textStyle: _kTextStyle,
           subtitleStyle: _kSubtitleStyling,
           title: 'Financial Modeling Prep API',
-          text: 'We proudly use this API for the portfolio, markets, and watchlist portion of the code.',
+          text: 'We proudly use this API for the portfolio, markets, and watchlist portion of the code. ' +
+                'Tap here to learn more.',
           url: 'https://financialmodelingprep.com/developer/docs/',
           icon: FontAwesomeIcons.shapes,
         ),
