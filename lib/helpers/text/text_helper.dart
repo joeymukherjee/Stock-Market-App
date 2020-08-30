@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 String displayDefaultTextIfNull(String text) {
-  return text.isEmpty ? '-' : text;
+  return text == null || text.isEmpty ? '-' : text;
 }
 
 String formatText(dynamic text) {

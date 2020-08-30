@@ -3,6 +3,7 @@ import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/keys/api_keys.dart';
 import 'package:sma/models/profile/market_index.dart';
 import 'package:sma/models/markets/market_active/market_active.dart';
+import 'package:sma/models/profile/stock_chart.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
@@ -20,13 +21,14 @@ class FNPFetchClient extends FetchClient {
   // Makes an HTTP request to any endpoint from Financial Modeling Prep API.
   Future<Response> financialModelRequest(String endpoint) async {
     final Uri uri = Uri.https('financialmodelingprep.com', endpoint, {
-      'apikey': kFinancialModelingPrepApi
+      'apikey': endpoint.contains('AAPL') ? 'demo'  : kFinancialModelingPrepApi
     });
-    print(uri);
+    // print(uri);
     return await Dio().getUri(uri);
   }
 
- StockQuote fromFinancialModelingQuote (Map<String, dynamic> json) {
+ StockQuote fromFinancialModelingQuoteList(List <dynamic> jsonList) {
+    Map<String, dynamic> json = jsonList [0];
     return StockQuote(
       symbol: json['symbol'],
       name: json['name'],
@@ -48,14 +50,37 @@ class FNPFetchClient extends FetchClient {
     );
   }
 
-  StockProfile fromFinancialModelingProfile (Map<String, dynamic> json) {
+  StockQuote fromFinancialModelingQuoteMap(Map <String, dynamic> json) {
+    return StockQuote(
+      symbol: json['symbol'],
+      name: json['name'],
+      price: json['price'],
+      changesPercentage: json['changesPercentage'],
+      change: json['change'],
+      dayLow: json['dayLow'],
+      dayHigh: json['dayHigh'],
+      yearHigh: json['yearHigh'],
+      yearLow: json['yearLow'],
+      marketCap: json['marketCap'],
+      volume: json['volume'],
+      avgVolume: json['avgVolume'],
+      open: json['open'],
+      previousClose: json['previousClose'],
+      eps: json['eps'],
+      pe: json['pe'],
+      sharesOutstanding: json['sharesOutstanding'],
+    );
+  }
+
+  StockProfile fromFinancialModelingProfile(Map<String, dynamic> jsonOriginal) {
+    var json = jsonOriginal['profile'];
     return StockProfile(
       price: json['price'],
-      beta: json['beta'],
-      volAvg: json['volAvg'],
-      mktCap: json['mktCap'],
-      changes: json['changes'],
-      changesPercentage: json['changesPercent'],
+      beta: double.parse (json['beta']),
+      volAvg: double.parse(json['volAvg']),
+      mktCap: double.parse(json['mktCap']),
+      //changes: double.parse(json['changes']),
+      //changesPercentage: double.parse (json['changesPercentage']),
       companyName: json['companyName'],
       exchange: json['exchange'],
       industry: json['industry'],
@@ -65,13 +90,13 @@ class FNPFetchClient extends FetchClient {
     );
   }
 
-  List<MarketIndexModel> fromFinancialModelingIndexes (List<dynamic> items) {
+  List<MarketIndexModel> fromFinancialModelingIndexes(List<dynamic> items) {
     return items
-    .map((item) => fromFinancialModelingIndexesFromJson (item))
+    .map((item) => fromFinancialModelingIndexesFromJson(item))
     .toList();
   }
 
-  MarketIndexModel fromFinancialModelingIndexesFromJson (Map<String, dynamic> json) {
+  MarketIndexModel fromFinancialModelingIndexesFromJson(Map<String, dynamic> json) {
     return MarketIndexModel(
       symbol: json['symbol'],
       change: json['change'],
@@ -90,66 +115,95 @@ class FNPFetchClient extends FetchClient {
     }
   }
 
-  MarketActiveModel fromFinancialModelingSingle (Map<String, dynamic> json) {
+  MarketActiveModel fromFinancialModelingSingle(Map<String, dynamic> json) {
     return MarketActiveModel(
       ticker: json['ticker'],
       changes: json['changes'].toDouble (),
-      price: json['price'].toDouble (),
-      changesPercentage: json['changesPercentage'].toDouble (),
-      companyName: json['companyName'],
+      price: double.parse(json['price']),
+      changesPercentage: double.parse(json['changesPercentage'].replaceAll(RegExp('[%()]'), '')) / 100.0,
+      companyName: json['companyName'] == null ? '-' : json['companyName'],
     );
   }
 
   @override
-  Future<List<MarketIndexModel>> getIndexes () async {
-    String symbols = 'DIA,SPY,QQQ,IWM,VXX';
-    if (kFinancialModelingPrepApi == 'demo') {
-      symbols = 'AAPL,AAPL,AAPL,AAPL,AAPL';
-    }
+  Future<List<MarketIndexModel>> getIndexes() async {
+    String symbols = "^DJI,^GSPC,^IXIC,^RUT,^VIX";
     final Uri uri = Uri.https('financialmodelingprep.com', '/api/v3/quote/$symbols', {
       'apikey': kFinancialModelingPrepApi
     });
     Response response = await Dio().getUri(uri);
-    print (uri);
-    print (response.data);
-    return fromFinancialModelingIndexes (response.data);
+    // print (uri);
+    // print (response.data);
+    return fromFinancialModelingIndexes(response.data);
   }
 
   @override
-  Future<Response> getChart (String symbol, String duration) async {
+  Future<List<StockChart>> getChart(String symbol, String duration) async {
     if (kFinancialModelingPrepApi == 'demo') {
       symbol = 'AAPL';
     }
-    final DateTime date = DateTime.now();
+    final DateTime toDate = DateTime.now();
+    Duration interval;
+    switch (duration) {
+      case '1d' : interval = Duration(days: 1); break;
+      case '5d' : interval = Duration(days: 5); break;
+      case '1m' : interval = Duration(days: 30); break;
+      case '3m' : interval = Duration(days: 90); break;
+      case '1y' : interval = Duration(days: 365); break;
+      case '5y' : interval = Duration(days: 365 * 5); break;
+    }
+    final DateTime fromDate = toDate.subtract(interval);
     final String authority = 'financialmodelingprep.com';
-    final Uri uri = Uri.https(authority, '/api/v3/historical-price-full/$symbol', {
-      'from': '${date.year - 1}-${date.month}-${date.day}',
-      'to': '${date.year}-${date.month}-${date.day - 1}',
-      'apikey': kFinancialModelingPrepApi
-    });
-    return await Dio().getUri(uri);
+    Uri url;
+    if (duration == '1d') {
+      url = Uri.https(authority, '/api/v3/historical-chart/1min/$symbol', {
+        'apikey': symbol == 'AAPL' ? 'demo' : kFinancialModelingPrepApi
+      });
+    } else {
+      url = Uri.https(authority, '/api/v3/historical-price-full/$symbol', {
+        'from': '${fromDate.year}-${fromDate.month}-${fromDate.day}',
+        'to': '${toDate.year}-${toDate.month}-${toDate.day - 1}',
+        'apikey': symbol == 'AAPL' ? 'demo' : kFinancialModelingPrepApi
+      });
+    }
+    
+    // print (url);
+    Response response = await Dio().getUri(url);
+    if (duration == '1d') {
+      return StockChart.toList (response.data);
+    } else {
+      return StockChart.toList (response.data ['historical']);
+    }
   }
 
   @override
-  Future<StockQuote> getQuote (String symbol) async {
+  Future<StockQuote> getQuote(String symbol) async {
     if (kFinancialModelingPrepApi == 'demo') {
       symbol = 'AAPL';
     }
     Response response = await financialModelRequest('/api/v3/quote/$symbol');
-    return fromFinancialModelingQuote(response.data);
+    if (response.data is List) {
+      return fromFinancialModelingQuoteList(response.data);
+    } else {
+      return fromFinancialModelingQuoteMap(response.data);
+    }
   }
 
   @override
-  Future<StockQuote> getQuoteFull (String symbol) async {
+  Future<StockQuote> getQuoteFull(String symbol) async {
     if (kFinancialModelingPrepApi == 'demo') {
       symbol = 'AAPL';
     }
     Response response = await financialModelRequest('/api/v3/quote/$symbol');
-    return fromFinancialModelingQuote(response.data);
+    if (response.data is List) {
+      return fromFinancialModelingQuoteList(response.data);
+    } else {
+      return fromFinancialModelingQuoteMap(response.data);
+    }
   }
 
   @override
-  Future<StockProfile> getCompanyProfile (String symbol) async {
+  Future<StockProfile> getCompanyProfile(String symbol) async {
     if (kFinancialModelingPrepApi == 'demo') {
       symbol = 'AAPL';
     }
@@ -158,7 +212,7 @@ class FNPFetchClient extends FetchClient {
   }
 
   @override
-  Future<Response> getProfileStats (String symbol) {
+  Future<Response> getProfileStats(String symbol) {
     if (kFinancialModelingPrepApi == 'demo') {
       symbol = 'AAPL';
     }
@@ -166,20 +220,20 @@ class FNPFetchClient extends FetchClient {
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketActives () async {
+  Future<List<MarketActiveModel>> getMarketActives() async {
     Response json = await financialModelRequest('/api/v3/stock/actives');
-    return fromFinancialModelingActives(json.data);
+    return fromFinancialModelingActives(json.data['mostActiveStock']);
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketGainers () async {
+  Future<List<MarketActiveModel>> getMarketGainers() async {
     Response json = await financialModelRequest('/api/v3/stock/gainers');
-    return fromFinancialModelingActives(json.data);
+    return fromFinancialModelingActives(json.data['mostGainerStock']);
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketLosers () async {
+  Future<List<MarketActiveModel>> getMarketLosers() async {
     Response json = await financialModelRequest('/api/v3/stock/losers');
-    return fromFinancialModelingActives(json.data);
+    return fromFinancialModelingActives(json.data['mostLoserStock']);
   }
 }

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:sma/helpers/color/color_helper.dart';
 import 'package:sma/helpers/fetch_client.dart';
@@ -54,8 +53,8 @@ class _ChartSwitcherState extends State<ChartSwitcher> with SingleTickerProvider
     if (!_tabController.indexIsChanging) {
       final String duration = cadences [_tabController.index].text;
       try {
-        final Response<dynamic> stockChart = await ProfileClient(globalFetchClient).fetchChart (symbol: widget.ticker, duration: duration);
-        setChart (StockChart.toList(stockChart.data));
+        final List<StockChart> stockChart = await ProfileClient(globalFetchClient).fetchChart (symbol: widget.ticker, duration: duration);
+        setChart (stockChart);
       } catch (err) {
         print ('Caught error $err');
       }

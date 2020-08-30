@@ -3,6 +3,7 @@ import 'package:sma/helpers/fetch_client.dart';
 import 'package:sma/keys/api_keys.dart';
 import 'package:sma/models/markets/market_active/market_active.dart';
 import 'package:sma/models/profile/market_index.dart';
+import 'package:sma/models/profile/stock_chart.dart';
 import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
@@ -30,7 +31,7 @@ class IEXFetchClient extends FetchClient {
     return await Dio().getUri(uri);
   }
 
-  StockQuote fromIEXCloudQuote (Map<String, dynamic> jsonQuote, Map<String, dynamic> jsonStats) {
+  StockQuote fromIEXCloudQuote(Map<String, dynamic> jsonQuote, Map<String, dynamic> jsonStats) {
     if (jsonStats != null) {
       return StockQuote(
         symbol: jsonQuote['symbol'],
@@ -70,7 +71,7 @@ class IEXFetchClient extends FetchClient {
     }
   }
 
-  StockProfile fromIEXCloudProfile (Map<String, dynamic> jsonCompany, Map<String, dynamic> jsonQuote) {
+  StockProfile fromIEXCloudProfile(Map<String, dynamic> jsonCompany, Map<String, dynamic> jsonQuote) {
     return StockProfile(
       price: jsonQuote['latestPrice'],
       peRatio: jsonQuote['peRatio'],
@@ -87,7 +88,7 @@ class IEXFetchClient extends FetchClient {
     );
   }
 
-  List<MarketIndexModel> fromIEXCloudIndexes (Map <String, dynamic> json) {
+  List<MarketIndexModel> fromIEXCloudIndexes(Map <String, dynamic> json) {
     List<MarketIndexModel> retVal = List ();
     json.forEach((key, value) =>
       retVal.add (MarketIndexModel (
@@ -110,7 +111,7 @@ class IEXFetchClient extends FetchClient {
     }
   }
 
-  MarketActiveModel fromIEXCloudActivesSingle (Map<String, dynamic> json) {
+  MarketActiveModel fromIEXCloudActivesSingle(Map<String, dynamic> json) {
     return MarketActiveModel(
       ticker: json['symbol'],
       changes: json['change'] != null ? json['change'].toDouble () : 0.0,
@@ -121,61 +122,62 @@ class IEXFetchClient extends FetchClient {
   }
 
   @override
-  Future<List<MarketIndexModel>> getIndexes () async {
+  Future<List<MarketIndexModel>> getIndexes() async {
     final Uri uri = Uri.https(baseUrl, '/stable/stock/market/batch/', {
       'symbols' : 'DIA,SPY,QQQ,IWM,VXX',
       'types': 'quote',
       'token': iexCloudKey
     });
-    // print ("iex_cloud_http_helper - " + uri.toString());
+    // print ("iex_cloud_http_helper - " 0+ uri.toString());
     Response response = await Dio().getUri(uri);
     return fromIEXCloudIndexes(response.data);
   }
 
   @override
-  Future<Response> getChart (String symbol, String duration) {
-    return iexCloudRequest('/stable/stock/$symbol/chart/$duration/');
+  Future <List<StockChart>> getChart(String symbol, String duration) async {
+    Response response = await iexCloudRequest('/stable/stock/$symbol/chart/$duration/');
+    return StockChart.toList (response.data);
   }
 
   @override
-  Future<Response> getProfileStats (String symbol) {
+  Future<Response> getProfileStats(String symbol) {
     return iexCloudRequest('/stable/stock/$symbol/stats');
   }
 
   @override
-  Future <StockQuote> getQuote (String symbol) async {
+  Future <StockQuote> getQuote(String symbol) async {
     Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
     return fromIEXCloudQuote(jsonQuote.data, null);
   }
 
   @override
-  Future <StockQuote> getQuoteFull (String symbol) async {
+  Future <StockQuote> getQuoteFull(String symbol) async {
     Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/quote');
     Response jsonStats = await iexCloudRequest('/stable/stock/$symbol/stats');
     return fromIEXCloudQuote(jsonQuote.data, jsonStats.data);
   }
 
   @override
-  Future<StockProfile> getCompanyProfile (String symbol) async {
+  Future<StockProfile> getCompanyProfile(String symbol) async {
     Response jsonCompany = await iexCloudRequest('/stable/stock/$symbol/company');
     Response jsonQuote = await iexCloudRequest('/stable/stock/$symbol/company');
     return fromIEXCloudProfile(jsonCompany.data, jsonQuote.data);
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketActives () async {
+  Future<List<MarketActiveModel>> getMarketActives() async {
     Response json = await iexCloudRequest('/stable/stock/market/list/mostactive');
     return fromIEXCloudActives(json.data);
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketGainers () async {
+  Future<List<MarketActiveModel>> getMarketGainers() async {
     Response json = await iexCloudRequest('/stable/stock/market/list/gainers');
     return fromIEXCloudActives(json.data);
   }
 
   @override
-  Future<List<MarketActiveModel>> getMarketLosers () async {
+  Future<List<MarketActiveModel>> getMarketLosers() async {
     Response json = await iexCloudRequest('/stable/stock/market/list/losers');
     return fromIEXCloudActives(json.data);
   }

@@ -84,19 +84,21 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioId (int portfolioId)
   return {'daily': daily, 'overall': overall};
 }
 
+// this fetches the latest quote from the internet.  We need to change this to a saved version of the close.
+
 Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
   var tickerMap = Map <String, TradeGroup> ();
-  await Future.forEach (trades, ((element) async {
-    if (!tickerMap.containsKey(element.ticker)) {
-      StockQuote stockQuote = await globalFetchClient.getQuote(element.ticker);
+  await Future.forEach (trades, ((trade) async {
+    if (!tickerMap.containsKey(trade.ticker)) {
+      StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
       final _folderRepo = PortfolioFoldersStorageClient();
-      String portfolioName = await _folderRepo.getPortfolioName(portfolioId: element.portfolioId);
-      var overallReturns = TradeGroup.computeTotalReturn(trades, element.ticker, stockQuote.price);
-      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, element.ticker, stockQuote.previousClose.toDouble());
+      String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
+      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, stockQuote.price);
+      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, stockQuote.previousClose.toDouble());
       var dailyReturns = overallReturns - yesterdayReturns;
 
-      tickerMap[element.ticker] = TradeGroup (ticker: element.ticker, companyName: stockQuote.name, portfolioName: portfolioName,
-                                          portfolioId: element.portfolioId,
+      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: stockQuote.name, portfolioName: portfolioName,
+                                          portfolioId: trade.portfolioId,
                                           daily: dailyReturns,
                                           overall: overallReturns);
     }
