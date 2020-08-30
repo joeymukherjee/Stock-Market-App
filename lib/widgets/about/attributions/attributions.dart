@@ -11,20 +11,31 @@ class Attributions extends StatelessWidget {
     TextStyle _kSubtitleStyling = Theme.of(context).textTheme.subtitle1;
     return BaseList(
       children: <Widget>[
-        _buildContent(
-          headlineStyle: _kHeadlineStyle,
-          textStyle: _kTextStyle,
-          title: 'Application Developed by Joey Mukherjee',
-          text: 'You can find this app\'s source code by tapping here.',
-          url: 'https://github.com/joeymukherjee/Stock-Market-App.git'
-        ),
-        Divider(),
-        _buildContent(
-          headlineStyle: _kHeadlineStyle,
-          textStyle: _kTextStyle,
-          title: 'This code started from code done by Joshua García',
-          text: 'You can find his app\'s source code by tapping here.',
-          url: 'https://github.com/JoshuaR503/Stock-Market-App'
+        Column(
+          children: [
+            Text('StonksJM!', style: _kHeadlineStyle),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text('Authors:', style: _kSubtitleStyling),
+                Column (children: [Text ('Joey Mukherjee'), Text ('Joshua Garcia')],)
+              ],
+            ),
+            Divider(),
+            GestureDetector(
+              onTap: () => launchUrl('https://github.com/joeymukherjee/Stock-Market-App.git'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+
+                  SizedBox(height: 8),
+                  Text('You can find this app\'s source code by tapping here.', style: _kTextStyle),
+                ],
+              ),
+            ),
+            Divider(),
+          ],
         ),
         Divider(),
 
@@ -37,27 +48,28 @@ class Attributions extends StatelessWidget {
         ),
         Divider(),
 
-
         Text('APIs used in this app:', style: _kHeadlineStyle),
         SizedBox(height: 18),
         _buildApisContent(
           textStyle: _kTextStyle,
           subtitleStyle: _kSubtitleStyling,
-          title: 'IEX Cloud API',
-          text: 'The Portfolio & Markets are powered by this API. Tap here to learn more.',
-          url: 'https://iexcloud.io/s/ae6531cc',
-          icon: FontAwesomeIcons.cloud,
+          title: 'Financial Modeling Prep API',
+          text: 'We proudly use this API for the portfolio, markets, and watchlist portion of the code.',
+          url: 'https://financialmodelingprep.com/developer/docs/',
+          icon: FontAwesomeIcons.shapes,
         ),
 
+       /*
         Divider(),
         _buildApisContent(
           textStyle: _kTextStyle,
           subtitleStyle: _kSubtitleStyling,
-          title: 'Financial Modeling Prep API',
-          text: 'Nothing is done by this API, but was used originally.',
-          url: 'https://financialmodelingprep.com/developer/docs/',
-          icon: FontAwesomeIcons.shapes,
+          title: 'IEX Cloud API',
+          text: 'The Portfolio & Markets can be powered by this API. Tap here to learn more.',
+          url: 'https://iexcloud.io/s/ae6531cc',
+          icon: FontAwesomeIcons.cloud,
         ),
+        */
 
         Divider(),
         _buildApisContent(
@@ -68,7 +80,7 @@ class Attributions extends StatelessWidget {
           url: 'https://www.alphavantage.co/documentation/',
           icon: FontAwesomeIcons.search,
         ),
-        
+
         Divider(),
         _buildApisContent(
           textStyle: _kTextStyle,
@@ -80,6 +92,15 @@ class Attributions extends StatelessWidget {
         ),
 
         Divider(),
+        _buildContent(
+          headlineStyle: _kHeadlineStyle,
+          textStyle: _kTextStyle,
+          title: 'This code originated from code done by Joshua García.',
+          text: 'You can find his app\'s source code by tapping here.',
+          url: 'https://github.com/JoshuaR503/Stock-Market-App'
+        ),
+/*
+        Divider(),
         _buildApisContent(
           textStyle: _kTextStyle,
           subtitleStyle: _kSubtitleStyling,
@@ -88,6 +109,7 @@ class Attributions extends StatelessWidget {
           url: 'https://finnhub.io/',
           icon: FontAwesomeIcons.solidNewspaper,
         ),
+*/
       ],
     );
   }
@@ -115,12 +137,10 @@ class Attributions extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            
             Padding(
               padding: EdgeInsets.only(right: 16),
               child: Icon(icon),
             ),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

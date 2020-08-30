@@ -1,4 +1,4 @@
-// You will need to get your own keys from each of these 
+// You will need to get your own keys from each of these
 // Create a file called .env in your home directory (above lib).
 // It will have lines like "kSentryDomainNameSystem=sf8sfsf9sfd" without quotes or spaces
 // Have a separate line for all of them
@@ -6,32 +6,33 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Sentry DNS is used to track errors. It is beeing used at [SentryHelper].
-/// To get your DNS, go to: https://sentry.io/. 
+/// To get your DNS, go to: https://sentry.io/.
 /// Create a project and follow these steps: https://forum.sentry.io/t/where-can-i-find-my-dsn/4877
 final String kSentryDomainNameSystem = DotEnv().env ['kSentryDomainNameSystem'];
 
 /// The Alpha Vantage API is used to power the Search Section.
-/// It is used at [SearchClient]. 
+/// It is used at [SearchClient].
 /// To get your own API key go to: https://www.alphavantage.co.
 final String kAlphaVantageKey = DotEnv().env ['kAlphaVantageKey'];
 
 /*
 /// The Finnhub Stock API is used to power the news section in the [ProfileSection] page.
-/// It is used at [ProfileClient]. 
+/// It is used at [ProfileClient].
 /// To get your own API key go to: https://finnhub.io.
-// JM - we are not using this anymore
+// JM - we are not using this, but keeping it in here in case we add it.
 final String kFinnhubKey = DotEnv().env ['kFinnhubKey'];
 */
 
 /// The News API is used to power the news section.
-/// It is used at [NewsClient]. 
+/// It is used at [NewsClient].
 /// To get your own API key go to: https://newsapi.org.
 final String kNewsKey = DotEnv().env ['kNewsKey'];
 
 /// Financial Modeling Prep API is used to power the Home, U.S Market and Profile Section.
 /// Now an API key is required which means that we won't be able to make infinite requests. :(
 /// To get your own API key go to: https://financialmodelingprep.com/developer/docs/
-/// JM - This is no longer used.  The free account only gives you 250
+/// The free account only gives you 250 calls, so be careful! However, they seem to have
+/// the best data/API providing.  All the code works okay with these two providers now.
 final String kFinancialModelingPrepApi = DotEnv().env ['kFinancialModelingPrepApi'];
 
 /// IEX Cloud API Key

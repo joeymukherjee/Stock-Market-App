@@ -166,7 +166,7 @@ class FNPFetchClient extends FetchClient {
         'apikey': symbol == 'AAPL' ? 'demo' : kFinancialModelingPrepApi
       });
     }
-    
+
     // print (url);
     Response response = await Dio().getUri(url);
     if (duration == '1d') {
