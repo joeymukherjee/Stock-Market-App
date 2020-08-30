@@ -1,5 +1,7 @@
 # StonksJM - Mobile
-This is a simple app that helps users track their favorite stonks. This is not a real time watchlist. You will need to get your own API keys. They're all free. To get started, [follow these instructions.](https://github.com/joeymukherjee/Stock-Market-App/blob/master/lib/keys/api_keys.dart) 
+This is a simple app that helps users track their favorite stonks and see their value in a portfolio that is kept manually for now. This is not a real time watchlist.
+
+You will need to get your own API keys. They're all free. To get started, [follow these instructions.](https://github.com/joeymukherjee/Stock-Market-App/blob/master/lib/keys/api_keys.dart) 
 
 This app proudly uses the [Financial Modeling Prep API](https://financialmodelingprep.com/developer/docs/) to download stock quotes and information.
 
