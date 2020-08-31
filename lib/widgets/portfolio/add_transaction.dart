@@ -6,6 +6,7 @@ import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:sma/shared/styles.dart';
+import 'package:sma/respository/trade/trades_repo.dart';
 
 class TransactionHeading extends StatelessWidget {
 
@@ -88,16 +89,20 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
   bool _didReinvest = true;
   double _priceAtReinvest = 0.0;
   // These quantities are strings since we have to parse them ourselves into doubles
+  String _numberOfShares = "";
   String _sharesTransacted = "";
   String _sharesFrom = "";
   String _sharesTo = "";
 
-  double _totalNumberOfShares = 0.0;  // These are for dividends, should be computed somehow from DB?
+  // double _totalNumberOfShares = 0.0;  // These are for dividends, should be computed somehow from DB?
 
   @override
   void initState () {
     super.initState();
-    if (widget.trade != null) {
+    _tabController = new TabController(length: 4, vsync: this);
+    if (widget.trade == null) {
+
+    } else {
       _tradeId = widget.trade.id;
       _ticker = widget.trade.ticker;
       _transactionDate = widget.trade.transactionDate;
@@ -107,23 +112,25 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
         _commission = c.commission;
         _paid = c.paid;
         _sharesTransacted = c.sharesTransacted.toString();
+        _tabController.index = widget.trade.type == TransactionType.sell ? 1 : 0;
       } else {
         Split s = widget.trade as Split;
         _price = s.price;
         _sharesFrom = s.sharesFrom.toString();
         _sharesTo = s.sharesTo.toString();
+        _tabController.index = 3;
       }
       if (widget.trade.type == TransactionType.dividend) {
+        _tabController.index = 2;
         Dividend d = widget.trade as Dividend;
+        _numberOfShares = d.numberOfShares.toString();
         _amountPerShare = d.amountPerShare;
         _priceAtReinvest = d.priceAtReinvest;
         _didReinvest = d.didReinvest;
-        _proceeds = d.proceeds;
+        _proceeds = d.proceeds == 0.0 ? _amountPerShare * d.numberOfShares : d.proceeds;
       }
     }
     _portfolioId = widget.portfolioId;
-    _tabController = new TabController(length: 4, vsync: this);
-
   }
 
   @override
@@ -140,13 +147,23 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
       switch (index) {
         case 0 : trade = Common.withId(id: this._tradeId, type: TransactionType.purchase, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission); break;
         case 1 : trade = Common.withId(id: this._tradeId, type: TransactionType.sell, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: -(double.parse(this._sharesTransacted)), price: this._price, commission: this._commission); break;
-        case 2 : trade = Dividend.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission, numberOfShares: this._totalNumberOfShares, amountPerShare: this._amountPerShare, didReinvest: this._didReinvest, priceAtReinvest: this._priceAtReinvest); break;
+        case 2 : trade = Dividend.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission, numberOfShares: double.parse (this._numberOfShares), amountPerShare: this._amountPerShare, didReinvest: this._didReinvest, priceAtReinvest: this._priceAtReinvest); break;
         case 3 : trade = Split.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, sharesFrom: double.parse(this._sharesFrom), sharesTo: double.parse(this._sharesTo)); break;
       }
       BlocProvider.of<TradesBloc>(context).add(DidTrade(trade));
     } else {
       BlocProvider.of<TradesBloc>(context).add(AddedTransaction());  // This is going back to our original condition
     }
+  }
+
+  void computeTotalSharesForDividend () async {
+    final TradesRepository _tradesRepo = SembastTradesRepository ();
+      List<Trade> _trades = await _tradesRepo.loadAllTradesForTickerAndPortfolioAndDate(_ticker, widget.portfolioId, _transactionDate);
+      double totalShares = 0.0;
+      _trades.forEach ((trade) => {
+        totalShares += trade.getNumberOfShares()
+      });
+      _sharesTransacted = totalShares.toString();
   }
 
   @override
@@ -235,7 +252,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
                       ]
                     ),
               ),
-            ] 
+            ]
           ),
         );
       }
@@ -287,7 +304,7 @@ List<Widget> _buildCommonItems (context, widget) {
 List<Widget> _buildCommonBuySellItems (context, widget) {
   double _price = widget._price;
   double _commission = widget._commission;
-  
+
   var priceController = MoneyMaskedTextController(initialValue: widget._price, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
   priceController.afterChange = (String masked, double raw) {
     _price = raw;
@@ -427,13 +444,13 @@ Widget _buildSellItems (context, widget) {
           if (value.isEmpty) {
             return ('enter the number of amount you received for this transaction');
           }
-          if (double.tryParse(value) == null) {
+          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
             return ('must be a valid number!');
           }
           return null;
         },
         onSaved: (String value) async {
-          widget._paid = widget._price * widget._sharesTransacted - widget._commission;
+          widget._paid = double.parse (value.replaceAll (RegExp('[,\$]'), ''));
         }
       )
     ],
@@ -441,48 +458,87 @@ Widget _buildSellItems (context, widget) {
 }
 
 Widget _buildDividendItems (context, widget) {
+  double _perShare = widget._amountPerShare;
+  double _proceeds = widget._proceeds;
+
+  var perShareController = MoneyMaskedTextController(initialValue: widget._amountPerShare, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
+  perShareController.afterChange = (String masked, double raw) {
+    _perShare = raw;
+  };
+  var proceedsController = MoneyMaskedTextController(initialValue: widget._proceeds, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
+  proceedsController.afterChange = (String masked, double raw) {
+    _proceeds = raw;
+  };
   List<Widget> allChildren = _buildCommonItems (context, widget) + [
-      Row (
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text ("Total Shares"),
-          Text ("fill in shares")
-        ],
+      Focus(
+        child: TextFormField(
+          initialValue: widget._numberOfShares,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp('[\\.0-9]*'))
+          ],
+          decoration: InputDecoration (hintText: 'number of shares', labelText: "Shares"),
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the number of shares for this transaction');
+            }
+            if (double.tryParse(value) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          showCursor: true,
+          onChanged: (String value) {
+            widget._numberOfShares = value;
+          },
+          onSaved: (String value) async {
+            widget._numberOfShares = value;
+          }
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            var value = widget._numberOfShares;
+            if (double.tryParse(value.replaceAll (',\$', '')) != null) {
+              _proceeds = _perShare * double.parse(value);
+              widget.setState (() { widget._proceeds = _proceeds; });
+            }
+          }
+        },
       ),
       TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._amountPerShare, decimalSeparator: '.', thousandSeparator: ','),
+        controller: perShareController,
         decoration: InputDecoration (hintText: 'amount per share', labelText: "Amount per Share"),
         showCursor: true,
         validator: (value) {
           if (value.isEmpty) {
             return ('enter the number of amount you received per share');
           }
-          if (double.tryParse(value) == null) {
+          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
             return ('must be a valid number!');
           }
           return null;
         },
         onSaved: (String value) async {
-          widget._amountPerShare = double.parse(value);
+          widget._amountPerShare = _perShare;
         }
       ),
       TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._proceeds, decimalSeparator: '.', thousandSeparator: ','),
+        controller: proceedsController,
         decoration: InputDecoration (hintText: 'dividend amount', labelText: "Dividend"),
         showCursor: true,
         validator: (value) {
           if (value.isEmpty) {
             return ('enter the total amount you received for this dividend');
           }
-          if (double.tryParse(value) == null) {
+          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
             return ('must be a valid number!');
           }
           return null;
         },
         onSaved: (String value) async {
-          widget._proceeds = double.parse(value);
+          widget._proceeds = _proceeds;
         }
       ),
       Row(
@@ -491,6 +547,8 @@ Widget _buildDividendItems (context, widget) {
             Switch(value: widget._didReinvest,
               onChanged: (bool value) {
                widget.setState(() {
+                 widget._proceeds = _proceeds;
+                 widget._amountPerShare = _perShare;
                  widget._didReinvest = value;
                 });
             }),
@@ -561,7 +619,7 @@ Widget _buildSplitItems (context, widget) {
           }
           return null;
         },
-        onSaved: (String value) async { 
+        onSaved: (String value) async {
           widget._sharesFrom = double.parse(value);
         }
       ),

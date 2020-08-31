@@ -8,16 +8,17 @@ Math
        Given either a list of trades or a trade group
 
 Trades
-    Edit transactions
     Add total return as first portfolio
     Reorder trade groups
 
 Portfolio Stuff
-    Don't make it update on loading the folder
-	Save the last close and only update when requested.
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong
     Reorder portfolios - control is there, but the Reorderable doesn't seem to work in a listview parent
     On the add/edit portfolio, we have to use onChanged.  Why?  We only care after they save, but it doesn't change on the onSaved call
+
+Automation
+    Download trades from TD Ameritrade - https://developer.tdameritrade.com/apis
+    Download trades from Vanguard - https://api-docs.vanguardapp.io
 
 News for Watchlist/Portfolio in separate tabs
 

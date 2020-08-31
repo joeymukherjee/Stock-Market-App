@@ -13,6 +13,9 @@ abstract class TradesRepository {
   // Return all trades for a particular portfolio
   Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId);
 
+  // Return all trades for a particular portfolio before a certain date
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, int portfolioId, DateTime since);
+
   // Saves a list of trades (these may have updated!)
   Future <void> saveTrades(List<Trade> trades);
 
@@ -61,6 +64,19 @@ class SembastTradesRepository implements TradesRepository {
   Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId) async
   {
     final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()), sortOrders: [SortOrder('transactionDate', false), SortOrder(Field.key, true)]);
+    final response = await _store.find(await _database, finder: finder);
+    return response
+      .map((snapshot) => Trade.fromJson(snapshot.value))
+      .toList();
+  }
+
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, int portfolioId, DateTime since) async {
+    final Filter filter = Filter.and([
+      Filter.equals('ticker', ticker),
+      Filter.equals('portfolioId', portfolioId.toString()),
+      Filter.lessThanOrEquals('transactionDate', since.toString())
+    ]);
+    final Finder finder = Finder(filter: filter, sortOrders: [SortOrder('transactionDate', false), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     return response
       .map((snapshot) => Trade.fromJson(snapshot.value))

@@ -57,10 +57,10 @@ abstract class Trade extends Equatable {
     Trade trade;
     TransactionType type = TransactionType.values.firstWhere((e) => e.toString() == json ['type']);
     switch (type) {
-      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], sharesFrom: json ['sharesFrom'], sharesTo: json ['sharesTo']); break;
+      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), sharesFrom: json ['sharesFrom'], sharesTo: json ['sharesTo']); break;
       case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
-      case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission']); break;
-      case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: json ['portfolioId'], ticker: json ['ticker'], transactionDate: json ['transactionDate'], sharesTransacted: json ['sharesTransacted'], price: json ['price'], commission: json ['commission'], numberOfShares: json ['numberOfShares'], amountPerShare: json ['amountPerShare'], didReinvest: json ['didReinvest'], priceAtReinvest: json ['priceAtReinvest']); break;
+      case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
+      case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission']), numberOfShares: json ['numberOfShares'] == null ? 0.0 : double.parse(json ['numberOfShares']), amountPerShare: double.parse(json['amountPerShare']), didReinvest: json ['didReinvest'] == 'true' ? true : false, priceAtReinvest: double.parse(json ['priceAtReinvest'])); break;
     }
     return trade;
   }
@@ -126,12 +126,13 @@ class Common extends Trade {
 }
 
 class Dividend extends Common {
+  final double numberOfShares;
   final double amountPerShare;
   final double proceeds;
   final bool didReinvest;
   final double priceAtReinvest;
 
-  Dividend (int portfolioId, String ticker, DateTime transactionDate, double sharesTransacted, double price, double commission, double numberOfShares, this.amountPerShare, this.didReinvest, this.priceAtReinvest) :
+  Dividend (int portfolioId, String ticker, DateTime transactionDate, double sharesTransacted, double price, double commission, this.numberOfShares, this.amountPerShare, this.didReinvest, this.priceAtReinvest) :
     this.proceeds = amountPerShare * numberOfShares,
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.dividend, sharesTransacted: sharesTransacted, price: price, commission: commission);
 
@@ -143,7 +144,7 @@ class Dividend extends Common {
     @required double sharesTransacted,
     @required double price,
     @required double commission,
-    @required double numberOfShares,
+    @required this.numberOfShares,
     @required this.amountPerShare,
     @required this.didReinvest,
     @required this.priceAtReinvest}) :
@@ -155,6 +156,7 @@ class Dividend extends Common {
   {
     final Map<String, dynamic> data = super.toJson();
     
+    data ['numberOfShares'] = this.numberOfShares.toString();
     data ['amountPerShare'] = this.amountPerShare.toString();
     data ['proceeds'] = this.proceeds.toString();
     data ['didReinvest'] = this.didReinvest.toString();
@@ -163,7 +165,7 @@ class Dividend extends Common {
   }
 
   double getTotalReturn () {
-    return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
+    return -this.proceeds; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
   }
 
   double getNumberOfShares () {
