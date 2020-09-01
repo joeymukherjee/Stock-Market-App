@@ -13,23 +13,24 @@ abstract class Trade extends Equatable {
   final TransactionType type;
 
   Trade ({
- //   @required this.id,
     String id,
-    @required this.portfolioId, 
-    @required this.ticker, 
-    @required this.transactionDate, 
-    @required this.type, 
-  }) : 
-    id = id == null ? Uuid().v4 () : id,
-    super ();
-
-  Trade.withId ({
-    @required this.id,
     @required this.portfolioId,
     @required this.ticker,
     @required this.transactionDate,
     @required this.type,
-  });
+  }) :
+    id = id == null ? Uuid().v4 () : id,
+    super ();
+
+  Trade.withId ({
+    @required String id,
+    @required this.portfolioId,
+    @required this.ticker,
+    @required this.transactionDate,
+    @required this.type,
+  }):
+    this.id = id == null ? Uuid().v4 () : id,
+    super ();
 
   double getTotalReturn ();
   double getNumberOfShares ();
@@ -51,13 +52,13 @@ abstract class Trade extends Equatable {
     data ['type'] = this.type.toString();
     return data;
   }
-  
+
   factory Trade.fromJson (Map<String, dynamic> json)
   {
     Trade trade;
     TransactionType type = TransactionType.values.firstWhere((e) => e.toString() == json ['type']);
     switch (type) {
-      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), sharesFrom: json ['sharesFrom'], sharesTo: json ['sharesTo']); break;
+      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json['sharesTransacted']), price: double.parse(json ['price']), sharesFrom: double.parse(json ['sharesFrom']), sharesTo: double.parse(json ['sharesTo'])); break;
       case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
       case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
       case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission']), numberOfShares: json ['numberOfShares'] == null ? 0.0 : double.parse(json ['numberOfShares']), amountPerShare: double.parse(json['amountPerShare']), didReinvest: json ['didReinvest'] == 'true' ? true : false, priceAtReinvest: double.parse(json ['priceAtReinvest'])); break;
@@ -88,11 +89,11 @@ class Common extends Trade {
     @required String id,
     @required int portfolioId,
     @required String ticker,
-    @required DateTime transactionDate, 
-    @required TransactionType type, 
-    @required this.sharesTransacted, 
-    @required this.price, 
-    @required this.commission}) : 
+    @required DateTime transactionDate,
+    @required TransactionType type,
+    @required this.sharesTransacted,
+    @required this.price,
+    @required this.commission}) :
     this.paid = price * sharesTransacted - commission,
     super (id: id, portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: type);
 
@@ -155,7 +156,7 @@ class Dividend extends Common {
   Map<String, dynamic> toJson()
   {
     final Map<String, dynamic> data = super.toJson();
-    
+
     data ['numberOfShares'] = this.numberOfShares.toString();
     data ['amountPerShare'] = this.amountPerShare.toString();
     data ['proceeds'] = this.proceeds.toString();
@@ -178,11 +179,12 @@ class Dividend extends Common {
 }
 
 class Split extends Trade {
+  final double sharesTransacted;
   final double price;
   final double sharesTo;
   final double sharesFrom;
 
-  Split (int portfolioId, String ticker, DateTime transactionDate, this.price, this.sharesFrom, this.sharesTo) :
+  Split (int portfolioId, String ticker, DateTime transactionDate, this.sharesTransacted, this.price, this.sharesFrom, this.sharesTo) :
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.split);
 
   Split.withId ({
@@ -190,7 +192,7 @@ class Split extends Trade {
     @required int portfolioId,
     @required String ticker,
     @required DateTime transactionDate,
-    @required double sharesTransacted,
+    @required this.sharesTransacted,
     @required this.price,
     @required this.sharesFrom,
     @required this.sharesTo}) :
@@ -199,22 +201,23 @@ class Split extends Trade {
   @override
   Map<String, dynamic> toJson()
   {
-    final Map<String, String> data = super.toJson();
+    final Map<String, dynamic> data = super.toJson();
     data ['price'] = this.price.toString();
+    data ['sharesTransacted'] = this.sharesTransacted.toString();
     data ['sharesTo'] = this.sharesTo.toString();
     data ['sharesFrom'] = this.sharesFrom.toString();
     return data;
   }
 
   double getTotalReturn () {
-    return 0.0; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
+     return 0.0;
   }
 
   double getNumberOfShares () {
-    return 0.0;  // TODO - how does this play into equation?
+    return 0.0;
   }
 
   double getInvestment () {
-    return 0.0;  // TODO - how does this play into equation?
+    return 0.0;
   }
 }

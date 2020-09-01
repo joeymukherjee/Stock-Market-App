@@ -46,6 +46,10 @@ class TradeGroup extends Equatable {
     trades.forEach((trade) {
       if (trade.ticker == ticker) {
         totalNumberOfShares = totalNumberOfShares + trade.getNumberOfShares();
+        if (trade.type == TransactionType.split) {
+          Split split = trade as Split;
+          totalNumberOfShares = totalNumberOfShares * split.sharesTo / split.sharesFrom;
+        }
       }
     });
     return totalNumberOfShares;

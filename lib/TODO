@@ -10,6 +10,7 @@ Math
 Trades
     Add total return as first portfolio
     Reorder trade groups
+    Import stuff from my Robinhood spreadsheet
 
 Portfolio Stuff
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong
