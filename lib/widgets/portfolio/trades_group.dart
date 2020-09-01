@@ -16,6 +16,7 @@ class TradeCard extends StatelessWidget {
   final Trade trade;
   final String portfolioName;
 
+// TODO - change this to ListTile
   TradeCard ({@required this.portfolioName, @required this.trade});
 
   void clickedEdit(BuildContext context, TradesState state) async {
@@ -25,11 +26,103 @@ class TradeCard extends StatelessWidget {
     }
   }
 
+  String formatSplitString (Split split) {
+    String fromShare = split.sharesFrom == 1.0 ? "share" : "shares";
+    String toShare = split.sharesTo == 1.0 ? "share" : "shares";
+    num numFrom = split.sharesFrom == split.sharesFrom.round() ? split.sharesFrom.round() : split.sharesFrom;
+    num numTo = split.sharesTo == split.sharesTo.round() ? split.sharesTo.round() : split.sharesTo;
+    return "Split $numFrom $fromShare to $numTo $toShare";
+  }
+
+  String formatDividendString (Dividend dividend) {
+    String amount = formatCurrencyText(-dividend.getTotalReturn());
+    return "Received \$$amount as dividend";
+  }
+
+  String formatBuySell (Common common) {
+    if (common.type == TransactionType.sell) {
+      String amount = formatCurrencyText(-common.getTotalReturn());
+      return "Sold ${-common.sharesTransacted} shares for \$$amount";
+    } else {
+      String amount = formatCurrencyText(common.getTotalReturn());
+      return "Bought ${common.sharesTransacted} shares for \$$amount";
+    }
+  }
+
+  Text formatSubtitle (Trade trade) {
+    String subtitle;
+    if (trade.type == TransactionType.split) {
+      subtitle = formatSplitString(trade);
+    } else if (trade.type == TransactionType.dividend) {
+      subtitle = formatDividendString(trade);
+    } else {
+      subtitle = formatBuySell(trade);
+    }
+    TextStyle style = TextStyle (fontWeight: FontWeight.w500, fontSize: 10);
+    return Text (subtitle, style: style);
+  }
+
+  Icon formatIcon (Trade trade) {
+    IconData icon;
+    if (trade.type == TransactionType.split) {
+      icon = Icons.call_split_rounded;
+    } else if (trade.type == TransactionType.dividend) {
+      icon = Icons.check_circle_rounded;
+    } else if (trade.type == TransactionType.sell) {
+      icon = Icons.arrow_circle_down_rounded;
+    } else icon = Icons.arrow_circle_up_rounded;
+    return Icon (icon, color: Colors.lightGreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
-        return Row(
+        return ListTile(
+          leading: (state is TradesLoadedEditing) ?
+              GestureDetector(
+                child: Icon(Icons.edit),
+                onTap: () { clickedEdit(context, state); },
+              )
+              : formatIcon (trade),
+          title: Text(DateFormat.yMMMMd().format (trade.transactionDate), style: TextStyle (fontSize: 12)),
+          subtitle: formatSubtitle (trade),
+          trailing: (state is TradesLoadedEditing) ?
+              GestureDetector(
+                child: Icon(Icons.highlight_off, color: Colors.red),
+                onTap: () {
+                  Alert(
+                    context: context,
+                    type: AlertType.warning,
+                    title: "Delete Trade",
+                    desc: "Are you sure you wish to delete the trade on " + DateFormat.yMMMMd().format (trade.transactionDate) + "?",
+                    buttons: [
+                      DialogButton(
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () {
+                          BlocProvider.of<TradesBloc>(context).add(DeletedTrade(id: trade.id, portfolioId: trade.portfolioId, ticker: trade.ticker));
+                          Navigator.pop(context);
+                        },
+                        color: Colors.red,
+                      ),
+                      DialogButton(
+                        child: Text(
+                          "No",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        color: Colors.green
+                      ),
+                    ],
+                  ).show();
+                },
+              )
+            : null,
+          );
+      /*  Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget> [
             (state is TradesLoadedEditing) ?
@@ -80,6 +173,7 @@ class TradeCard extends StatelessWidget {
               : Container(),
           ]
         );
+      */
       }
     );
   }
