@@ -116,6 +116,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
       } else {
         Split s = widget.trade as Split;
         _price = s.price;
+        _sharesTransacted = s.sharesTransacted.toString();
         _sharesFrom = s.sharesFrom.toString();
         _sharesTo = s.sharesTo.toString();
         _tabController.index = 3;
@@ -424,7 +425,7 @@ Widget _buildBuyItems (context, widget) {
           return null;
         },
         onSaved: (String value) async {
-          widget._paid = double.parse (value.replaceAll (RegExp('[,\$]'), '')); // widget._price * double.parse(widget._sharesTransacted) - widget._commission;
+          widget._paid = double.parse (value.replaceAll (RegExp('[,\$]'), ''));
         }
       )
     ],
@@ -544,7 +545,7 @@ Widget _buildDividendItems (context, widget) {
       Row(
           children: [
             Text("Reinvest Dividend:"),
-            Switch(value: widget._didReinvest,
+            Switch.adaptive(value: widget._didReinvest,
               onChanged: (bool value) {
                widget.setState(() {
                  widget._proceeds = _proceeds;
@@ -560,47 +561,74 @@ Widget _buildDividendItems (context, widget) {
 }
 
 Widget _buildSplitItems (context, widget) {
+  //double _price = widget._price;
+  var priceController = MoneyMaskedTextController(initialValue: widget._price, leftSymbol: '\$', decimalSeparator: '.', thousandSeparator: ',', precision: 2);
+  priceController.afterChange = (String masked, double raw) {
+    //_price = raw;
+  };
   return ListView (
     shrinkWrap: true,
     children: _buildCommonItems (context, widget) + [
-      TextFormField(
-        initialValue: widget._sharesTransacted,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp('[\\.0-9]*'))
-        ],
-        decoration: InputDecoration (hintText: 'number of shares', labelText: "Shares"),
-        showCursor: true,
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the number of shares you held for this transaction');
+      Focus(
+        child: TextFormField(
+          initialValue: widget._sharesTransacted,
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp('[\\.0-9]*'))
+          ],
+          decoration: InputDecoration (hintText: 'number of shares', labelText: "Shares"),
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the number of shares for this transaction');
+            }
+            if (double.tryParse(value) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          showCursor: true,
+          onChanged: (String value) {
+            widget._sharesTransacted = value;
+          },
+          onSaved: (String value) async {
+            widget._sharesTransacted = value;
           }
-          if (double.tryParse(value) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            var value = widget._sharesTransacted;
+            if (double.tryParse(value.replaceAll (',\$', '')) != null) {
+              // TODO - nothing yet... widget.setState (() { widget._paid = widget._price * double.parse(value) - widget._commission; });
+            }
           }
-          return null;
         },
-        onSaved: (String value) async {
-           widget._sharesTransacted = double.parse(value);
-        }
       ),
-      TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: MoneyMaskedTextController(initialValue: widget._priceAtReinvest, decimalSeparator: '.', thousandSeparator: ','),
-        decoration: InputDecoration (hintText: 'price after split', labelText: "Price After"),
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the price per share after the split occurred');
+      Focus(
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: priceController,
+          decoration: InputDecoration (hintText: 'price of share', labelText: "Price"),
+          showCursor: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the cost of the stock when this transaction occurred');
+            }
+            if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          onSaved: (String value) async {
+            widget._price = priceController.numberValue;
           }
-          if (double.tryParse(value) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            if (double.tryParse(widget._sharesTransacted) != null) {
+              // widget.setState (() { widget._price = _price; widget._paid = _price * double.parse(widget._sharesTransacted) - widget._commission; });
+            }
           }
-          return null;
         },
-        showCursor: true,
-        onSaved: (String value) async {
-          widget._priceAtReinvest = double.parse(value);
-        }
       ),
       TextFormField(
         initialValue: widget._sharesFrom,
@@ -620,7 +648,7 @@ Widget _buildSplitItems (context, widget) {
           return null;
         },
         onSaved: (String value) async {
-          widget._sharesFrom = double.parse(value);
+          widget._sharesFrom = value;
         }
       ),
       TextFormField(
@@ -641,7 +669,7 @@ Widget _buildSplitItems (context, widget) {
         },
         showCursor: true,
         onSaved: (String value) async {
-          widget._sharesTo = double.parse(value);
+          widget._sharesTo = value;
         }
       ),
     ],

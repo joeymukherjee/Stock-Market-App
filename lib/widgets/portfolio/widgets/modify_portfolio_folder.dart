@@ -50,7 +50,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
         Row(
           children: [
             Text("Exclude from Total:"),
-            Switch(value: _exclude,
+            Switch.adaptive(value: _exclude,
               onChanged: (bool value) {
                setState(() {
                  _exclude = value;

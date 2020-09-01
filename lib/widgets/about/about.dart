@@ -34,7 +34,7 @@ class AboutSection extends StatelessWidget {
                     child: Row(
                       children: [
                         Text ("Dark Mode Theme:", style: Theme.of(context).textTheme.caption),
-                        Switch(
+                        Switch.adaptive(
                           value: state.isNight,
                           onChanged: (bool) => {
                             BlocProvider
