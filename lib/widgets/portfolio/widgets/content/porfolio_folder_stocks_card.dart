@@ -6,8 +6,6 @@ import 'package:sma/shared/styles.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/helpers/color/color_helper.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:sma/widgets/widgets/loading_indicator.dart';
-import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/widgets/portfolio/trades_group.dart';
 
@@ -98,18 +96,10 @@ class PortfolioFolderStocksCard extends StatelessWidget {
 
             shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
             onPressed: () {
-
-              // Trigger fetch event.
-              if (state is TradesEditing) {
-              //  Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyTradesSection ('Edit', TradesGroup())));
-              } else {
-
-                BlocProvider
-                  .of<TradesBloc>(context)
-                  .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
-
-                Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
-              }
+              BlocProvider
+                .of<TradesBloc>(context)
+                .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
             },
           ),
         );

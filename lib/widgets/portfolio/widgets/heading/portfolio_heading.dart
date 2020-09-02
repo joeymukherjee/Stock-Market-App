@@ -3,7 +3,7 @@ import 'package:sma/shared/styles.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sma/widgets/portfolio/add_transaction.dart';
+import 'package:sma/widgets/portfolio/transaction.dart';
 
 class PortfolioHeadingSection extends StatelessWidget {
   final int portfolioId;

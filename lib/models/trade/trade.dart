@@ -166,7 +166,7 @@ class Dividend extends Common {
   }
 
   double getTotalReturn () {
-    return -this.proceeds; // TODO - need to figure this out... this.numberOfShares * this.sharesTransacted - this.commission;
+    return -this.proceeds;
   }
 
   double getNumberOfShares () {
