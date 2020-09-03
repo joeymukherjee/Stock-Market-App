@@ -21,9 +21,9 @@ class SimpleTimeSeriesChart extends StatelessWidget {
           colorFn: (_, __) => charts.ColorUtil.fromDartColor(color),
           domainFn: (RowData row, _) => row.timeStamp,
           measureFn: (RowData row, _) => row.cost,
-          data: this.chart
+          data: this.chart != null ? this.chart
             .map((item) => RowData(timeStamp: DateTime.parse(item.date), cost: item.close))
-            .toList(),
+            .toList() : [RowData(timeStamp: DateTime.now(), cost: 0.0)],
         ),
       ],
 

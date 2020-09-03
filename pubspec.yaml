@@ -31,6 +31,8 @@ dependencies:
   flutter_masked_text: ^0.8.0
   date_field: ^0.3.0
   shared_preferences: ^0.5.8
+  csv: ^4.0.3
+  file_picker: ^1.13.3
 
 dev_dependencies:
   flutter_launcher_icons: ^0.7.4

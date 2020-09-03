@@ -12,6 +12,7 @@ class StockChart {
   });
 
   static List<StockChart> toList(List<dynamic> items) {
+    if (items == null) return null;
     var retVal = items
     .map((item) => StockChart.fromJson(item))
     .toList();

@@ -27,8 +27,16 @@ class FNPFetchClient extends FetchClient {
     return await Dio().getUri(uri);
   }
 
- StockQuote fromFinancialModelingQuoteList(List <dynamic> jsonList) {
+ StockQuote fromFinancialModelingQuoteList(String ticker, List <dynamic> jsonList) {
+    if (jsonList.length == 0) {
+      print ("$ticker is null!");
+      return StockQuote.unknown(ticker);
+    }
     Map<String, dynamic> json = jsonList [0];
+    if (json == null) {
+      print ("$ticker is null!");
+      return StockQuote.unknown(ticker);
+    }
     return StockQuote(
       symbol: json['symbol'],
       name: json['name'],
@@ -50,7 +58,11 @@ class FNPFetchClient extends FetchClient {
     );
   }
 
-  StockQuote fromFinancialModelingQuoteMap(Map <String, dynamic> json) {
+  StockQuote fromFinancialModelingQuoteMap(String ticker, Map <String, dynamic> json) {
+    if (json == null) {
+      print ("$ticker is null!");
+      return StockQuote.unknown(ticker);
+    }
     return StockQuote(
       symbol: json['symbol'],
       name: json['name'],
@@ -72,8 +84,11 @@ class FNPFetchClient extends FetchClient {
     );
   }
 
-  StockProfile fromFinancialModelingProfile(Map<String, dynamic> jsonOriginal) {
+  StockProfile fromFinancialModelingProfile(String ticker, Map<String, dynamic> jsonOriginal) {
     var json = jsonOriginal['profile'];
+    if (json == null || json == []) {
+      return StockProfile();
+    }
     return StockProfile(
       price: json['price'],
       beta: double.parse (json['beta']),
@@ -183,9 +198,9 @@ class FNPFetchClient extends FetchClient {
     }
     Response response = await financialModelRequest('/api/v3/quote/$symbol');
     if (response.data is List) {
-      return fromFinancialModelingQuoteList(response.data);
+      return fromFinancialModelingQuoteList(symbol, response.data);
     } else {
-      return fromFinancialModelingQuoteMap(response.data);
+      return fromFinancialModelingQuoteMap(symbol, response.data);
     }
   }
 
@@ -196,9 +211,9 @@ class FNPFetchClient extends FetchClient {
     }
     Response response = await financialModelRequest('/api/v3/quote/$symbol');
     if (response.data is List) {
-      return fromFinancialModelingQuoteList(response.data);
+      return fromFinancialModelingQuoteList(symbol, response.data);
     } else {
-      return fromFinancialModelingQuoteMap(response.data);
+      return fromFinancialModelingQuoteMap(symbol, response.data);
     }
   }
 
@@ -208,7 +223,7 @@ class FNPFetchClient extends FetchClient {
       symbol = 'AAPL';
     }
     Response response = await financialModelRequest('/api/v3/company/profile/$symbol');
-    return (fromFinancialModelingProfile(response.data));
+    return (fromFinancialModelingProfile(symbol, response.data));
   }
 
   @override

@@ -52,7 +52,22 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       yield TradesLoading ();
       yield* _mapDeletedTradeToState (event);
     }
+
+    if (event is MergeMultipleTrades) {
+      yield TradesLoading ();
+      yield* _mapMergeMultipleTradesToState (event);
+    }
     print ("mapEventToState: (event): " + event.toString());
+  }
+
+  Stream<TradesState> _mapMergeMultipleTradesToState(MergeMultipleTrades event) async* {
+    try {
+      _saveTrades(event.trades);
+    } catch (e) {
+      print ("Exception: _mapMergeMultipleTradesToState");
+      print (e);
+      yield TradesFailure(message: "Can't merge these transactions!");
+    }
   }
 
   Stream<TradesState> _mapDeletedTradeToState(DeletedTrade event) async* {

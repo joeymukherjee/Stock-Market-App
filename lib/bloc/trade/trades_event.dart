@@ -101,3 +101,13 @@ class DeletedTrade extends TradeEvent {
 
   DeletedTrade ({@required this.id, @required this.portfolioId, @required this.ticker});
 }
+
+class MergeMultipleTrades extends TradeEvent {
+  final int portfolioId;
+  final List<Trade> trades;
+
+  @override
+  List<Object> get props => [portfolioId, trades];
+
+  MergeMultipleTrades ({@required this.portfolioId, @required this.trades});
+}
