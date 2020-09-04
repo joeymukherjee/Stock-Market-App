@@ -9,11 +9,13 @@ class PortfolioFoldersStorageModel {
   final FolderChange daily;
   final FolderChange overall;
   final DateTime lastUpdated;
+  final bool hideClosedPositions;
 
   PortfolioFoldersStorageModel({
     @required this.order,
     @required this.name,
     @required this.exclude,
+    @required this.hideClosedPositions,
     @required this.daily,
     @required this.overall,
     @required this.lastUpdated
@@ -30,6 +32,7 @@ class PortfolioFoldersStorageModel {
     data['order'] = this.order;
     data['name'] = this.name;
     data['exclude'] = this.exclude;
+    data['hideClosedPositions'] = this.hideClosedPositions;
     data['daily'] = this.daily.toJson();
     data['overall'] = this.overall.toJson();
     data['lastUpdated'] = this.lastUpdated.toString();
@@ -41,9 +44,10 @@ class PortfolioFoldersStorageModel {
       order: json ['order'],
       name: json['name'],
       exclude: json['exclude'],
-      daily: json['daily'],
-      overall: json['overall'],
-      lastUpdated: DateTime.parse(json ['lastUpdated'])
+      hideClosedPositions: json['hideClosedPositions'],
+      daily: FolderChange.fromJson(json['daily']),
+      overall: FolderChange.fromJson(json['overall']),
+      lastUpdated: DateTime.parse(json ['lastUpdated']),
     );
   }
 }

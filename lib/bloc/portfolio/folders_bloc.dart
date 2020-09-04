@@ -53,7 +53,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       for (var folder in foldersStored) {
         var changes = await toTotalReturnFromPortfolioIdUpdate (folder.key);
         PortfolioFolderModel updatedFolder = PortfolioFolderModel(
-          key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude,
+          key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude, hideClosedPositions: folder.hideClosedPositions,
           daily: changes ['daily'], overall: changes ['overall']);
           updatedFolders.add(updatedFolder);
           _databaseRepository.save(model: updatedFolder);

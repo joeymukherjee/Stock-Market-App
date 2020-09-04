@@ -17,7 +17,7 @@ class PortfoliosHeadingSection extends StatelessWidget {
   void toggleEditing (BuildContext context, PortfolioFoldersState state) {
     if (state is PortfolioFoldersLoadedEditingState || state is PortfolioFoldersEmpty) {
         Navigator.push(context, MaterialPageRoute(
-          builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, name: '', order: 0, daily: FolderChange(), overall: FolderChange()))));
+          builder: (_) => ModifyPortfolioFolderSection ('Add', PortfolioFolderModel(key: -1, exclude: false, hideClosedPositions: true, name: '', order: 0, daily: FolderChange(), overall: FolderChange()))));
     } else {
       BlocProvider
         .of<PortfolioFoldersBloc>(context)

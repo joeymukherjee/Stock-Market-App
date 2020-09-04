@@ -54,10 +54,12 @@ class PortfolioFoldersSection extends StatelessWidget {
             ],
           );
         }
-
-        return Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
-          child: LoadingIndicatorWidget(),
+        return Expanded(
+          child:
+            Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
+              child: LoadingIndicatorWidget(),
+            ),
         );
       },
     );

@@ -35,6 +35,7 @@ class PortfolioFoldersStorageClient {
     PortfolioFoldersStorageModel storageModel = PortfolioFoldersStorageModel (
       name: model.name,
       exclude: model.exclude,
+      hideClosedPositions: model.hideClosedPositions,
       order: model.order,
       daily: model.daily,
       overall: model.overall,
@@ -59,13 +60,12 @@ class PortfolioFoldersStorageClient {
   }
 
   // Gets a portfolio name based on portfolio id, which is also the database key
-  Future <String> getPortfolioName ({int portfolioId}) async {
-
+  Future <PortfolioFolderModel> getPortfolio ({int portfolioId}) async {
     final response = await _store.record(portfolioId).get(await _database);
     if (response == null) {
-      return "Unknown portfolioId: $portfolioId!";
+      return null;
     } else {
-      return response.values.elementAt(1);
+      return PortfolioFolderModel.fromStorage(portfolioId, response);
     }
   }
 }

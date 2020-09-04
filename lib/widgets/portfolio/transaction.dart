@@ -94,8 +94,6 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
   String _sharesFrom = "";
   String _sharesTo = "";
 
-  // double _totalNumberOfShares = 0.0;  // These are for dividends, should be computed somehow from DB?
-
   @override
   void initState () {
     super.initState();
@@ -144,7 +142,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
       final int index = _tabController.index;
       switch (index) {
         case 0 : trade = Common.withId(id: this._tradeId, type: TransactionType.purchase, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission); break;
-        case 1 : trade = Common.withId(id: this._tradeId, type: TransactionType.sell, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: -(double.parse(this._sharesTransacted)), price: this._price, commission: this._commission); break;
+        case 1 : trade = Common.withId(id: this._tradeId, type: TransactionType.sell, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission); break;
         case 2 : trade = Dividend.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesTransacted: double.parse(this._sharesTransacted), price: this._price, commission: this._commission, numberOfShares: double.parse (this._numberOfShares), amountPerShare: this._amountPerShare, didReinvest: this._didReinvest); break;
         case 3 : trade = Split.withId(id: this._tradeId, portfolioId: this._portfolioId, ticker: this._ticker, transactionDate: this._transactionDate, sharesFrom: double.parse(this._sharesFrom), sharesTo: double.parse(this._sharesTo)); break;
       }
@@ -432,7 +430,7 @@ Widget _buildBuyItems (context, widget) {
 Widget _buildSellItems (context, widget) {
   return ListView (
     shrinkWrap: true,
-    children: _buildCommonItems(context, widget) + _buildCommonBuySellItems (context, widget) + [
+    children: _buildCommonItems(context, widget) + _buildCommonBuySellItems(context, widget) + [
       TextFormField(
         keyboardType: TextInputType.numberWithOptions(decimal: true),
         controller: MoneyMaskedTextController(initialValue: widget._paid, decimalSeparator: '.', thousandSeparator: ','),

@@ -14,6 +14,8 @@ class TradeGroup extends Equatable {
   final String companyName;
   final int portfolioId;
   final String portfolioName;
+  final bool hideClosedPositions;
+  final double totalNumberOfShares;
   final FolderChange daily;
   final FolderChange overall;
 
@@ -22,6 +24,8 @@ class TradeGroup extends Equatable {
     @required this.companyName,
     @required this.portfolioId,
     @required this.portfolioName,
+    @required this.hideClosedPositions,
+    @required this.totalNumberOfShares,
     @required this.daily,
     @required this.overall
   });
@@ -30,7 +34,7 @@ class TradeGroup extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [portfolioId, ticker, companyName, portfolioName, daily, overall];
+  List<Object> get props => [ticker, companyName, portfolioId, portfolioName, totalNumberOfShares, daily, overall];
 
 // TODO - move this somewhere
 // To compute the current return, we take the total number of shares of all the trades
@@ -98,6 +102,7 @@ Future <List<TradeGroup>> toTickerMapFromTradesUpdate (List<Trade> trades) async
     if (!tickerMap.containsKey(trade.ticker)) {
       StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
       final _folderRepo = PortfolioFoldersStorageClient();
+      PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: trade.portfolioId);
       final _companiesRepo = LocalCompaniesRepository ();
       Company company = Company (
         ticker: trade.ticker,
@@ -107,15 +112,20 @@ Future <List<TradeGroup>> toTickerMapFromTradesUpdate (List<Trade> trades) async
         lastUpdated: DateTime.now()
       );
       _companiesRepo.saveCompanies([company]);
-      String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
+      String portfolioName = folder.name;
+      double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, trade.ticker);
       var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
       var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
       var dailyReturns = overallReturns - yesterdayReturns;
 
-      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: company.companyName, portfolioName: portfolioName,
-                                          portfolioId: trade.portfolioId,
-                                          daily: dailyReturns,
-                                          overall: overallReturns);
+      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker,
+                                            companyName: company.companyName,
+                                            portfolioName: portfolioName,
+                                            portfolioId: trade.portfolioId,
+                                            hideClosedPositions: folder.hideClosedPositions,
+                                            totalNumberOfShares: numberOfShares,
+                                            daily: dailyReturns,
+                                            overall: overallReturns);
     }
   }));
   List<TradeGroup> retVal = List();
@@ -130,6 +140,7 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
       final _folderRepo = PortfolioFoldersStorageClient();
+      PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: trade.portfolioId);
       final _companiesRepo = LocalCompaniesRepository ();
       Company company = await _companiesRepo.loadCompany (trade.ticker);
       if (company == null) {
@@ -143,17 +154,27 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
         );
         _companiesRepo.saveCompanies([company]);
       }
-      String portfolioName = await _folderRepo.getPortfolioName(portfolioId: trade.portfolioId);
+      String portfolioName = folder.name;
+      double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, trade.ticker);
       var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
       var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
       var dailyReturns = overallReturns - yesterdayReturns;
-      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker, companyName: company.companyName, portfolioName: portfolioName,
-                                          portfolioId: trade.portfolioId,
-                                          daily: dailyReturns,
-                                          overall: overallReturns);
+      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker,
+                                            companyName: company.companyName,
+                                            portfolioName: portfolioName,
+                                            portfolioId: trade.portfolioId,
+                                            hideClosedPositions: folder.hideClosedPositions,
+                                            totalNumberOfShares: numberOfShares,
+                                            daily: dailyReturns,
+                                            overall: overallReturns);
     }
   }));
   List<TradeGroup> retVal = List();
-  tickerMap.forEach((key, value) => retVal.add(value));
+  tickerMap.forEach((key, value) {
+      if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
+       retVal.add (value);
+      }
+    }
+  );
   return retVal;
 }

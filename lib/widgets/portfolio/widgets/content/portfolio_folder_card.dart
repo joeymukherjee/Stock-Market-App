@@ -70,7 +70,7 @@ class PortfolioFolderCard extends StatelessWidget {
 
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(key: data.key, order: data.order, exclude: data.exclude, name: data.name, daily: data.daily, overall: data.overall))));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(key: data.key, order: data.order, exclude: data.exclude, hideClosedPositions: data.hideClosedPositions, name: data.name, daily: data.daily, overall: data.overall))));
               } else {
                 BlocProvider
                   .of<TradesBloc>(context)

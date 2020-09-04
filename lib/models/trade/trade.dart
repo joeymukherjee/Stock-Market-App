@@ -58,16 +58,51 @@ abstract class Trade extends Equatable {
     Trade trade;
     TransactionType type = TransactionType.values.firstWhere((e) => e.toString() == json ['type']);
     switch (type) {
-      case TransactionType.split : trade = Split.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesFrom: double.parse(json ['sharesFrom']), sharesTo: double.parse(json ['sharesTo'])); break;
-      case TransactionType.purchase : trade = Common.withId(id: json ['id'], type: TransactionType.purchase, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse (json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
-      case TransactionType.sell : trade = Common.withId(id: json ['id'], type: TransactionType.sell, portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission'])); break;
-      case TransactionType.dividend : trade = Dividend.withId(id: json ['id'], portfolioId: int.parse(json ['portfolioId']), ticker: json ['ticker'], transactionDate: DateTime.parse(json ['transactionDate']), sharesTransacted: double.parse(json ['sharesTransacted']), price: double.parse(json ['price']), commission: double.parse(json ['commission']), numberOfShares: json ['numberOfShares'] == null ? 0.0 : double.parse(json ['numberOfShares']), amountPerShare: double.parse(json['amountPerShare']), didReinvest: json ['didReinvest'] == 'true' ? true : false); break;
+      case TransactionType.split : trade = Split.withId(
+            id: json ['id'],
+            portfolioId: int.parse(json ['portfolioId']),
+            ticker: json ['ticker'],
+            transactionDate: DateTime.parse(json ['transactionDate']),
+            sharesFrom: double.parse(json ['sharesFrom']),
+            sharesTo: double.parse(json ['sharesTo']));
+        break;
+      case TransactionType.purchase : trade = Common.withId(
+            id: json ['id'],
+            type: TransactionType.purchase,
+            portfolioId: int.parse(json ['portfolioId']),
+            ticker: json ['ticker'],
+            transactionDate: DateTime.parse(json ['transactionDate']),
+            sharesTransacted: double.parse (json ['sharesTransacted']),
+            price: double.parse(json ['price']),
+            commission: double.parse(json ['commission']));
+        break;
+      case TransactionType.sell : trade = Common.withId(
+            id: json ['id'], type: TransactionType.sell,
+            portfolioId: int.parse(json ['portfolioId']),
+            ticker: json ['ticker'],
+            transactionDate: DateTime.parse(json ['transactionDate']),
+            sharesTransacted: double.parse(json ['sharesTransacted']),
+            price: double.parse(json ['price']),
+            commission: double.parse(json ['commission']));
+        break;
+      case TransactionType.dividend : trade = Dividend.withId(
+            id: json ['id'],
+            portfolioId: int.parse(json ['portfolioId']),
+            ticker: json ['ticker'],
+            transactionDate: DateTime.parse(json ['transactionDate']),
+            sharesTransacted: double.parse(json ['sharesTransacted']),
+            price: double.parse(json ['price']),
+            commission: double.parse(json ['commission']),
+            numberOfShares: json ['numberOfShares'] == null ? 0.0 : double.parse(json ['numberOfShares']),
+            amountPerShare: double.parse(json['amountPerShare']),
+            didReinvest: json ['didReinvest'] == 'true' ? true : false);
+        break;
     }
     return trade;
   }
 }
 
-// Common is used for buying/selling - sharesTransacted will be negative
+// Common is used for buying/selling
 class Common extends Trade {
   final double sharesTransacted;
   final double price;

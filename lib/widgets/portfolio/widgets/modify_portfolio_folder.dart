@@ -99,19 +99,21 @@ class ModifyPortfolioFolderSection extends StatefulWidget {
 class _State extends State<ModifyPortfolioFolderSection> {
   String _name;
   bool _exclude;
+  bool _hideClosedPositions;
 
   @override
   void initState () {
     super.initState();
     _name = widget._data.name;
     _exclude = widget._data.exclude;
+    _hideClosedPositions = widget._data.hideClosedPositions;
   }
 
   void onPressedHandler(context)
   {
       BlocProvider
       .of<PortfolioFoldersBloc>(context)
-      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
+      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, hideClosedPositions: _hideClosedPositions, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
       Navigator.pop(context);
   }
   @override
@@ -136,6 +138,18 @@ class _State extends State<ModifyPortfolioFolderSection> {
               onChanged: (bool value) {
                setState(() {
                  _exclude = value;
+                });
+            }),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Hide Closed Positions:"),
+            Switch.adaptive(value: _hideClosedPositions,
+              onChanged: (bool value) {
+               setState(() {
+                 _hideClosedPositions = value;
                 });
             }),
           ],

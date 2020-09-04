@@ -38,6 +38,7 @@ class PortfolioFolderModel extends Equatable {
   final int order;
   final String name;
   final bool exclude;
+  final bool hideClosedPositions;
   final FolderChange daily;
   final FolderChange overall;
   final DateTime lastUpdated = DateTime.now();
@@ -46,13 +47,14 @@ class PortfolioFolderModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [key, order, name, exclude, daily, overall, lastUpdated];
+  List<Object> get props => [key, order, name, exclude, hideClosedPositions, daily, overall, lastUpdated];
 
   PortfolioFolderModel({
     @required this.key,
     @required this.order,
     @required this.name,
     @required this.exclude,
+    @required this.hideClosedPositions,
     @required this.daily,
     @required this.overall,
     lastUpdated
@@ -64,6 +66,7 @@ class PortfolioFolderModel extends Equatable {
       order: json['order'],
       name: json['name'],
       exclude: json['exclude'],
+      hideClosedPositions: json['hideClosedPositions'] == null ? true : json ['hideClosedPositions'],
       daily: json ['daily'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['daily']),
       overall: json ['overall'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['overall']),
       lastUpdated: json ['lastUpdated'] == null ? DateTime.now() : json['lastUpdated'],

@@ -37,6 +37,7 @@ class PortfolioSection extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column (
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               PortfoliosHeadingSection(),
               PortfolioFoldersSection()

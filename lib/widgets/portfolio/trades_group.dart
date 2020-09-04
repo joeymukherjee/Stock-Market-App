@@ -34,16 +34,15 @@ class TradeCard extends StatelessWidget {
   }
 
   String formatDividendString (Dividend dividend) {
-    String amount = formatCurrencyText(-dividend.getTotalReturn());
+    String amount = formatCurrencyText(dividend.getTotalReturn());
     return "Received \$$amount as dividend";
   }
 
   String formatBuySell (Common common) {
+    String amount = formatCurrencyText(common.getTotalReturn());
     if (common.type == TransactionType.sell) {
-      String amount = formatCurrencyText(-common.getTotalReturn());
-      return "Sold ${-common.sharesTransacted} shares for \$$amount";
+      return "Sold ${common.sharesTransacted} shares for \$$amount";
     } else {
-      String amount = formatCurrencyText(common.getTotalReturn());
       return "Bought ${common.sharesTransacted} shares for \$$amount";
     }
   }
