@@ -10,7 +10,13 @@ Math
 Trades
     Add total return as first portfolio
     Reorder trade groups
-    Import stuff from my Robinhood spreadsheet
+    Import stuff from my Robinhood spreadsheet (works, but not on simulator?)
+
+Portfolio UI
+    ListView needs to be only on stocklist
+    hide closed positions
+    reorder list on long press?
+
 
 Portfolio Stuff
     Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong

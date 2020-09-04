@@ -31,17 +31,17 @@ class PortfolioSection extends StatelessWidget {
       child: EmptyScreen(message: 'Looks like you don\'t have an internet connection.'),
     );
   }
-
   Widget _buildContent(context) {
     return RefreshIndicator(
       child: SafeArea(
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          children: [
-            PortfoliosHeadingSection(),
-            PortfolioFoldersSection()
-          ]
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column (
+            children: [
+              PortfoliosHeadingSection(),
+              PortfolioFoldersSection()
+            ]
+          ),
         )
       ),
 

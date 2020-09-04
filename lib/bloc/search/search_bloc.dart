@@ -37,13 +37,15 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
      if (event is FetchSearchResults) {
       yield SearchLoading();
-
-      final hasConnection = await DataConnectionChecker().hasConnection;
-
-      if (hasConnection) {
-        yield* _fetchSearchResults(symbol: event.symbol);
-      } else {
-        yield SearchResultsLoadingError(message: 'No internet connection');
+      try {
+        final hasConnection =await DataConnectionChecker().hasConnection;
+        if (hasConnection) {
+         yield* _fetchSearchResults(symbol: event.symbol);
+        } else {
+          yield SearchResultsLoadingError(message: 'No internet connection.  Reason: ' + DataConnectionChecker().lastTryResults.toString());
+        }
+      } catch (e) {
+          print (e);
       }
     }
   }

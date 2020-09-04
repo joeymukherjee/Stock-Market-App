@@ -95,11 +95,11 @@ class PortfolioFolderStocksCard extends StatelessWidget {
             ),
 
             shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
-            onPressed: () {
+            onPressed: () async {
               BlocProvider
                 .of<TradesBloc>(context)
                 .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
-              Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
             },
           ),
         );

@@ -40,22 +40,20 @@ class PortfolioFolderSection extends StatelessWidget {
           );
         }
         if (state is TradeGroupsLoadedEditing) {
-          return Column(
-            children: <Widget>[
-              _buildFolderSection(tradeGroups: state.tradeGroups)
-            ],
+          return Expanded(
+            child: _buildFolderSection(tradeGroups: state.tradeGroups)
           );
         }
         if (state is TradeGroupsLoadSuccess) {
-          return Column(
-            children: <Widget>[
-              _buildFolderSection(tradeGroups: state.tradeGroups)
-            ],
+          return Expanded(
+            child: _buildFolderSection(tradeGroups: state.tradeGroups)
           );
         }
-        return Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
-          child: LoadingIndicatorWidget(),
+        return Expanded(
+          child: Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
+              child: LoadingIndicatorWidget(),
+            ),
         );
       }
     );
@@ -63,6 +61,7 @@ class PortfolioFolderSection extends StatelessWidget {
 
   Widget _buildFolderSection({List<TradeGroup> tradeGroups}) {
     return ListView.builder(
+      key: const PageStorageKey("stocks"),  // allows folder to remember position!
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
       itemCount: tradeGroups.length,

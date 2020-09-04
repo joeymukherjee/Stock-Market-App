@@ -15,13 +15,14 @@ class PortfolioFolder extends StatelessWidget {
     return Scaffold(
         body: RefreshIndicator(
         child: SafeArea(
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            children: [
-              PortfolioHeadingSection(portfolioName: portfolioName, portfolioId: portfolioId),
-              PortfolioFolderSection(portfolioName: portfolioName, portfolioId: portfolioId)
-            ]
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column (
+              children: [
+                PortfolioHeadingSection(portfolioName: portfolioName, portfolioId: portfolioId),
+                PortfolioFolderSection(portfolioName: portfolioName, portfolioId: portfolioId)
+              ]
+            ),
           )
         ),
 
