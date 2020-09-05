@@ -12,9 +12,10 @@ Trades
     Reorder trade groups
     Import stuff from my Robinhood spreadsheet (works, but not on simulator?)
 
+Database
+    Change to cloud based database
+
 Portfolio UI
-    ListView needs to be only on stocklist
-    hide closed positions
     reorder list on long press?
 
 

@@ -94,79 +94,65 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (int portfo
   return {'daily': daily, 'overall': overall};
 }
 
+Future<TradeGroup> getTradeGroup (String ticker, int portfolioId, Company company, List<Trade> trades) async
+{
+  final _folderRepo = PortfolioFoldersStorageClient();
+  PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: portfolioId);
+  final _companiesRepo = LocalCompaniesRepository ();
+
+  if (company == null) {
+    StockQuote stockQuote = await globalFetchClient.getQuote(ticker);
+    company = Company (
+      ticker: ticker,
+      companyName: stockQuote.name,
+      previousClose: stockQuote.previousClose == null ? 0.0 : stockQuote.previousClose.toDouble(),
+      lastClose: stockQuote.previousClose == null ? 0.0 : stockQuote.price,
+      lastUpdated: DateTime.now()
+    );
+    _companiesRepo.saveCompanies([company]);
+  }
+  String portfolioName = folder.name;
+  double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, ticker);
+  var overallReturns = TradeGroup.computeTotalReturn(trades, ticker, company.lastClose);
+  var yesterdayReturns = TradeGroup.computeTotalReturn(trades, ticker, company.previousClose);
+  var dailyReturns = overallReturns - yesterdayReturns;
+  return TradeGroup (ticker: ticker,
+                    companyName: company.companyName,
+                    portfolioName: portfolioName,
+                    portfolioId: portfolioId,
+                    hideClosedPositions: folder.hideClosedPositions,
+                    totalNumberOfShares: numberOfShares,
+                    daily: dailyReturns,
+                    overall: overallReturns);
+}
+// This gets the ticker map based on previously saved data
+
 // this updates the trades by fetching the latest quote from the internet.
 // TODO - remove cloned code
 Future <List<TradeGroup>> toTickerMapFromTradesUpdate (List<Trade> trades) async {
   var tickerMap = Map <String, TradeGroup> ();
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
-      StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
-      final _folderRepo = PortfolioFoldersStorageClient();
-      PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: trade.portfolioId);
-      final _companiesRepo = LocalCompaniesRepository ();
-      Company company = Company (
-        ticker: trade.ticker,
-        companyName: stockQuote.name,
-        previousClose: stockQuote.previousClose == null ? 0.0 : stockQuote.previousClose.toDouble(),
-        lastClose: stockQuote.previousClose == null ? 0.0 : stockQuote.price,
-        lastUpdated: DateTime.now()
-      );
-      _companiesRepo.saveCompanies([company]);
-      String portfolioName = folder.name;
-      double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, trade.ticker);
-      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
-      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
-      var dailyReturns = overallReturns - yesterdayReturns;
-
-      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker,
-                                            companyName: company.companyName,
-                                            portfolioName: portfolioName,
-                                            portfolioId: trade.portfolioId,
-                                            hideClosedPositions: folder.hideClosedPositions,
-                                            totalNumberOfShares: numberOfShares,
-                                            daily: dailyReturns,
-                                            overall: overallReturns);
+      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, null, trades);
     }
   }));
   List<TradeGroup> retVal = List();
-  tickerMap.forEach((key, value) => retVal.add(value));
+  tickerMap.forEach((key, value) {
+      if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
+       retVal.add (value);
+      }
+    }
+  );
   return retVal;
 }
 
-// This gets the ticker map based on previously saved data
-
 Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
   var tickerMap = Map <String, TradeGroup> ();
+  final _companiesRepo = LocalCompaniesRepository ();
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
-      final _folderRepo = PortfolioFoldersStorageClient();
-      PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: trade.portfolioId);
-      final _companiesRepo = LocalCompaniesRepository ();
       Company company = await _companiesRepo.loadCompany (trade.ticker);
-      if (company == null) {
-        StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
-        company = Company (
-          ticker: trade.ticker,
-          companyName: stockQuote.name,
-          previousClose: stockQuote.previousClose == null ? 0.0 : stockQuote.previousClose.toDouble(),
-          lastClose: stockQuote.previousClose == null ? 0.0 : stockQuote.price,
-          lastUpdated: DateTime.now()
-        );
-        _companiesRepo.saveCompanies([company]);
-      }
-      String portfolioName = folder.name;
-      double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, trade.ticker);
-      var overallReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.lastClose);
-      var yesterdayReturns = TradeGroup.computeTotalReturn(trades, trade.ticker, company.previousClose);
-      var dailyReturns = overallReturns - yesterdayReturns;
-      tickerMap[trade.ticker] = TradeGroup (ticker: trade.ticker,
-                                            companyName: company.companyName,
-                                            portfolioName: portfolioName,
-                                            portfolioId: trade.portfolioId,
-                                            hideClosedPositions: folder.hideClosedPositions,
-                                            totalNumberOfShares: numberOfShares,
-                                            daily: dailyReturns,
-                                            overall: overallReturns);
+      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, company, trades);
     }
   }));
   List<TradeGroup> retVal = List();
