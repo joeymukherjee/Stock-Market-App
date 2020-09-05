@@ -37,6 +37,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
      if (event is FetchSearchResults) {
       yield SearchLoading();
+      yield* _fetchSearchResults(symbol: event.symbol);  // TODO - assume internet connection!
+      /*
       try {
         final hasConnection =await DataConnectionChecker().hasConnection;
         if (hasConnection) {
@@ -47,6 +49,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       } catch (e) {
           print (e);
       }
+      */
     }
   }
 
