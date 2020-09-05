@@ -85,7 +85,8 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (int portfo
   FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
   Future<List<Trade>> trades = _tradesRepo.loadAllTradesForPortfolio(portfolioId);
-  Future<List<TradeGroup>> tradesList = toTickerMapFromTradesUpdate (await trades);
+  updateCompanies(await trades);
+  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades (await trades);
   Future.forEach(await tradesList, (trade) => {
     daily += trade.daily,
     overall += trade.overall
@@ -128,23 +129,6 @@ Future<TradeGroup> getTradeGroup (String ticker, int portfolioId, Company compan
 // This gets the ticker map based on previously saved data
 
 // this updates the trades by fetching the latest quote from the internet.
-// TODO - remove cloned code
-Future <List<TradeGroup>> toTickerMapFromTradesUpdate (List<Trade> trades) async {
-  var tickerMap = Map <String, TradeGroup> ();
-  await Future.forEach (trades, ((trade) async {
-    if (!tickerMap.containsKey(trade.ticker)) {
-      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, null, trades);
-    }
-  }));
-  List<TradeGroup> retVal = List();
-  tickerMap.forEach((key, value) {
-      if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
-       retVal.add (value);
-      }
-    }
-  );
-  return retVal;
-}
 
 Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
   var tickerMap = Map <String, TradeGroup> ();
@@ -163,4 +147,23 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
     }
   );
   return retVal;
+}
+
+// update all the companies in a list of trades
+void updateCompanies (List<Trade> trades) async {
+  var doneList = List <String> ();
+  final _companiesRepo = LocalCompaniesRepository ();
+  await Future.forEach (trades, ((trade) async {
+    if (!doneList.contains(trade.ticker)) {
+      StockQuote stockQuote = await globalFetchClient.getQuote(trade.ticker);
+      Company company = Company (
+        ticker: trade.ticker,
+        companyName: stockQuote.name,
+        previousClose: stockQuote.previousClose == null ? 0.0 : stockQuote.previousClose.toDouble(),
+        lastClose: stockQuote.previousClose == null ? 0.0 : stockQuote.price,
+        lastUpdated: DateTime.now()
+      );
+      _companiesRepo.saveCompanies([company]);
+    }
+  }));
 }
