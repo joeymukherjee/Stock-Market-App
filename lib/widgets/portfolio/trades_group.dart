@@ -133,7 +133,7 @@ class TradeGroupHeader extends StatelessWidget {
 
   void clickedAdd(BuildContext context, TradesState state) async {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.portfolioName, portfolioId: tradeGroup.portfolioId)));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.portfolioName, portfolioId: tradeGroup.portfolioId, defaultTicker: tradeGroup.ticker)));
     if (state is TradesSavedOkay) {
       BlocProvider.of<TradesBloc>(context).add(EditedTrades (portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
     }

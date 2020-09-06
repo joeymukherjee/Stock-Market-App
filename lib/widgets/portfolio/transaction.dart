@@ -64,7 +64,8 @@ class TransactionContents extends StatefulWidget {
   final String portfolioName;
   final String portfolioId;
   final Trade trade;
-  TransactionContents ({@required this.portfolioName, @required this.portfolioId, @required this.trade});
+  final String defaultTicker;
+  TransactionContents ({@required this.portfolioName, @required this.portfolioId, @required this.trade, @required this.defaultTicker});
 
   @override
   _TransactionContentsState createState() => _TransactionContentsState();
@@ -99,7 +100,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
     super.initState();
     _tabController = new TabController(length: 4, vsync: this);
     if (widget.trade == null) {
-
+      _ticker = widget.defaultTicker;
     } else {
       _tradeId = widget.trade.id;
       _ticker = widget.trade.ticker;
@@ -628,8 +629,9 @@ Widget _buildSplitItems (context, widget) {
 class AddTransaction extends StatelessWidget {
   final String portfolioId;
   final String portfolioName;
+  final String defaultTicker;
 
-  AddTransaction ({@required this.portfolioName, @required this.portfolioId});
+  AddTransaction ({@required this.portfolioName, @required this.portfolioId, @required this.defaultTicker});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -640,7 +642,7 @@ class AddTransaction extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
               TransactionHeading (prefix: "Add", portfolioId: portfolioId, portfolioName: portfolioName),
-              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: null),
+              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: null, defaultTicker: defaultTicker),
           ]
         ),
       ),
@@ -664,7 +666,7 @@ class EditTransaction extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
               TransactionHeading (prefix: "Edit", portfolioId: portfolioId, portfolioName: portfolioName),
-              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: trade),
+              TransactionContents (portfolioId: portfolioId, portfolioName: portfolioName, trade: trade, defaultTicker: trade.ticker),
           ]
         ),
       ),
