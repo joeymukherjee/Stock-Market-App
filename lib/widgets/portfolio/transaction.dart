@@ -166,8 +166,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double tabWidth = width / 5;
-    double labelPadding = tabWidth / 8;
+    double tabWidth = width / 6;
 
     return BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
@@ -176,22 +175,23 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
         }
         return Form(
           key: _formKey,
-          child: Column (
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: Theme.of(context).tabBarTheme.labelColor,
-                labelPadding: EdgeInsets.symmetric(horizontal: labelPadding),
-                unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
-                indicatorSize: TabBarIndicatorSize.label,
-                //indicatorPadding: EdgeInsets.all(10.0),
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Theme.of(context).highlightColor),
-                tabs: [
-                  Tab(child: Container(
+          child: SizedBox (
+            height: MediaQuery.of(context).size.height - 160,  // I think this is the size of the header?
+            child: Column (
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  labelColor: Theme.of(context).tabBarTheme.labelColor,
+                  labelPadding: EdgeInsets.symmetric(horizontal: 10),
+                  unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Theme.of(context).highlightColor),
+                  tabs: [
+                    Tab(child: Container(
                         width: tabWidth,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
@@ -202,7 +202,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
                         ),
                       ),
                     ),
-                  Tab(child: Container(
+                    Tab(child: Container(
                         width: tabWidth,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
@@ -213,7 +213,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
                         ),
                       ),
                     ),
-                  Tab(child: Container(
+                    Tab(child: Container(
                         width: tabWidth,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
@@ -224,33 +224,33 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
                         ),
                       ),
                     ),
-                  Tab(child: Container(
-                        width: tabWidth,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Split", textScaleFactor: 1.0)
-                        ),
+                    Tab(child: Container(
+                      width: tabWidth,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text("Split", textScaleFactor: 1.0)
                       ),
                     ),
-                ]
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height - MediaQuery.of(context).viewInsets.bottom - 305,
-                child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildBuyItems (context, this),
-                        _buildSellItems (context, this),
-                        _buildDividendItems (context, this),
-                        _buildSplitItems (context, this)
-                      ]
-                    ),
-              ),
-            ]
-          ),
+                  ),
+                  ]
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildBuyItems (context, this),
+                      _buildSellItems (context, this),
+                      _buildDividendItems (context, this),
+                      _buildSplitItems (context, this)
+                    ]
+                  ),
+                ),
+              ]
+            ),
+          )
         );
       }
     );
