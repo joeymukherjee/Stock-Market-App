@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sma/shared/colors.dart';
 
 class EmptyScreen extends StatelessWidget {
 

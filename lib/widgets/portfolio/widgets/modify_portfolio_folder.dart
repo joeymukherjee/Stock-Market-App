@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:sma/helpers/import_helper.dart';
 
 class FilePickerButton extends StatefulWidget {
-  final int portfolioId;
+  final String portfolioId;
 
   FilePickerButton ({@required this.portfolioId});
 
@@ -113,7 +113,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
   {
       BlocProvider
       .of<PortfolioFoldersBloc>(context)
-      .add(SaveFolder(model: PortfolioFolderModel(key: widget._data.key, name: _name, exclude: _exclude, hideClosedPositions: _hideClosedPositions, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
+      .add(SaveFolder(model: PortfolioFolderModel(id: widget._data.id, name: _name, exclude: _exclude, hideClosedPositions: _hideClosedPositions, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
       Navigator.pop(context);
   }
   @override
@@ -154,7 +154,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
             }),
           ],
         ),
-        widget._data.key != -1 ? FilePickerButton(portfolioId: widget._data.key) : Container (), // TODO - only allow import on edit?
+        FilePickerButton(portfolioId: widget._data.id)
       ]
     );
   }

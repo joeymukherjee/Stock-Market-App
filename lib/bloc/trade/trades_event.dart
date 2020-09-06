@@ -9,7 +9,7 @@ abstract class TradeEvent extends Equatable {
 }
 
 class PickedPortfolio extends TradeEvent {
-  final int portfolioId;
+  final String portfolioId;
 
   const PickedPortfolio (this.portfolioId);
   @override
@@ -17,7 +17,7 @@ class PickedPortfolio extends TradeEvent {
 }
 
 class EditedTradeGroup extends TradeEvent {
-  final int portfolioId;
+  final String portfolioId;
 
   const EditedTradeGroup (this.portfolioId);
   @override
@@ -26,7 +26,7 @@ class EditedTradeGroup extends TradeEvent {
 
 class DeletedTradeGroup extends TradeEvent {
   final String ticker;
-  final int portfolioId;
+  final String portfolioId;
 
   const DeletedTradeGroup ({this.ticker, this.portfolioId});
   @override
@@ -57,7 +57,7 @@ class SavedTrade extends TradeEvent {
   });
 }
 class SelectedTrades extends TradeEvent {
-  final int portfolioId;
+  final String portfolioId;
   final String ticker;
 
   @override
@@ -72,7 +72,7 @@ class SelectedTrades extends TradeEvent {
 }
 
 class EditedTrades extends TradeEvent {
-  final int portfolioId;
+  final String portfolioId;
   final String ticker;
 
   @override
@@ -88,7 +88,7 @@ class EditedTrades extends TradeEvent {
 
 class DeletedTrade extends TradeEvent {
   final String id;
-  final int portfolioId;
+  final String portfolioId;
   final String ticker;
 
   @override
@@ -103,7 +103,7 @@ class DeletedTrade extends TradeEvent {
 }
 
 class MergeMultipleTrades extends TradeEvent {
-  final int portfolioId;
+  final String portfolioId;
   final List<Trade> trades;
 
   @override

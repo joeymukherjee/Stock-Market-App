@@ -5,7 +5,7 @@ import 'package:sma/widgets/portfolio/widgets/heading/portfolio_heading.dart';
 import 'package:sma/widgets/portfolio/widgets/content/portfolio_folder_section.dart';
 
 class PortfolioFolder extends StatelessWidget {
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
 
   PortfolioFolder ({@required this.portfolioName, @required this.portfolioId});

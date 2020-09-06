@@ -7,7 +7,7 @@ import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/widgets/portfolio/widgets/content/porfolio_folder_stocks_card.dart';
 
 class PortfolioFolderSection extends StatelessWidget {
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
 
   PortfolioFolderSection ({@required this.portfolioName, @required this.portfolioId});

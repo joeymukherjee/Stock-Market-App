@@ -7,7 +7,7 @@ enum TransactionType {purchase, sell, dividend, split}
 @immutable
 abstract class Trade extends Equatable {
   final String id;
-  final int portfolioId;
+  final String portfolioId;
   final String ticker;
   final DateTime transactionDate;
   final TransactionType type;
@@ -60,7 +60,7 @@ abstract class Trade extends Equatable {
     switch (type) {
       case TransactionType.split : trade = Split.withId(
             id: json ['id'],
-            portfolioId: int.parse(json ['portfolioId']),
+            portfolioId: json ['portfolioId'],
             ticker: json ['ticker'],
             transactionDate: DateTime.parse(json ['transactionDate']),
             sharesFrom: double.parse(json ['sharesFrom']),
@@ -69,7 +69,7 @@ abstract class Trade extends Equatable {
       case TransactionType.purchase : trade = Common.withId(
             id: json ['id'],
             type: TransactionType.purchase,
-            portfolioId: int.parse(json ['portfolioId']),
+            portfolioId: json ['portfolioId'],
             ticker: json ['ticker'],
             transactionDate: DateTime.parse(json ['transactionDate']),
             sharesTransacted: double.parse (json ['sharesTransacted']),
@@ -78,7 +78,7 @@ abstract class Trade extends Equatable {
         break;
       case TransactionType.sell : trade = Common.withId(
             id: json ['id'], type: TransactionType.sell,
-            portfolioId: int.parse(json ['portfolioId']),
+            portfolioId: json ['portfolioId'],
             ticker: json ['ticker'],
             transactionDate: DateTime.parse(json ['transactionDate']),
             sharesTransacted: double.parse(json ['sharesTransacted']),
@@ -87,7 +87,7 @@ abstract class Trade extends Equatable {
         break;
       case TransactionType.dividend : trade = Dividend.withId(
             id: json ['id'],
-            portfolioId: int.parse(json ['portfolioId']),
+            portfolioId: json ['portfolioId'],
             ticker: json ['ticker'],
             transactionDate: DateTime.parse(json ['transactionDate']),
             sharesTransacted: double.parse(json ['sharesTransacted']),
@@ -110,7 +110,7 @@ class Common extends Trade {
   final double paid;
 
   Common ({
-    @required int portfolioId,
+    @required String portfolioId,
     @required String ticker,
     @required DateTime transactionDate,
     @required TransactionType type,
@@ -122,7 +122,7 @@ class Common extends Trade {
 
   Common.withId ({
     @required String id,
-    @required int portfolioId,
+    @required String portfolioId,
     @required String ticker,
     @required DateTime transactionDate,
     @required TransactionType type,
@@ -167,13 +167,13 @@ class Dividend extends Common {
   final double proceeds;
   final bool didReinvest;
 
-  Dividend (int portfolioId, String ticker, DateTime transactionDate, double sharesTransacted, double price, double commission, this.numberOfShares, this.amountPerShare, this.didReinvest) :
+  Dividend (String portfolioId, String ticker, DateTime transactionDate, double sharesTransacted, double price, double commission, this.numberOfShares, this.amountPerShare, this.didReinvest) :
     this.proceeds = amountPerShare * numberOfShares,
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.dividend, sharesTransacted: sharesTransacted, price: price, commission: commission);
 
   Dividend.withId ({
     @required String id,
-    @required int portfolioId,
+    @required String portfolioId,
     @required String ticker,
     @required DateTime transactionDate,
     @required double sharesTransacted,
@@ -214,12 +214,12 @@ class Split extends Trade {
   final double sharesTo;
   final double sharesFrom;
 
-  Split (int portfolioId, String ticker, DateTime transactionDate, this.sharesFrom, this.sharesTo) :
+  Split (String portfolioId, String ticker, DateTime transactionDate, this.sharesFrom, this.sharesTo) :
     super (portfolioId: portfolioId, ticker: ticker, transactionDate: transactionDate, type: TransactionType.split);
 
   Split.withId ({
     @required String id,
-    @required int portfolioId,
+    @required String portfolioId,
     @required String ticker,
     @required DateTime transactionDate,
     @required this.sharesFrom,

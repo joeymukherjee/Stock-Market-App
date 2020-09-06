@@ -18,11 +18,11 @@ abstract class ImportHelper {
 class ReadRobinhoodCSV extends ImportHelper {
   final BuildContext context;
   final String filename;
-  final int portfolioId;
+  final String portfolioId;
   final List<String> columns = ['symbol', 'name', 'side', 'type', 'quantity', 'price', 'amount', 'date', 'fees'];
 
   ReadRobinhoodCSV({@required this.context, @required File file, @required this.portfolioId}) : this.filename = file.path;
-  ReadRobinhoodCSV.fromFileame ({@required this.context, @required this.filename}) : portfolioId = 0;
+  ReadRobinhoodCSV.fromFilename ({@required this.context, @required this.filename}) : portfolioId = '';
 
 // Given a CSV line, convert to a trade
   Trade parseLine (List<dynamic> lineParts) {

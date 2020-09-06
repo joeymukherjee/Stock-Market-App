@@ -12,7 +12,7 @@ class TransactionHeading extends StatelessWidget {
 
   final String prefix;
   final String portfolioName;
-  final int portfolioId;
+  final String portfolioId;
 
   TransactionHeading ({@required this.prefix, @required this.portfolioName, @required this.portfolioId});
 
@@ -62,7 +62,7 @@ class TransactionHeading extends StatelessWidget {
 
 class TransactionContents extends StatefulWidget {
   final String portfolioName;
-  final int portfolioId;
+  final String portfolioId;
   final Trade trade;
   TransactionContents ({@required this.portfolioName, @required this.portfolioId, @required this.trade});
 
@@ -75,7 +75,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
 
   TabController _tabController;
   String _tradeId;
-  int _portfolioId;
+  String _portfolioId;
 
   final moneyEditController = MoneyMaskedTextController();
   String _ticker = '';
@@ -153,7 +153,7 @@ class _TransactionContentsState extends State<TransactionContents> with TickerPr
   }
 
   void computeTotalSharesForDividend () async {
-    final TradesRepository _tradesRepo = SembastTradesRepository ();
+    final TradesRepository _tradesRepo = globalTradesDatabase;
       List<Trade> _trades = await _tradesRepo.loadAllTradesForTickerAndPortfolioAndDate(_ticker, widget.portfolioId, _transactionDate);
       double totalShares = 0.0;
       _trades.forEach ((trade) => {
@@ -494,58 +494,73 @@ Widget _buildDividendItems (context, widget) {
         onFocusChange: (bool hasFocus) {
           if (!hasFocus) {
             var value = widget._numberOfShares;
-            if (double.tryParse(value.replaceAll (',\$', '')) != null) {
+            if (double.tryParse(value) != null) {
               _proceeds = _perShare * double.parse(value);
-              widget.setState (() { widget._proceeds = _proceeds; });
+              widget.setState (() { widget._numberOfShares = value; widget._proceeds = _proceeds; });
             }
           }
         },
       ),
-      TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: perShareController,
-        decoration: InputDecoration (hintText: 'amount per share', labelText: "Amount per Share"),
-        showCursor: true,
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the number of amount you received per share');
+      Focus(
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: perShareController,
+          decoration: InputDecoration (hintText: 'amount per share', labelText: "Amount per Share"),
+          showCursor: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the number of amount you received per share');
+            }
+            if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          onSaved: (String value) async {
+            widget._amountPerShare = perShareController.numberValue;
           }
-          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
-            return ('must be a valid number!');
+        ),
+        onFocusChange: (bool hasFocus) {
+          if (!hasFocus) {
+            if (double.tryParse(widget._numberOfShares) != null) {
+              _proceeds = _perShare * double.parse(widget._numberOfShares);
+              widget.setState (() { widget._proceeds = _proceeds; widget._amountPerShare = _perShare; });
+            }
           }
-          return null;
         },
-        onSaved: (String value) async {
-          widget._amountPerShare = _perShare;
-        }
       ),
-      TextFormField(
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        controller: proceedsController,
-        decoration: InputDecoration (hintText: 'dividend amount', labelText: "Dividend"),
-        showCursor: true,
-        validator: (value) {
-          if (value.isEmpty) {
-            return ('enter the total amount you received for this dividend');
+      Focus(
+        child: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          controller: proceedsController,
+          decoration: InputDecoration (hintText: 'dividend amount', labelText: "Dividend"),
+          showCursor: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return ('enter the total amount you received for this dividend');
+            }
+            if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
+              return ('must be a valid number!');
+            }
+            return null;
+          },
+          onSaved: (String value) async {
+            widget._proceeds = _proceeds;
           }
-          if (double.tryParse(value.replaceAll (RegExp('[,\$]'), '')) == null) {
-            return ('must be a valid number!');
-          }
-          return null;
-        },
-        onSaved: (String value) async {
-          widget._proceeds = _proceeds;
-        }
+        ),
       ),
       Row(
           children: [
             Text("Reinvest Dividend:"),
             Switch.adaptive(value: widget._didReinvest,
-              onChanged: (bool value) {
+              onChanged: (bool didReinvest) {
                widget.setState(() {
-                 widget._proceeds = _proceeds;
-                 widget._amountPerShare = _perShare;
-                 widget._didReinvest = value;
+                 widget._didReinvest = didReinvest;
+                 if (!didReinvest) {
+                   widget._price = 0.0;
+                   widget._sharesTransacted = "0.0";
+                   widget._commission = 0.0;
+                 }
                 });
             }),
           ],
@@ -611,7 +626,7 @@ Widget _buildSplitItems (context, widget) {
 }
 
 class AddTransaction extends StatelessWidget {
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
 
   AddTransaction ({@required this.portfolioName, @required this.portfolioId});
@@ -634,7 +649,7 @@ class AddTransaction extends StatelessWidget {
 }
 
 class EditTransaction extends StatelessWidget {
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
   final Trade trade;
 

@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sma/widgets/portfolio/transaction.dart';
 
 class PortfolioHeadingSection extends StatelessWidget {
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
 
   PortfolioHeadingSection ({@required this.portfolioName, @required this.portfolioId});

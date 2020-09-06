@@ -30,9 +30,9 @@ class SaveFolder extends PortfolioFoldersEvent {
 
 class DeleteFolder extends PortfolioFoldersEvent {
 
-  final String name;
+  final String id;
 
   DeleteFolder({
-    @required this.name
+    @required this.id
   });
 }

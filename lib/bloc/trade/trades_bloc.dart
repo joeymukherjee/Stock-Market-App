@@ -11,7 +11,8 @@ part 'trades_state.dart';
 
 class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
-  final TradesRepository repository = SembastTradesRepository ();
+  final TradesRepository repository = globalTradesDatabase;
+
   TradesBloc () : super (TradesInitial());
 
   @override
@@ -34,7 +35,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       yield* _mapFinishedTransactionToState();
     }
     if (event is EditedTradeGroup) {
-      yield* _mapEditedTradeGroupToState(event.portfolioId);
+      yield* _mapEditedTradeGroupToState(event);
     }
     if (event is DeletedTradeGroup) {
       yield TradesLoading ();
@@ -84,12 +85,12 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   }
 
   Stream<TradesState> _mapSelectedTradesToState(SelectedTrades event) async* {
-    List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    final List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
     yield TradesLoaded (trades);
   }
 
   Stream<TradesState> _mapEditedTradesToState(EditedTrades event) async* {
-    List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    final List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
     yield TradesLoadedEditing (trades);
   }
 
@@ -104,9 +105,9 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     }
   }
 
-  Stream<TradesState> _mapEditedTradeGroupToState(int portfolioId) async* {
+  Stream<TradesState> _mapEditedTradeGroupToState(event) async* {
      try {
-      final trades = await this.repository.loadAllTradesForPortfolio(portfolioId);
+      final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
         var tradeGroups = await toTickerMapFromTrades (trades);
@@ -128,7 +129,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   Stream<TradesState> _mapPickedPortfolioToState(PickedPortfolio event) async* {
     try {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
-      if (trades.length == 0) yield TradesEmpty();
+      if (trades == null || trades.length == 0) yield TradesEmpty();
       else {
         var tradeGroups = await toTickerMapFromTrades (trades);
         yield TradeGroupsLoadSuccess(tradeGroups);

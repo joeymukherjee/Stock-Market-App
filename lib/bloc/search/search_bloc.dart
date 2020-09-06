@@ -40,7 +40,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _fetchSearchResults(symbol: event.symbol);  // TODO - assume internet connection!
       /*
       try {
-        final hasConnection =await DataConnectionChecker().hasConnection;
+        final hasConnection = await DataConnectionChecker().hasConnection;
         if (hasConnection) {
          yield* _fetchSearchResults(symbol: event.symbol);
         } else {

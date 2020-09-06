@@ -8,6 +8,14 @@ import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/profile/stock_profile.dart';
 
 class FNPFetchClient extends FetchClient {
+  static final FNPFetchClient _singleton = FNPFetchClient._internal();
+
+  factory FNPFetchClient() {
+    return _singleton;
+  }
+
+  FNPFetchClient._internal();
+
   String getAttribution () { return "Financial Modeling Prep"; }
 
   Future<Response> fetchData({Uri uri}) async {

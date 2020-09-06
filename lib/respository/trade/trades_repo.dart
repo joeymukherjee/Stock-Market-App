@@ -1,4 +1,5 @@
 import 'package:sembast/sembast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sma/helpers/database_helper.dart';
 import 'package:sma/models/trade/trade.dart';
 
@@ -8,13 +9,14 @@ abstract class TradesRepository {
   Future <List<Trade>> loadAllTrades();
 
   // Return all trades for a particular portfolio
-  Future <List<Trade>> loadAllTradesForPortfolio(int portfolioId);
+  Future <List<Trade>> loadAllTradesForPortfolio(String portfolioId);
 
   // Return all trades for a particular portfolio
-  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId);
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, String portfolioId);
 
   // Return all trades for a particular portfolio before a certain date
-  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, int portfolioId, DateTime since);
+  // Used for the computation of dividends
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, String portfolioId, DateTime since);
 
   // Saves a list of trades (these may have updated!)
   Future <void> saveTrades(List<Trade> trades);
@@ -32,10 +34,18 @@ abstract class TradesRepository {
   Future <void> deleteTrade(List<String> ids);
 
   // Delete a bunch of trades by ticker from a portfolio
-  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, int portfolioId});
+  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, String portfolioId});
 }
 
 class SembastTradesRepository implements TradesRepository {
+  static final SembastTradesRepository _singleton = SembastTradesRepository._internal();
+
+  factory SembastTradesRepository() {
+    return _singleton;
+  }
+
+  SembastTradesRepository._internal();
+
   final StoreRef<int, Map<String, dynamic>> _store = intMapStoreFactory.store('trades_repository');
 
   // Sembast Database.
@@ -50,9 +60,9 @@ class SembastTradesRepository implements TradesRepository {
       .toList();
   }
 
-  Future<List<Trade>> loadAllTradesForPortfolio(int portfolioId) async
+  Future<List<Trade>> loadAllTradesForPortfolio(String portfolioId) async
   {
-    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId.toString()),
+    final Finder finder = Finder(filter: Filter.matches('portfolioId', portfolioId),
       sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     //print ("DB Contents:");
@@ -62,9 +72,9 @@ class SembastTradesRepository implements TradesRepository {
       .toList();
   }
 
-  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, int portfolioId) async
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, String portfolioId) async
   {
-    final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()),
+    final Finder finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId),
       sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
     final response = await _store.find(await _database, finder: finder);
     return response
@@ -72,10 +82,10 @@ class SembastTradesRepository implements TradesRepository {
       .toList();
   }
 
-  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, int portfolioId, DateTime since) async {
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, String portfolioId, DateTime since) async {
     final Filter filter = Filter.and([
       Filter.equals('ticker', ticker),
-      Filter.equals('portfolioId', portfolioId.toString()),
+      Filter.equals('portfolioId', portfolioId),
       Filter.lessThanOrEquals('transactionDate', since.toString())
     ]);
     final Finder finder = Finder(filter: filter, sortOrders: [SortOrder('transactionDate', true), SortOrder(Field.key, true)]);
@@ -130,10 +140,151 @@ class SembastTradesRepository implements TradesRepository {
   }
 
   // Deletes all trades for a stock in a portfolio from the database.
-  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, int portfolioId}) async
+  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, String portfolioId}) async
   {
-    final finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId.toString()));
+    final finder = Finder(filter: Filter.equals('ticker', ticker) & Filter.equals('portfolioId', portfolioId));
     final response = await _store.find(await _database, finder: finder);
     response.forEach((element) async { await _store.record(element.key).delete(await _database); });
   }
 }
+
+class FirestoreTradesRepository implements TradesRepository {
+
+  static final FirestoreTradesRepository _singleton = FirestoreTradesRepository._internal();
+
+  factory FirestoreTradesRepository() {
+    return _singleton;
+  }
+
+  FirestoreTradesRepository._internal();
+
+  final CollectionReference collection = FirebaseFirestore.instance.collection('trades_repository');
+
+  // Return all trades
+  Future <List<Trade>> loadAllTrades() async {
+    List<Trade> retVal = [];
+    await collection
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            retVal.add (Trade.fromJson(trade.data()));
+        })
+    });
+    return retVal;
+  }
+
+  // Return all trades for a particular portfolio
+  Future <List<Trade>> loadAllTradesForPortfolio(String portfolioId) async {
+    List<Trade> retVal = [];
+    await collection
+      .where('portfolioId', isEqualTo: portfolioId)
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            retVal.add (Trade.fromJson(trade.data()));
+        })
+      });
+    return retVal;
+  }
+
+  // Return all trades for a particular portfolio
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, String portfolioId) async {
+    List<Trade> retVal = [];
+    await collection
+      .where('portfolioId', isEqualTo: portfolioId)
+      .where('ticker', isEqualTo: ticker)
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            retVal.add (Trade.fromJson(trade.data()));
+        })
+    });
+    return retVal;
+  }
+
+  // Return all trades for a particular portfolio before a certain date
+  Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, String portfolioId, DateTime since) async {
+    List<Trade> retVal = [];
+    await collection
+      .where('portfolioId', isEqualTo: portfolioId)
+      .where('ticker', isEqualTo: ticker)
+      .where('transactionDate', isGreaterThanOrEqualTo: since)
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            retVal.add (Trade.fromJson(trade.data()));
+        })
+    });
+    return retVal;
+  }
+
+  // Saves a list of trades (these may have updated!)
+  Future <void> saveTrades(List<Trade> trades) async {
+    trades.forEach((trade) {updateTrade (trade); });
+  }
+
+  // Load a single trade based on an id
+  Future <Trade> loadTrade(String id) async {
+    List<Trade> retVal = [];
+    await collection
+      .where('id', isEqualTo: id)
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            retVal.add (Trade.fromJson(trade.data()));
+        })
+    });
+    assert (retVal.length == 1);
+    return retVal [0];
+  }
+
+  // Inserts a new trade (must not exist)
+  Future <void> addTrade(Trade trade) async {
+    collection
+      .add(trade.toJson ())
+      .then((value) => print("Trade added!"))
+      .catchError((error) => print ("Failed to save trade: $error"));
+  }
+
+  // Updates an existing trade (must already exist)
+  Future <void> updateTrade(Trade trade) async {
+    collection
+    .doc(trade.id)
+    .set(trade.toJson ())
+    .then((value) => print("Trade updated!"))
+    .catchError((error) => print ("Failed to update trade: $error"));
+  }
+
+  // Delete an existing trade(s)
+  Future <void> deleteTrade(List<String> ids) async {
+    ids.forEach((id) {
+      collection
+      .doc(id)
+      .delete()
+      .then((value) => print("Trade deleted!"))
+      .catchError((error) => print ("Failed to delete trade: $error"));
+    });
+
+  }
+
+  // Delete a bunch of trades by ticker from a portfolio
+  Future<void> deleteAllTradesByTickerAndPortfolio({String ticker, String portfolioId}) async {
+    await collection
+      .where('portfolioId', isEqualTo: portfolioId)
+      .where('ticker', isEqualTo: ticker)
+      .orderBy ('transactionDate', descending: true)
+      .get()
+      .then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((trade) {
+            deleteTrade([trade.id]);
+        })
+    });
+  }
+}
+
+final TradesRepository globalTradesDatabase = FirestoreTradesRepository ();

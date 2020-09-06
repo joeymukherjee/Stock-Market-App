@@ -1,3 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/shared/styles.dart';
@@ -21,6 +25,11 @@ void main() async {
 
   await DotEnv().load('.env');
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   final prefs = await SharedPreferences.getInstance();
   bool initialTheme = prefs.getBool('theme') == null ? true : prefs.getBool('theme');
@@ -60,8 +69,9 @@ void main() async {
             return MaterialApp(
               locale: DevicePreview.of(context).locale,
               builder: DevicePreview.appBuilder,
-              title: 'Stonks',
+              title: 'StonksJM',
               theme: state.isNight ? darkMode : lightMode,
+              navigatorObservers: <NavigatorObserver>[observer],
               home: StockMarketAppHome(),
               debugShowCheckedModeBanner: true,
               routes: {

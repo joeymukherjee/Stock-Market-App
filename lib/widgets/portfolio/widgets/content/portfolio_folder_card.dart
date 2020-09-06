@@ -70,12 +70,12 @@ class PortfolioFolderCard extends StatelessWidget {
 
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', PortfolioFolderModel(key: data.key, order: data.order, exclude: data.exclude, hideClosedPositions: data.hideClosedPositions, name: data.name, daily: data.daily, overall: data.overall))));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', data))); // PortfolioFolderModel(id: data.id, order: data.order, exclude: data.exclude, hideClosedPositions: data.hideClosedPositions, name: data.name, daily: data.daily, overall: data.overall))));
               } else {
                 BlocProvider
                   .of<TradesBloc>(context)
-                  .add(PickedPortfolio(data.key));
-                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(portfolioName: data.name, portfolioId: data.key)));
+                  .add(PickedPortfolio(data.id));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(portfolioName: data.name, portfolioId: data.id)));
               }
             },
           ),
@@ -107,7 +107,7 @@ class PortfolioFolderCard extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                         onPressed: () {
-                          BlocProvider.of<PortfolioFoldersBloc>(context).add(DeleteFolder(name: data.name));
+                          BlocProvider.of<PortfolioFoldersBloc>(context).add(DeleteFolder(id: data.id));
                           Navigator.pop(context);
                         },
                         color: Colors.red,

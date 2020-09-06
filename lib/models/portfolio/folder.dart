@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:uuid/uuid.dart';
 import 'package:equatable/equatable.dart';
 
 class FolderChange extends Equatable {
@@ -34,7 +35,7 @@ class FolderChange extends Equatable {
 }
 
 class PortfolioFolderModel extends Equatable {
-  final int key;
+  final String id;
   final int order;
   final String name;
   final bool exclude;
@@ -47,10 +48,10 @@ class PortfolioFolderModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [key, order, name, exclude, hideClosedPositions, daily, overall, lastUpdated];
+  List<Object> get props => [id, order, name, exclude, hideClosedPositions, daily, overall, lastUpdated];
 
   PortfolioFolderModel({
-    @required this.key,
+    String id,
     @required this.order,
     @required this.name,
     @required this.exclude,
@@ -58,11 +59,35 @@ class PortfolioFolderModel extends Equatable {
     @required this.daily,
     @required this.overall,
     lastUpdated
-  });
+  }) : 
+    this.id = id == null ? Uuid().v4 () : id,
+    super ();
 
-  factory PortfolioFolderModel.fromStorage(int key, Map<String, dynamic> json) {
+  PortfolioFolderModel.empty () :
+    this.id = '',
+    this.order = -1,
+    this.name = '',
+    this.exclude = false,
+    this.hideClosedPositions = true,
+    this.daily = FolderChange(),
+    this.overall = FolderChange();
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['order'] = this.order;
+    data['name'] = this.name;
+    data['exclude'] = this.exclude;
+    data['hideClosedPositions'] = this.hideClosedPositions;
+    data['daily'] = this.daily.toJson();
+    data['overall'] = this.overall.toJson();
+    data['lastUpdated'] = this.lastUpdated.toString();
+    return data;
+  }
+
+  factory PortfolioFolderModel.fromStorage(Map<String, dynamic> json) {
     return PortfolioFolderModel(
-      key: key,
+      id: json ['id'],
       order: json['order'],
       name: json['name'],
       exclude: json['exclude'],

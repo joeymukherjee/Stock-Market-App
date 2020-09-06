@@ -15,7 +15,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
 
   PortfolioFoldersBloc () : super (PortfolioFoldersInitial());
 
-  final _databaseRepository = PortfolioFoldersStorageClient();
+  final _databaseRepository = globalPortfolioFoldersDatabase;
 
   @override
   Stream<PortfolioFoldersState> mapEventToState(PortfolioFoldersEvent event) async* {
@@ -34,13 +34,13 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
     }
     if (event is SaveFolder) {
       yield PortfolioFoldersLoading();
-      await this._databaseRepository.save(model: event.model);
+      await this._databaseRepository.savePortfolioFolder(model: event.model);
       yield* _loadContent(event);
     }
 
     if (event is DeleteFolder) {
       yield PortfolioFoldersLoading();
-      await this._databaseRepository.delete(name: event.name);
+      await this._databaseRepository.deletePortfolioFolder(id: event.id);
       yield* _loadContent(event);
     }
   }
@@ -48,15 +48,15 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
   Stream<PortfolioFoldersState> _updateContent(PortfolioFoldersEvent event) async* {
 
     try {
-      final foldersStored = await _databaseRepository.fetch();  // gets all the folders
+      final foldersStored = await _databaseRepository.getAllPortfolioFolders();  // gets all the folders
       List<PortfolioFolderModel> updatedFolders = [];
       for (var folder in foldersStored) {
-        var changes = await toTotalReturnFromPortfolioIdUpdate (folder.key);
+        var changes = await toTotalReturnFromPortfolioIdUpdate (folder.id);
         PortfolioFolderModel updatedFolder = PortfolioFolderModel(
-          key: folder.key, name: folder.name, order: folder.order, exclude: folder.exclude, hideClosedPositions: folder.hideClosedPositions,
+          id: folder.id, name: folder.name, order: folder.order, exclude: folder.exclude, hideClosedPositions: folder.hideClosedPositions,
           daily: changes ['daily'], overall: changes ['overall']);
           updatedFolders.add(updatedFolder);
-          _databaseRepository.save(model: updatedFolder);
+          _databaseRepository.savePortfolioFolder(model: updatedFolder);
       }
 
       if (foldersStored.isNotEmpty) {
@@ -72,7 +72,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
 
   Stream<PortfolioFoldersState> _loadContent(PortfolioFoldersEvent event) async* {
     try {
-      final foldersStored = await _databaseRepository.fetch();  // gets all the folders
+      final foldersStored = await _databaseRepository.getAllPortfolioFolders();  // gets all the folders
       if (foldersStored.isNotEmpty) {
         if (event is PortfolioFoldersEditingEvent) {
           yield PortfolioFoldersLoadedEditingState(folders: foldersStored);

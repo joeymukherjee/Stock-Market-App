@@ -12,7 +12,7 @@ import 'package:sma/respository/trade/companies_repo.dart';
 class TradeGroup extends Equatable {
   final String ticker;
   final String companyName;
-  final int portfolioId;
+  final String portfolioId;
   final String portfolioName;
   final bool hideClosedPositions;
   final double totalNumberOfShares;
@@ -79,8 +79,8 @@ class TradeGroup extends Equatable {
   }
 }
 
-Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (int portfolioId) async {
-  final TradesRepository _tradesRepo = SembastTradesRepository ();
+Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String portfolioId) async {
+  final TradesRepository _tradesRepo = globalTradesDatabase;
   FolderChange daily = FolderChange(change: 0.0, changePercentage: 0.0);
   FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
@@ -95,10 +95,10 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (int portfo
   return {'daily': daily, 'overall': overall};
 }
 
-Future<TradeGroup> getTradeGroup (String ticker, int portfolioId, Company company, List<Trade> trades) async
+Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company company, List<Trade> trades) async
 {
-  final _folderRepo = PortfolioFoldersStorageClient();
-  PortfolioFolderModel folder = await _folderRepo.getPortfolio(portfolioId: portfolioId);
+  final _folderRepo = globalPortfolioFoldersDatabase;
+  PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: portfolioId);
   final _companiesRepo = LocalCompaniesRepository ();
 
   if (company == null) {
