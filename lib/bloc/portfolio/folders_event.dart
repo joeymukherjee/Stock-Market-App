@@ -36,3 +36,5 @@ class DeleteFolder extends PortfolioFoldersEvent {
     @required this.id
   });
 }
+
+class FinishedFolderEditing extends PortfolioFoldersEvent {}

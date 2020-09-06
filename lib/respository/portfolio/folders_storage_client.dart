@@ -122,16 +122,16 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
     .catchError((error) => print ("Failed to update folder: $error"));
   }
 
-  // Deletes a folder from the database by name
+  // Deletes a folder from the database by id
   Future<void> deletePortfolioFolder({String id}) async {
-    collection
+    await collection
       .where('id', isEqualTo: id)
       .get()
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((folder) async {
+          await folder.reference.delete();
           List<Trade> trades = await globalTradesDatabase.loadAllTradesForPortfolio(id);
           trades.forEach((trade) { globalTradesDatabase.deleteTrade([trade.id]); });
-          folder.reference.delete();
           print("Folder deleted!");
         }
       )})

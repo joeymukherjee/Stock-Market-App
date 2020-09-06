@@ -97,6 +97,7 @@ class ModifyPortfolioFolderSection extends StatefulWidget {
 }
 
 class _State extends State<ModifyPortfolioFolderSection> {
+  final _formKey = GlobalKey<FormState>();
   String _name;
   bool _exclude;
   bool _hideClosedPositions;
@@ -109,53 +110,71 @@ class _State extends State<ModifyPortfolioFolderSection> {
     _hideClosedPositions = widget._data.hideClosedPositions;
   }
 
-  void onPressedHandler(context)
-  {
-      BlocProvider
+  void onPressedHandler(context) {
+    BlocProvider
       .of<PortfolioFoldersBloc>(context)
-      .add(SaveFolder(model: PortfolioFolderModel(id: widget._data.id, name: _name, exclude: _exclude, hideClosedPositions: _hideClosedPositions, order: widget._data.order, daily: widget._data.daily, overall: widget._data.overall)));
-      Navigator.pop(context);
+      .add(SaveFolder(
+        model: PortfolioFolderModel(
+        id: widget._data.id,
+        name: _name,
+        exclude: _exclude,
+        hideClosedPositions: _hideClosedPositions,
+        order: widget._data.order,
+        daily: widget._data.daily,
+        overall: widget._data.overall)
+      )
+    );
   }
   @override
   Widget build(BuildContext context) {
-    return BaseList(
-      children: [
-        ModifyPortfolioHeadingSection(widget._prefix, onPressedHandler),
-        TextFormField(
-          initialValue: widget._data.name,
-          decoration: InputDecoration (hintText: 'portfolio name', labelText: "Name *"),
-          showCursor: true,
-          onChanged: (String value) async {
-            setState(() {
-              _name = value;
-            });
-          }),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Exclude from Total:"),
-            Switch.adaptive(value: _exclude,
-              onChanged: (bool value) {
-               setState(() {
-                 _exclude = value;
-                });
-            }),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Hide Closed Positions:"),
-            Switch.adaptive(value: _hideClosedPositions,
-              onChanged: (bool value) {
-               setState(() {
-                 _hideClosedPositions = value;
-                });
-            }),
-          ],
-        ),
-        FilePickerButton(portfolioId: widget._data.id)
-      ]
+    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
+      builder: (BuildContext context, PortfolioFoldersState state) {
+        if (state is PortfolioFolderValidate) {
+            onPressedHandler (context);
+        }
+        return Form(
+          key: _formKey,
+          child: BaseList(
+            children: [
+              ModifyPortfolioHeadingSection(widget._prefix), //, onPressedHandler),
+              TextFormField(
+                initialValue: widget._data.name,
+                decoration: InputDecoration (hintText: 'portfolio name', labelText: "Name *"),
+                showCursor: true,
+                onChanged: (String value) async {
+                  setState(() {
+                    _name = value;
+                  });
+                }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Exclude from Total:"),
+                  Switch.adaptive(value: _exclude,
+                    onChanged: (bool value) {
+                    setState(() {
+                      _exclude = value;
+                      });
+                  }),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Hide Closed Positions:"),
+                  Switch.adaptive(value: _hideClosedPositions,
+                    onChanged: (bool value) {
+                    setState(() {
+                      _hideClosedPositions = value;
+                      });
+                  }),
+                ],
+              ),
+              FilePickerButton(portfolioId: widget._data.id)
+            ]
+          ),
+        );
+      }
     );
   }
 }

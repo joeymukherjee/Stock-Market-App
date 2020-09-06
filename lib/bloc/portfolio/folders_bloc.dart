@@ -28,25 +28,36 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       yield* _loadContent(event);
     }
     if (event is ResyncPortfolioFoldersData) {
-      print ("Called Resync!");
       yield PortfolioFoldersLoading();
       yield* _updateContent(event);
     }
+    if (event is FinishedFolderEditing) {
+      yield PortfolioFolderValidate ();
+    }
     if (event is SaveFolder) {
       yield PortfolioFoldersLoading();
-      await this._databaseRepository.savePortfolioFolder(model: event.model);
+      try {
+        await this._databaseRepository.savePortfolioFolder(model: event.model);
+      } catch (e) {
+        print (e);
+        yield PortfolioFoldersError (message: e.toString());
+      }
+      yield PortfolioFolderSavedOkay ();
       yield* _loadContent(event);
     }
 
     if (event is DeleteFolder) {
-      yield PortfolioFoldersLoading();
-      await this._databaseRepository.deletePortfolioFolder(id: event.id);
-      yield* _loadContent(event);
+      try {
+        await this._databaseRepository.deletePortfolioFolder(id: event.id);
+      } catch (e) {
+        print (e);
+        yield PortfolioFoldersError (message: e.toString());
+      }
+      yield PortfolioFoldersInitial();
     }
   }
 
   Stream<PortfolioFoldersState> _updateContent(PortfolioFoldersEvent event) async* {
-
     try {
       final foldersStored = await _databaseRepository.getAllPortfolioFolders();  // gets all the folders
       List<PortfolioFolderModel> updatedFolders = [];

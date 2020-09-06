@@ -36,3 +36,6 @@ class PortfolioFoldersLoaded extends PortfolioFoldersState {
     @required this.folders,
   });
 }
+
+class PortfolioFolderValidate extends PortfolioFoldersState {}
+class PortfolioFolderSavedOkay extends PortfolioFoldersState {}

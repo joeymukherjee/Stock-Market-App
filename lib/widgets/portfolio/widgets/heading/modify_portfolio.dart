@@ -3,8 +3,7 @@ import 'package:sma/widgets/portfolio/widgets/save_portfolio_folder.dart';
 
 class ModifyPortfolioHeadingSection extends StatelessWidget {
   final String _prefix;
-  final Function (BuildContext) _callback;
-  ModifyPortfolioHeadingSection(this._prefix, this._callback);
+  ModifyPortfolioHeadingSection(this._prefix);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,7 @@ class ModifyPortfolioHeadingSection extends StatelessWidget {
                   fontWeight: FontWeight.bold
                 )
               ),
-            SavePortfolioWidget (_callback)
+            SavePortfolioWidget ()
           ],
         ),
     );

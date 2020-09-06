@@ -8,7 +8,7 @@ class PortfolioFolder extends StatelessWidget {
   final String portfolioId;
   final String portfolioName;
 
-  PortfolioFolder ({@required this.portfolioName, @required this.portfolioId});
+   PortfolioFolder ({@required this.portfolioName, @required this.portfolioId});
 
   @override
   Widget build(BuildContext context) {

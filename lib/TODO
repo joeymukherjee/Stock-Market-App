@@ -20,7 +20,6 @@ Portfolio UI
 
 
 Portfolio Stuff
-    Change Add to be stateless and use BLoC? - currently works, but the callback method seems wrong
     Reorder portfolios - control is there, but the Reorderable doesn't seem to work in a listview parent
     On the add/edit portfolio, we have to use onChanged.  Why?  We only care after they save, but it doesn't change on the onSaved call
 
