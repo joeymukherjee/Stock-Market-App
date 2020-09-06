@@ -20,6 +20,7 @@ class StocksBox extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Expanded(flex: 5, child: _buildCompanyData(context)),
+        Expanded(flex: 8, child: _buildEquityData()),
         Expanded(flex: 8, child: _buildPriceData())
       ],
     );
@@ -38,11 +39,41 @@ class StocksBox extends StatelessWidget {
     );
   }
 
+/// This method is in charge of rendering the equity/number of shares.
+  /// This is the middle of the card.
+  /// It renders the [change] and the stock's [price] from [tradeGroup].
+  Widget _buildEquityData() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Container(
+            child: Text(
+              tradeGroup.totalNumberOfShares.toString() + ' shares',
+              style: TextStyle (fontSize: 12),
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.end
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+           child: Text(formatCurrencyText (tradeGroup.totalEquity + tradeGroup.overall.change),
+            overflow: TextOverflow.visible,
+            textAlign: TextAlign.end,
+            style: TextStyle (fontSize: 12)
+          ),
+        ),
+      ],
+    );
+  }
+
   /// This method is in charge of rendering the stock company data.
   /// This is the right side in the card.
   /// It renders the [change] and the stock's [price] from [tradeGroup].
   Widget _buildPriceData() {
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -60,7 +91,7 @@ class StocksBox extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text(determineTextBasedOnChange(tradeGroup.overall.change),
+           child: Text(determineTextBasedOnChange(tradeGroup.overall.change),
             overflow: TextOverflow.visible,
             textAlign: TextAlign.end,
             style: determineTextStyleBasedOnChange(tradeGroup.overall.change)

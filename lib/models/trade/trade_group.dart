@@ -16,6 +16,7 @@ class TradeGroup extends Equatable {
   final String portfolioName;
   final bool hideClosedPositions;
   final double totalNumberOfShares;
+  final double totalEquity;
   final FolderChange daily;
   final FolderChange overall;
 
@@ -26,6 +27,7 @@ class TradeGroup extends Equatable {
     @required this.portfolioName,
     @required this.hideClosedPositions,
     @required this.totalNumberOfShares,
+    @required this.totalEquity,
     @required this.daily,
     @required this.overall
   });
@@ -34,7 +36,7 @@ class TradeGroup extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [ticker, companyName, portfolioId, portfolioName, totalNumberOfShares, daily, overall];
+  List<Object> get props => [ticker, companyName, portfolioId, portfolioName, totalNumberOfShares, totalEquity, daily, overall];
 
 // TODO - move this somewhere
 // To compute the current return, we take the total number of shares of all the trades
@@ -74,7 +76,7 @@ class TradeGroup extends Equatable {
     double currentReturn = numberOfShares * currentCostPerShare;
     double totalInvestment = computeTotalInvestment (trades, ticker);
     double totalReturn = currentReturn - totalInvestment;
-    double totalChangePct = totalReturn / totalInvestment * 100;
+    double totalChangePct = totalReturn / totalInvestment;
     return FolderChange (change: totalReturn, changePercentage: totalChangePct);
   }
 }
@@ -114,6 +116,7 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
   }
   String portfolioName = folder.name;
   double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, ticker);
+  double equity = TradeGroup.computeTotalInvestment(trades, ticker);
   var overallReturns = TradeGroup.computeTotalReturn(trades, ticker, company.lastClose);
   var yesterdayReturns = TradeGroup.computeTotalReturn(trades, ticker, company.previousClose);
   var dailyReturns = overallReturns - yesterdayReturns;
@@ -123,6 +126,7 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
                     portfolioId: portfolioId,
                     hideClosedPositions: folder.hideClosedPositions,
                     totalNumberOfShares: numberOfShares,
+                    totalEquity: equity,
                     daily: dailyReturns,
                     overall: overallReturns);
 }

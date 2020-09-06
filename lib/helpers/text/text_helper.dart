@@ -8,6 +8,10 @@ String formatText(dynamic text) {
   return text == null ? '-' : NumberFormat().format(text);
 }
 
+String formatPercentText(dynamic text) {
+  return text == null ? '-' : NumberFormat.decimalPercentPattern(locale: "en_US", decimalDigits: 2).format(text);
+}
+
 String formatCurrencyText(dynamic text) {
   return text == null ? '-' : NumberFormat.currency(name: '', symbol: '', decimalDigits: 2).format(text);
 }
@@ -28,6 +32,6 @@ String determineTextBasedOnChange(double change) {
 /// based on the [change].
 String determineTextPercentageBasedOnChange(double change) {
   return (change == null || change < 0)
-    ? '${formatText(change)}%' 
-    : '+${formatText(change)}%';
+    ? '${formatPercentText(change)}'
+    : '+${formatPercentText(change)}';
 }
