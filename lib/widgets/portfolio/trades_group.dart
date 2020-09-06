@@ -40,10 +40,11 @@ class TradeCard extends StatelessWidget {
 
   String formatBuySell (Common common) {
     String amount = formatCurrencyText(common.getTotalReturn());
+    num numShares = common.sharesTransacted == common.sharesTransacted.round() ? common.sharesTransacted.round() : common.sharesTransacted;
     if (common.type == TransactionType.sell) {
-      return "Sold ${common.sharesTransacted} shares for \$$amount";
+      return "Sold $numShares shares for \$$amount";
     } else {
-      return "Bought ${common.sharesTransacted} shares for \$$amount";
+      return "Bought $numShares shares for \$$amount";
     }
   }
 
