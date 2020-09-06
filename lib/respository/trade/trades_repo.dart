@@ -151,6 +151,10 @@ class SembastTradesRepository implements TradesRepository {
 class FirestoreTradesRepository implements TradesRepository {
 
   static final FirestoreTradesRepository _singleton = FirestoreTradesRepository._internal();
+  static final CollectionReference collection = FirebaseFirestore.instance.collection('trades_repository');
+
+  DateTime _lastUpdated;
+  Source _source;
 
   factory FirestoreTradesRepository() {
     return _singleton;
@@ -158,14 +162,25 @@ class FirestoreTradesRepository implements TradesRepository {
 
   FirestoreTradesRepository._internal();
 
-  final CollectionReference collection = FirebaseFirestore.instance.collection('trades_repository');
+  void _updateSource () {
+    if (_lastUpdated == null || _lastUpdated.difference(DateTime.now()).inMinutes > 5) {
+      _source = Source.server;
+      _lastUpdated = DateTime.now();
+    } else {
+      _source = Source.cache;
+    }
+  }
+
+  void _forceServerRead () {
+    _lastUpdated = _lastUpdated.subtract(Duration (minutes: 5));
+  }
 
   // Return all trades
   Future <List<Trade>> loadAllTrades() async {
     List<Trade> retVal = [];
     await collection
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             retVal.add (Trade.fromJson(trade.data()));
@@ -177,10 +192,11 @@ class FirestoreTradesRepository implements TradesRepository {
   // Return all trades for a particular portfolio
   Future <List<Trade>> loadAllTradesForPortfolio(String portfolioId) async {
     List<Trade> retVal = [];
+    _updateSource ();
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             retVal.add (Trade.fromJson(trade.data()));
@@ -192,11 +208,12 @@ class FirestoreTradesRepository implements TradesRepository {
   // Return all trades for a particular portfolio
   Future <List<Trade>> loadAllTradesForTickerAndPortfolio(String ticker, String portfolioId) async {
     List<Trade> retVal = [];
+    _updateSource ();
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             retVal.add (Trade.fromJson(trade.data()));
@@ -208,12 +225,13 @@ class FirestoreTradesRepository implements TradesRepository {
   // Return all trades for a particular portfolio before a certain date
   Future <List<Trade>> loadAllTradesForTickerAndPortfolioAndDate(String ticker, String portfolioId, DateTime since) async {
     List<Trade> retVal = [];
+    _updateSource ();
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
       .where('transactionDate', isGreaterThanOrEqualTo: since)
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             retVal.add (Trade.fromJson(trade.data()));
@@ -225,15 +243,17 @@ class FirestoreTradesRepository implements TradesRepository {
   // Saves a list of trades (these may have updated!)
   Future <void> saveTrades(List<Trade> trades) async {
     trades.forEach((trade) {updateTrade (trade); });
+    _forceServerRead ();
   }
 
   // Load a single trade based on an id
   Future <Trade> loadTrade(String id) async {
     List<Trade> retVal = [];
+    _updateSource ();
     await collection
       .where('id', isEqualTo: id)
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             retVal.add (Trade.fromJson(trade.data()));
@@ -278,12 +298,13 @@ class FirestoreTradesRepository implements TradesRepository {
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
       .orderBy ('transactionDate', descending: true)
-      .get()
+      .get(GetOptions (source: Source.server))  // always delete on server!
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
             deleteTrade([trade.id]);
         })
     });
+    _forceServerRead();
   }
 }
 

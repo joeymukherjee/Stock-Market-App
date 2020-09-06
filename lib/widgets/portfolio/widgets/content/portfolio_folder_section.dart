@@ -51,7 +51,7 @@ class PortfolioFolderSection extends StatelessWidget {
         }
         return Expanded(
           child: Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height),
+              padding: EdgeInsets.only(top: 20),
               child: LoadingIndicatorWidget(),
             ),
         );

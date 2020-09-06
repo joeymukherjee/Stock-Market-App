@@ -63,12 +63,12 @@ class TradeCard extends StatelessWidget {
   Icon formatIcon (Trade trade) {
     IconData icon;
     if (trade.type == TransactionType.split) {
-      icon = Icons.call_split_rounded;
+      icon = Icons.call_split;
     } else if (trade.type == TransactionType.dividend) {
-      icon = Icons.check_circle_rounded;
+      icon = FontAwesomeIcons.checkCircle;
     } else if (trade.type == TransactionType.sell) {
-      icon = Icons.arrow_circle_down_rounded;
-    } else icon = Icons.arrow_circle_up_rounded;
+      icon = FontAwesomeIcons.arrowAltCircleDown;
+    } else icon = FontAwesomeIcons.arrowAltCircleUp;
     return Icon (icon, color: Colors.lightGreen);
   }
 

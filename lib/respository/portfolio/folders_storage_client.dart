@@ -106,7 +106,6 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
       .get()
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((folder) {
-            print(folder);
             retVal.add (PortfolioFolderModel.fromStorage(folder.data()));
         })
     });
