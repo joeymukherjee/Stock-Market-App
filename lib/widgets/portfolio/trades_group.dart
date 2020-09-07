@@ -30,21 +30,21 @@ class TradeCard extends StatelessWidget {
     String toShare = split.sharesTo == 1.0 ? "share" : "shares";
     num numFrom = split.sharesFrom == split.sharesFrom.round() ? split.sharesFrom.round() : split.sharesFrom;
     num numTo = split.sharesTo == split.sharesTo.round() ? split.sharesTo.round() : split.sharesTo;
-    return "Split $numFrom $fromShare to $numTo $toShare";
+    return "Split from $numFrom $fromShare to $numTo $toShare.";
   }
 
   String formatDividendString (Dividend dividend) {
-    String amount = formatCurrencyText(dividend.getTotalReturn());
-    return "Received \$$amount as dividend";
+    String amount = formatCurrencyText(dividend.proceeds);
+    return "Received \$$amount as dividend.";
   }
 
   String formatBuySell (Common common) {
     String amount = formatCurrencyText(common.getTotalReturn());
     num numShares = common.sharesTransacted == common.sharesTransacted.round() ? common.sharesTransacted.round() : common.sharesTransacted;
     if (common.type == TransactionType.sell) {
-      return "Sold $numShares shares for \$$amount";
+      return "Sold $numShares shares for \$$amount.";
     } else {
-      return "Bought $numShares shares for \$$amount";
+      return "Bought $numShares shares for \$$amount.";
     }
   }
 

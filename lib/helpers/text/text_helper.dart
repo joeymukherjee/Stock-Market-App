@@ -8,6 +8,10 @@ String formatText(dynamic text) {
   return text == null ? '-' : NumberFormat().format(text);
 }
 
+String formatDecimalText(dynamic text) {
+  return text == null ? '-' : NumberFormat.decimalPattern("en_US").format(text);
+}
+
 String formatPercentText(dynamic text) {
   return text == null ? '-' : NumberFormat.decimalPercentPattern(locale: "en_US", decimalDigits: 2).format(text);
 }

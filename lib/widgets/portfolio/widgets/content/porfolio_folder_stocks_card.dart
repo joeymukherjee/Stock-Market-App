@@ -51,7 +51,7 @@ class StocksBox extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
             child: Text(
-              tradeGroup.totalNumberOfShares.toString() + ' shares',
+              formatDecimalText(tradeGroup.totalNumberOfShares) + (tradeGroup.totalNumberOfShares == 1.0 ? " share" : " shares"),
               style: TextStyle (fontSize: 12),
               overflow: TextOverflow.visible,
               textAlign: TextAlign.end
