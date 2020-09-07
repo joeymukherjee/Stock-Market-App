@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
@@ -7,10 +8,9 @@ import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/widgets/portfolio/widgets/content/porfolio_folder_stocks_card.dart';
 
 class PortfolioFolderSection extends StatelessWidget {
-  final String portfolioId;
-  final String portfolioName;
+  final PortfolioFolderModel folder;
 
-  PortfolioFolderSection ({@required this.portfolioName, @required this.portfolioId});
+  PortfolioFolderSection ({@required this.folder});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
@@ -18,7 +18,7 @@ class PortfolioFolderSection extends StatelessWidget {
         if (state is TradesSavedOkay) {
           BlocProvider
             .of<TradesBloc>(context)
-            .add(PickedPortfolio(portfolioId));
+            .add(PickedPortfolio(folder.id, folder.defaultSortOption));
         }
         if (state is TradesEmpty) {
           return Column(
@@ -28,7 +28,7 @@ class PortfolioFolderSection extends StatelessWidget {
                   vertical: MediaQuery.of(context).size.height / 10,
                   horizontal: 4
                 ),
-                child: EmptyScreen(message: 'Looks like you don\'t have any transactions on $portfolioName.  Add one by clicking the "Add" icon above!'),
+                child: EmptyScreen(message: 'Looks like you don\'t have any transactions on ${folder.name}.  Add one by clicking the "Add" icon above!'),
               ),
             ],
           );

@@ -176,7 +176,8 @@ class TradeGroupHeader extends StatelessWidget {
         BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
       }
       if (state is TradesLoaded) {
-        BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId));
+        assert (!(state is TradesLoaded));  // We don't have the sort option since we are two levels from the folder?  Do we get here?
+        //BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId));
       }
       Navigator.pop(context);
     }

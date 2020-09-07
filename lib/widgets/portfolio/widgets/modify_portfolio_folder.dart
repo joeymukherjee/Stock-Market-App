@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sma/models/portfolio/folder.dart';
+import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/widgets/widgets/base_list.dart';
 import 'package:sma/widgets/portfolio/widgets/heading/modify_portfolio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -101,6 +102,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
   String _name;
   bool _exclude;
   bool _hideClosedPositions;
+  SortOptions _sortOption;
 
   @override
   void initState () {
@@ -108,6 +110,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
     _name = widget._data.name;
     _exclude = widget._data.exclude;
     _hideClosedPositions = widget._data.hideClosedPositions;
+    _sortOption = widget._data.defaultSortOption;
   }
 
   void onPressedHandler(context) {
@@ -119,6 +122,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
         name: _name,
         exclude: _exclude,
         hideClosedPositions: _hideClosedPositions,
+        defaultSortOption: _sortOption, // TODO - let them change this!
         order: widget._data.order,
         daily: widget._data.daily,
         overall: widget._data.overall)
@@ -168,6 +172,28 @@ class _State extends State<ModifyPortfolioFolderSection> {
                       _hideClosedPositions = value;
                       });
                   }),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text ("Sort By:"),
+                  DropdownButton (
+                    value: _sortOption,
+                    items: [
+                      DropdownMenuItem (value: SortOptions.ticker, child: Text ('Symbol')),
+                      DropdownMenuItem (value: SortOptions.equity, child: Text ('Equity')),
+                      DropdownMenuItem (value: SortOptions.dailyChange, child: Text ('Daily Change')),
+                      DropdownMenuItem (value: SortOptions.dailyChangePercentage, child: Text ('Daily Change %')),
+                      DropdownMenuItem (value: SortOptions.overallChange, child: Text ('Overall Change')),
+                      DropdownMenuItem (value: SortOptions.overallChangePercentage, child: Text ('Overall Change %'))
+                    ],
+                    onChanged: (SortOptions newValue) {
+                      setState (() {
+                        _sortOption = newValue;
+                      });
+                    },
+                  )
                 ],
               ),
               FilePickerButton(portfolioId: widget._data.id)

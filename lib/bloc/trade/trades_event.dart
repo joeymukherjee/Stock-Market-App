@@ -10,18 +10,20 @@ abstract class TradeEvent extends Equatable {
 
 class PickedPortfolio extends TradeEvent {
   final String portfolioId;
+  final SortOptions sortOption;
 
-  const PickedPortfolio (this.portfolioId);
+  const PickedPortfolio (this.portfolioId, this.sortOption);
   @override
-  List<Object> get props => [portfolioId];
+  List<Object> get props => [portfolioId, sortOption];
 }
 
 class EditedTradeGroup extends TradeEvent {
   final String portfolioId;
+  final SortOptions sortOption;
 
-  const EditedTradeGroup (this.portfolioId);
+  const EditedTradeGroup (this.portfolioId, this.sortOption);
   @override
-  List<Object> get props => [portfolioId];
+  List<Object> get props => [portfolioId, sortOption];
 }
 
 class DeletedTradeGroup extends TradeEvent {

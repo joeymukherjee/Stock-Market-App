@@ -74,8 +74,8 @@ class PortfolioFolderCard extends StatelessWidget {
               } else {
                 BlocProvider
                   .of<TradesBloc>(context)
-                  .add(PickedPortfolio(data.id));
-                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(portfolioName: data.name, portfolioId: data.id)));
+                  .add(PickedPortfolio(data.id, data.defaultSortOption));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(folder: data)));
               }
             },
           ),

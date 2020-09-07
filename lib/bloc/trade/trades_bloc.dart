@@ -105,12 +105,12 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     }
   }
 
-  Stream<TradesState> _mapEditedTradeGroupToState(event) async* {
+  Stream<TradesState> _mapEditedTradeGroupToState(EditedTradeGroup event) async* {
      try {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
-        var tradeGroups = await toTickerMapFromTrades (trades);
+        var tradeGroups = await toTickerMapFromTrades (trades, event.sortOption);
         yield TradeGroupsLoadedEditing(tradeGroups);
       }
     } catch (e) {
@@ -131,7 +131,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades == null || trades.length == 0) yield TradesEmpty();
       else {
-        var tradeGroups = await toTickerMapFromTrades (trades);
+        var tradeGroups = await toTickerMapFromTrades (trades, event.sortOption);
         yield TradeGroupsLoadSuccess(tradeGroups);
       }
     } catch (e) {

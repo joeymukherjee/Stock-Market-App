@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sma/models/portfolio/folder.dart';
@@ -81,14 +83,16 @@ class TradeGroup extends Equatable {
   }
 }
 
-Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String portfolioId) async {
+enum SortOptions {none, order, ticker, equity, dailyChange, dailyChangePercentage, overallChange, overallChangePercentage}
+
+Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String portfolioId, SortOptions sortOptions) async {
   final TradesRepository _tradesRepo = globalTradesDatabase;
   FolderChange daily = FolderChange(change: 0.0, changePercentage: 0.0);
   FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
   Future<List<Trade>> trades = _tradesRepo.loadAllTradesForPortfolio(portfolioId);
   updateCompanies(await trades);
-  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades (await trades);
+  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades (await trades, sortOptions);
   Future.forEach(await tradesList, (trade) => {
     daily += trade.daily,
     overall += trade.overall
@@ -132,9 +136,7 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
 }
 // This gets the ticker map based on previously saved data
 
-// this updates the trades by fetching the latest quote from the internet.
-
-Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
+Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions sortOptions) async {
   var tickerMap = Map <String, TradeGroup> ();
   final _companiesRepo = LocalCompaniesRepository ();
   await Future.forEach (trades, ((trade) async {
@@ -143,14 +145,41 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades) async {
       tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, company, trades);
     }
   }));
-  List<TradeGroup> retVal = List();
-  tickerMap.forEach((key, value) {
-      if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
-       retVal.add (value);
-      }
+  // final SortOptions sortBy = SortOptions.overallChange;
+
+  SplayTreeMap <dynamic, TradeGroup> sortedMap = SplayTreeMap (
+    (dynamic key1, dynamic key2) {
+      return key1 is num ? ((key1 as double).compareTo(key2 as double)) : key1.compareTo (key2);
     }
   );
-  return retVal;
+
+  if (sortOptions == SortOptions.none) {
+    // This does not ignore our closed positions and applies no sorting!!
+    List<TradeGroup> retVal = List();
+    tickerMap.forEach((key, value) { retVal.add (value); });
+    return retVal;
+  } else {
+    tickerMap.forEach((key, value) {
+        if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
+          dynamic key;
+          switch (sortOptions) {
+            case SortOptions.none : break; // NEVER REACHED!
+            case SortOptions.order : key = value.ticker; break; // TODO - we don't have order saved?
+            case SortOptions.ticker : key = value.ticker; break;
+            case SortOptions.equity : key = value.totalEquity + value.overall.change; break;
+            case SortOptions.dailyChange : key = value.daily.change; break;
+            case SortOptions.dailyChangePercentage : key = value.daily.changePercentage; break;
+            case SortOptions.overallChange : key = value.overall.change; break;
+            case SortOptions.overallChangePercentage : key = value.overall.changePercentage; break;
+          }
+          sortedMap [key] = (value);
+        }
+      }
+    );
+    List<TradeGroup> retVal = List();
+    sortedMap.forEach((key, value) { retVal.add (value); });
+    return retVal;
+  }
 }
 
 // update all the companies in a list of trades
