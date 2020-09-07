@@ -129,8 +129,8 @@ class PortfolioFolderStocksCard extends StatelessWidget {
             onPressed: () async {
               BlocProvider
                 .of<TradesBloc>(context)
-                .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
-              await Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
+                .add(SelectedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => TradeGroupFolder(tradeGroup: tradeGroup)));
             },
           ),
         );
@@ -153,7 +153,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
                     context: context,
                     type: AlertType.warning,
                     title: "Delete Portfolio",
-                    desc: "Are you sure you wish to delete all the transactions for ${tradeGroup.ticker} in ${tradeGroup.portfolioName}?",
+                    desc: "Are you sure you wish to delete all the transactions for ${tradeGroup.ticker} in ${tradeGroup.folder.name}?",
                     buttons: [
                       DialogButton(
                         child: Text(
@@ -161,7 +161,7 @@ class PortfolioFolderStocksCard extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                         onPressed: () {
-                          BlocProvider.of<TradesBloc>(context).add(DeletedTradeGroup(ticker: tradeGroup.ticker, portfolioId: tradeGroup.portfolioId));
+                          BlocProvider.of<TradesBloc>(context).add(DeletedTradeGroup(ticker: tradeGroup.ticker, portfolioId: tradeGroup.folder.id));
                           Navigator.pop(context);
                         },
                         color: Colors.red,

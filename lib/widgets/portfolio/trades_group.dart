@@ -133,9 +133,9 @@ class TradeGroupHeader extends StatelessWidget {
 
   void clickedAdd(BuildContext context, TradesState state) async {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.portfolioName, portfolioId: tradeGroup.portfolioId, defaultTicker: tradeGroup.ticker)));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: tradeGroup.folder.name, portfolioId: tradeGroup.folder.id, defaultTicker: tradeGroup.ticker)));
     if (state is TradesSavedOkay) {
-      BlocProvider.of<TradesBloc>(context).add(EditedTrades (portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+      BlocProvider.of<TradesBloc>(context).add(EditedTrades (portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
     }
   }
 
@@ -152,11 +152,11 @@ class TradeGroupHeader extends StatelessWidget {
     if (state is TradesLoaded) {
       BlocProvider
         .of<TradesBloc>(context)
-        .add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        .add(EditedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
     } else {
       BlocProvider
         .of<TradesBloc>(context)
-        .add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        .add(SelectedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
     }
   }
 
@@ -166,18 +166,17 @@ class TradeGroupHeader extends StatelessWidget {
         Navigator.pop(context);
       } else {
         if (state is TradesLoadedEditing) {
-          BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+          BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
         } else {
-          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
         }
       }
     } else {
       if (state is TradesLoadedEditing) {
-        BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+        BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
       }
       if (state is TradesLoaded) {
-        assert (!(state is TradesLoaded));  // We don't have the sort option since we are two levels from the folder?  Do we get here?
-        //BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.portfolioId));
+         BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.folder.id, tradeGroup.folder.defaultSortOption));
       }
       Navigator.pop(context);
     }
@@ -225,7 +224,7 @@ class TradeGroupSection extends StatelessWidget {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
         if (state is TradesSavedOkay) {
-          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.portfolioId, ticker: tradeGroup.ticker));
+          BlocProvider.of<TradesBloc>(context).add(EditedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
         }
         if (state is TradesFailure) {
           return Padding(
@@ -250,14 +249,14 @@ class TradeGroupSection extends StatelessWidget {
         if (state is TradesLoaded) {
           return Column(
             children: <Widget>[
-              _buildTrades(tradeGroup.portfolioName, state.trades)
+              _buildTrades(tradeGroup.folder.name, state.trades)
             ],
           );
         }
         if (state is TradesLoadedEditing) {
           return Column(
             children: <Widget>[
-              _buildTrades(tradeGroup.portfolioName, state.trades)
+              _buildTrades(tradeGroup.folder.name, state.trades)
             ],
           );
         }
@@ -293,7 +292,7 @@ class TradeGroupSection extends StatelessWidget {
                     context: context,
                     type: AlertType.warning,
                     title: "Delete Portfolio",
-                    desc: "Are you sure you wish to delete all the transactions for ${tradeGroup.ticker} in ${tradeGroup.portfolioName}?",
+                    desc: "Are you sure you wish to delete all the transactions for ${tradeGroup.ticker} in ${tradeGroup.folder.name}?",
                     buttons: [
                       DialogButton(
                         child: Text(
@@ -301,7 +300,7 @@ class TradeGroupSection extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                         onPressed: () {
-                          BlocProvider.of<TradesBloc>(context).add(DeletedTradeGroup(ticker: tradeGroup.ticker, portfolioId: tradeGroup.portfolioId));
+                          BlocProvider.of<TradesBloc>(context).add(DeletedTradeGroup(ticker: tradeGroup.ticker, portfolioId: tradeGroup.folder.id));
                           Navigator.pop(context);
                         },
                         color: Colors.red,

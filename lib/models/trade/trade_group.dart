@@ -14,9 +14,7 @@ import 'package:sma/respository/trade/companies_repo.dart';
 class TradeGroup extends Equatable {
   final String ticker;
   final String companyName;
-  final String portfolioId;
-  final String portfolioName;
-  final bool hideClosedPositions;
+  final PortfolioFolderModel folder;
   final double totalNumberOfShares;
   final double totalEquity;
   final FolderChange daily;
@@ -25,9 +23,7 @@ class TradeGroup extends Equatable {
   TradeGroup({
     @required this.ticker,
     @required this.companyName,
-    @required this.portfolioId,
-    @required this.portfolioName,
-    @required this.hideClosedPositions,
+    @required this.folder,
     @required this.totalNumberOfShares,
     @required this.totalEquity,
     @required this.daily,
@@ -38,7 +34,7 @@ class TradeGroup extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [ticker, companyName, portfolioId, portfolioName, totalNumberOfShares, totalEquity, daily, overall];
+  List<Object> get props => [ticker, companyName, folder, totalNumberOfShares, totalEquity, daily, overall];
 
 // TODO - move this somewhere
 // To compute the current return, we take the total number of shares of all the trades
@@ -118,7 +114,6 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
     );
     _companiesRepo.saveCompanies([company]);
   }
-  String portfolioName = folder.name;
   double numberOfShares = double.parse (TradeGroup.computeTotalNumberOfShares(trades, ticker).toStringAsFixed(3));
   double equity = TradeGroup.computeTotalInvestment(trades, ticker);
   var overallReturns = TradeGroup.computeTotalReturn(trades, ticker, company.lastClose);
@@ -126,9 +121,7 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
   var dailyReturns = overallReturns - yesterdayReturns;
   return TradeGroup (ticker: ticker,
                     companyName: company.companyName,
-                    portfolioName: portfolioName,
-                    portfolioId: portfolioId,
-                    hideClosedPositions: folder.hideClosedPositions,
+                    folder: folder,
                     totalNumberOfShares: numberOfShares,
                     totalEquity: equity,
                     daily: dailyReturns,
@@ -145,7 +138,6 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions
       tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, company, trades);
     }
   }));
-  // final SortOptions sortBy = SortOptions.overallChange;
 
   SplayTreeMap <dynamic, TradeGroup> sortedMap = SplayTreeMap (
     (dynamic key1, dynamic key2) {
@@ -160,7 +152,7 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions
     return retVal;
   } else {
     tickerMap.forEach((key, value) {
-        if (value.totalNumberOfShares != 0 || !value.hideClosedPositions) {
+        if (value.totalNumberOfShares != 0 || !value.folder.hideClosedPositions) {
           dynamic key;
           switch (sortOptions) {
             case SortOptions.none : break; // NEVER REACHED!
