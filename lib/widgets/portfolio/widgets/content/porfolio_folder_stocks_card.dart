@@ -19,7 +19,7 @@ class StocksBox extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Expanded(flex: 5, child: _buildCompanyData(context)),
+        Expanded(flex: 12, child: _buildCompanyData(context)),
         Expanded(flex: 8, child: _buildEquityData()),
         Expanded(flex: 8, child: _buildPriceData())
       ],
@@ -33,7 +33,7 @@ class StocksBox extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(tradeGroup.ticker, style: kStockTickerSymbol),
-        SizedBox(height: 4.0),
+        //SizedBox(height: 4.0),
         Text(tradeGroup.companyName, style: Theme.of(context).textTheme.bodyText2)
       ],
     );
@@ -45,17 +45,15 @@ class StocksBox extends StatelessWidget {
   Widget _buildEquityData() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Container(
-            child: Text(
-              formatDecimalText(tradeGroup.totalNumberOfShares) + (tradeGroup.totalNumberOfShares == 1.0 ? " share" : " shares"),
-              style: TextStyle (fontSize: 12),
-              overflow: TextOverflow.visible,
-              textAlign: TextAlign.end
-            ),
+          padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+          child: Text(
+            formatDecimalText(tradeGroup.totalNumberOfShares) + (tradeGroup.totalNumberOfShares == 1.0 ? " share" : " shares"),
+            style: TextStyle (fontSize: 12),
+            overflow: TextOverflow.visible,
+            textAlign: TextAlign.end
           ),
         ),
         Padding(
@@ -89,14 +87,11 @@ class StocksBox extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-           child: Text(determineTextBasedOnChange(tradeGroup.overall.change),
-            overflow: TextOverflow.visible,
-            textAlign: TextAlign.end,
-            style: determineTextStyleBasedOnChange(tradeGroup.overall.change)
+        Text(determineTextBasedOnChange(tradeGroup.overall.change),
+         overflow: TextOverflow.visible,
+         textAlign: TextAlign.end,
+         style: determineTextStyleBasedOnChange(tradeGroup.overall.change)
           ),
-        ),
       ],
     );
   }
