@@ -115,7 +115,7 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
     _companiesRepo.saveCompanies([company]);
   }
   String portfolioName = folder.name;
-  double numberOfShares = TradeGroup.computeTotalNumberOfShares(trades, ticker);
+  double numberOfShares = double.parse (TradeGroup.computeTotalNumberOfShares(trades, ticker).toStringAsFixed(3));
   double equity = TradeGroup.computeTotalInvestment(trades, ticker);
   var overallReturns = TradeGroup.computeTotalReturn(trades, ticker, company.lastClose);
   var yesterdayReturns = TradeGroup.computeTotalReturn(trades, ticker, company.previousClose);
