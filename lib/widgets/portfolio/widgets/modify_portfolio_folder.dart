@@ -122,7 +122,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
         name: _name,
         exclude: _exclude,
         hideClosedPositions: _hideClosedPositions,
-        defaultSortOption: _sortOption, // TODO - let them change this!
+        defaultSortOption: _sortOption,
         order: widget._data.order,
         daily: widget._data.daily,
         overall: widget._data.overall)

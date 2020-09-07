@@ -6,6 +6,8 @@ import 'package:sma/shared/styles.dart';
 import 'package:sma/helpers/text/text_helper.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
+import 'package:sma/bloc/profile/profile_bloc.dart';
+import 'package:sma/widgets/profile/profile.dart';
 import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/widgets/widgets/loading_indicator.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
@@ -25,7 +27,7 @@ class TradeCard extends StatelessWidget {
     }
   }
 
-  String formatSplitString (Split split) {
+  String formatSplitString(Split split) {
     String fromShare = split.sharesFrom == 1.0 ? "share" : "shares";
     String toShare = split.sharesTo == 1.0 ? "share" : "shares";
     num numFrom = split.sharesFrom == split.sharesFrom.round() ? split.sharesFrom.round() : split.sharesFrom;
@@ -33,12 +35,12 @@ class TradeCard extends StatelessWidget {
     return "Split from $numFrom $fromShare to $numTo $toShare.";
   }
 
-  String formatDividendString (Dividend dividend) {
+  String formatDividendString(Dividend dividend) {
     String amount = formatCurrencyText(dividend.proceeds);
     return "Received \$$amount as dividend.";
   }
 
-  String formatBuySell (Common common) {
+  String formatBuySell(Common common) {
     String amount = formatCurrencyText(common.getTotalReturn());
     num numShares = common.sharesTransacted == common.sharesTransacted.round() ? common.sharesTransacted.round() : common.sharesTransacted;
     if (common.type == TransactionType.sell) {
@@ -48,7 +50,7 @@ class TradeCard extends StatelessWidget {
     }
   }
 
-  Text formatSubtitle (Trade trade) {
+  Text formatSubtitle(Trade trade) {
     String subtitle;
     if (trade.type == TransactionType.split) {
       subtitle = formatSplitString(trade);
@@ -61,7 +63,7 @@ class TradeCard extends StatelessWidget {
     return Text (subtitle, style: style);
   }
 
-  Icon formatIcon (Trade trade) {
+  Icon formatIcon(Trade trade) {
     IconData icon;
     if (trade.type == TransactionType.split) {
       icon = Icons.call_split;
@@ -160,7 +162,7 @@ class TradeGroupHeader extends StatelessWidget {
     }
   }
 
-  void clickedDoneOrBack (context, state, isEditing) {
+  void clickedDoneOrBack(context, state, isEditing) {
     if (isEditing) {
       if (state is TradesEmpty) {
         Navigator.pop(context);
@@ -200,7 +202,16 @@ class TradeGroupHeader extends StatelessWidget {
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => clickedDoneOrBack(context, state, _isEditing)
                   ),
-                  Expanded(child: Text(tradeGroup.ticker, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
+                  GestureDetector(
+                    child: Text(tradeGroup.ticker, style: kPortfolioHeaderTitle, textAlign: TextAlign.center),
+                    onTap: () => {// Trigger fetch event.
+                      BlocProvider
+                        .of<ProfileBloc>(context)
+                        .add(FetchProfileData(symbol: tradeGroup.ticker)),
+                      // Send to Profile.
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => Profile(symbol: tradeGroup.ticker)))
+                    },
+                  ),
                   GestureDetector(
                     child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.edit),
                     onTap: () => toggleEditing(context, state)
