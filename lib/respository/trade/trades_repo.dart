@@ -179,7 +179,7 @@ class FirestoreTradesRepository implements TradesRepository {
   Future <List<Trade>> loadAllTrades() async {
     List<Trade> retVal = [];
     await collection
-      .orderBy ('transactionDate', descending: true)
+      .orderBy ('transactionDate', descending: false)
       .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
@@ -195,7 +195,7 @@ class FirestoreTradesRepository implements TradesRepository {
     _updateSource ();
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
-      .orderBy ('transactionDate', descending: true)
+      .orderBy ('transactionDate', descending: false)
       .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
@@ -212,7 +212,7 @@ class FirestoreTradesRepository implements TradesRepository {
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
-      .orderBy ('transactionDate', descending: true)
+      .orderBy ('transactionDate', descending: false)
       .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
@@ -230,7 +230,7 @@ class FirestoreTradesRepository implements TradesRepository {
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
       .where('transactionDate', isGreaterThanOrEqualTo: since)
-      .orderBy ('transactionDate', descending: true)
+      .orderBy ('transactionDate', descending: false)
       .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
@@ -252,7 +252,6 @@ class FirestoreTradesRepository implements TradesRepository {
     _updateSource ();
     await collection
       .where('id', isEqualTo: id)
-      .orderBy ('transactionDate', descending: true)
       .get(GetOptions (source: _source))
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
@@ -297,7 +296,6 @@ class FirestoreTradesRepository implements TradesRepository {
     await collection
       .where('portfolioId', isEqualTo: portfolioId)
       .where('ticker', isEqualTo: ticker)
-      .orderBy ('transactionDate', descending: true)
       .get(GetOptions (source: Source.server))  // always delete on server!
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((trade) {
