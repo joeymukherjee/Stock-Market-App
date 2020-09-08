@@ -7,7 +7,6 @@ import 'package:sma/models/profile/stock_quote.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/models/trade/company.dart';
 import 'package:sma/helpers/fetch_client.dart';
-import 'package:sma/respository/portfolio/folders_storage_client.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
 import 'package:sma/respository/trade/companies_repo.dart';
 
@@ -79,16 +78,17 @@ class TradeGroup extends Equatable {
   }
 }
 
-enum SortOptions {none, order, ticker, equity, dailyChange, dailyChangePercentage, overallChange, overallChangePercentage}
+enum SortOptions {order, ticker, equity, dailyChange, dailyChangePercentage, overallChange, overallChangePercentage}
 
-Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String portfolioId, SortOptions sortOptions) async {
+// This is used for folder list, but not the folder itself!
+Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String portfolioId) async {
   final TradesRepository _tradesRepo = globalTradesDatabase;
   FolderChange daily = FolderChange(change: 0.0, changePercentage: 0.0);
   FolderChange overall = FolderChange(change: 0.0, changePercentage: 0.0);
   // Get the trades by portfolio id
   Future<List<Trade>> trades = _tradesRepo.loadAllTradesForPortfolio(portfolioId);
   updateCompanies(await trades);
-  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades (await trades, sortOptions);
+  Future<List<TradeGroup>> tradesList = toTickerMapFromTrades (await trades, null);
   Future.forEach(await tradesList, (trade) => {
     daily += trade.daily,
     overall += trade.overall
@@ -97,10 +97,8 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String por
   return {'daily': daily, 'overall': overall};
 }
 
-Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company company, List<Trade> trades) async
+Future<TradeGroup> getTradeGroup (String ticker, PortfolioFolderModel folder, Company company, List<Trade> trades) async
 {
-  final _folderRepo = globalPortfolioFoldersDatabase;
-  PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: portfolioId);
   final _companiesRepo = LocalCompaniesRepository ();
 
   if (company == null) {
@@ -129,13 +127,13 @@ Future<TradeGroup> getTradeGroup (String ticker, String portfolioId, Company com
 }
 // This gets the ticker map based on previously saved data
 
-Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions sortOptions) async {
+Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, PortfolioFolderModel folder) async {
   var tickerMap = Map <String, TradeGroup> ();
   final _companiesRepo = LocalCompaniesRepository ();
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
       Company company = await _companiesRepo.loadCompany (trade.ticker);
-      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, trade.portfolioId, company, trades);
+      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, folder, company, trades);
     }
   }));
 
@@ -145,7 +143,7 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions
     }
   );
 
-  if (sortOptions == SortOptions.none) {
+  if (folder == null) {
     // This does not ignore our closed positions and applies no sorting!!
     List<TradeGroup> retVal = List();
     tickerMap.forEach((key, value) { retVal.add (value); });
@@ -154,8 +152,7 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, SortOptions
     tickerMap.forEach((key, value) {
         if (value.totalNumberOfShares != 0 || !value.folder.hideClosedPositions) {
           dynamic key;
-          switch (sortOptions) {
-            case SortOptions.none : break; // NEVER REACHED!
+          switch (folder.defaultSortOption) {
             case SortOptions.order : key = value.ticker; break; // TODO - we don't have order saved?
             case SortOptions.ticker : key = value.ticker; break;
             case SortOptions.equity : key = value.totalEquity + value.overall.change; break;

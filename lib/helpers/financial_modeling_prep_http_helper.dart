@@ -99,7 +99,7 @@ class FNPFetchClient extends FetchClient {
     }
     return StockProfile(
       price: json['price'],
-      beta: double.parse (json['beta']),
+      beta: json ['beta'] == null ? 0.0 : double.parse (json['beta']),
       volAvg: double.parse(json['volAvg']),
       mktCap: double.parse(json['mktCap']),
       //changes: double.parse(json['changes']),

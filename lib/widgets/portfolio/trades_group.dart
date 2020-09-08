@@ -178,7 +178,7 @@ class TradeGroupHeader extends StatelessWidget {
         BlocProvider.of<TradesBloc>(context).add(SelectedTrades(portfolioId: tradeGroup.folder.id, ticker: tradeGroup.ticker));
       }
       if (state is TradesLoaded) {
-         BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.folder.id, tradeGroup.folder.defaultSortOption));
+         BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(tradeGroup.folder.id));
       }
       Navigator.pop(context);
     }

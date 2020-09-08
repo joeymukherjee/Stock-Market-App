@@ -18,7 +18,7 @@ class PortfolioFolderSection extends StatelessWidget {
         if (state is TradesSavedOkay) {
           BlocProvider
             .of<TradesBloc>(context)
-            .add(PickedPortfolio(folder.id, folder.defaultSortOption));
+            .add(PickedPortfolio(folder.id));
         }
         if (state is TradesEmpty) {
           return Column(

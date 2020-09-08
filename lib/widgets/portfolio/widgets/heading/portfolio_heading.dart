@@ -4,6 +4,7 @@ import 'package:sma/shared/styles.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sma/widgets/portfolio/widgets/modify_portfolio_folder.dart';
 import 'package:sma/widgets/portfolio/transaction.dart';
 
 class PortfolioHeadingSection extends StatelessWidget {
@@ -15,7 +16,7 @@ class PortfolioHeadingSection extends StatelessWidget {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
     await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: folder.name, portfolioId: folder.id, defaultTicker: null)));
     if (state is TradesSavedOkay) {
-      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id, folder.defaultSortOption));
+      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id));
     }
   }
 
@@ -28,7 +29,7 @@ class PortfolioHeadingSection extends StatelessWidget {
     } else {
       BlocProvider
         .of<TradesBloc>(context)
-        .add(EditedTradeGroup(folder.id, folder.defaultSortOption));
+        .add(EditedTradeGroup(folder.id));
     }
   }
 
@@ -51,12 +52,18 @@ class PortfolioHeadingSection extends StatelessWidget {
                     onTap: () => {
                       _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
                                     {
-                                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id, folder.defaultSortOption))
+                                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id))
                                     }
                                   } : Navigator.pop(context)
                     }
                   ),
-                  Expanded(child: Text(folder.name, style: kPortfolioHeaderTitle, textAlign: TextAlign.center)),
+                  GestureDetector(
+                    child: Text(folder.name, style: kPortfolioHeaderTitle, textAlign: TextAlign.center),
+                    onTap: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', folder)));
+                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id));
+                    },
+                  ),
                   GestureDetector(
                     child: _isEditing ? Icon(FontAwesomeIcons.plus) : Icon(FontAwesomeIcons.edit),
                     onTap: () => toggleEditing(context, state)

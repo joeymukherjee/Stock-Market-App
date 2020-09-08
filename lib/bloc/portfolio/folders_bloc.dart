@@ -62,7 +62,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       final foldersStored = await _databaseRepository.getAllPortfolioFolders();  // gets all the folders
       List<PortfolioFolderModel> updatedFolders = [];
       for (var folder in foldersStored) {
-        var changes = await toTotalReturnFromPortfolioIdUpdate (folder.id, SortOptions.none);
+        var changes = await toTotalReturnFromPortfolioIdUpdate (folder.id);
         PortfolioFolderModel updatedFolder = PortfolioFolderModel(
           id: folder.id, name: folder.name, order: folder.order, exclude: folder.exclude,
           defaultSortOption: folder.defaultSortOption,

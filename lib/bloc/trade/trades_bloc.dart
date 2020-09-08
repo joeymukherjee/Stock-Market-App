@@ -4,7 +4,9 @@ import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/models/trade/trade_group.dart';
+import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
+import 'package:sma/respository/portfolio/folders_storage_client.dart';
 
 part 'trades_event.dart';
 part 'trades_state.dart';
@@ -107,10 +109,12 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Stream<TradesState> _mapEditedTradeGroupToState(EditedTradeGroup event) async* {
      try {
+      final _folderRepo = globalPortfolioFoldersDatabase;
+      PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: event.portfolioId);
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
-        var tradeGroups = await toTickerMapFromTrades (trades, event.sortOption);
+        var tradeGroups = await toTickerMapFromTrades (trades, folder);
         yield TradeGroupsLoadedEditing(tradeGroups);
       }
     } catch (e) {
@@ -128,10 +132,12 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Stream<TradesState> _mapPickedPortfolioToState(PickedPortfolio event) async* {
     try {
+      final _folderRepo = globalPortfolioFoldersDatabase;
+      PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: event.portfolioId);
       final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades == null || trades.length == 0) yield TradesEmpty();
       else {
-        var tradeGroups = await toTickerMapFromTrades (trades, event.sortOption);
+        var tradeGroups = await toTickerMapFromTrades (trades, folder);
         yield TradeGroupsLoadSuccess(tradeGroups);
       }
     } catch (e) {
