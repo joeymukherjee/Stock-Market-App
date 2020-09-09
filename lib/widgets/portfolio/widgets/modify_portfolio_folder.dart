@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sma/helpers/import_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FilePickerButton extends StatefulWidget {
   final String portfolioId;
@@ -119,6 +120,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
       .add(SaveFolder(
         model: PortfolioFolderModel(
         id: widget._data.id,
+        userId: FirebaseAuth.instance.currentUser.uid,
         name: _name,
         exclude: _exclude,
         hideClosedPositions: _hideClosedPositions,

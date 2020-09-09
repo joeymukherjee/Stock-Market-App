@@ -4,6 +4,7 @@ import 'package:sma/helpers/database_helper.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/models/trade/trade.dart';
 import 'package:sma/respository/trade/trades_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class PortfolioFoldersRepository {
   Future<List<PortfolioFolderModel>> getAllPortfolioFolders();
@@ -87,6 +88,7 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
   Future<List<PortfolioFolderModel>> getAllPortfolioFolders() async {
     List<PortfolioFolderModel> retVal = [];
     await collection
+      .where('userId', isEqualTo: FirebaseAuth.instance.currentUser.uid)
       .orderBy ('order', descending: true)
       .get()
       .then((QuerySnapshot querySnapshot) => {
@@ -102,6 +104,7 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
     List<PortfolioFolderModel> retVal = [];
     await collection
       .where('id', isEqualTo: portfolioId)
+      .where('userId', isEqualTo: FirebaseAuth.instance.currentUser.uid)
       .orderBy ('order', descending: true)
       .get()
       .then((QuerySnapshot querySnapshot) => {
@@ -126,6 +129,7 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
   Future<void> deletePortfolioFolder({String id}) async {
     await collection
       .where('id', isEqualTo: id)
+      .where('userId', isEqualTo: FirebaseAuth.instance.currentUser.uid)
       .get()
       .then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((folder) async {

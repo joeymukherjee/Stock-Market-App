@@ -67,7 +67,6 @@ class PortfolioFolderCard extends StatelessWidget {
 
             shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
             onPressed: () {
-
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', data)));

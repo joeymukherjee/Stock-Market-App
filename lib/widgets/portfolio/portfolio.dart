@@ -3,8 +3,10 @@ import 'package:flutter_offline/flutter_offline.dart';
 import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sma/bloc/portfolio/folders_bloc.dart';
+import 'package:sma/bloc/authentication/authentication_bloc.dart';
 import 'package:sma/widgets/portfolio/widgets/heading/portfolios_heading.dart';
 import 'package:sma/widgets/portfolio/widgets/content/portfolio_folders.dart';
+import 'package:sma/widgets/login/login_page.dart';
 
 class PortfolioSection extends StatelessWidget {
   @override
@@ -15,7 +17,7 @@ class PortfolioSection extends StatelessWidget {
         connectivityBuilder: ( context,  connectivity, child,  ) {
           return connectivity == ConnectivityResult.none 
           ? _buildNoConnectionMessage(context)
-          : _buildContent(context);
+          : _buildLogin(context);
         }
       )
     );
@@ -31,7 +33,21 @@ class PortfolioSection extends StatelessWidget {
       child: EmptyScreen(message: 'Looks like you don\'t have an internet connection.'),
     );
   }
-  Widget _buildContent(context) {
+
+  Widget _buildLogin(context) {
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state){
+          if (state is AuthenticationAuthenticated){
+            // show portfolios
+            return _buildPortfolios(context);
+          }
+          // otherwise show login page
+          return LoginPage();
+        }
+    );
+  }
+
+  Widget _buildPortfolios(context) {
     return RefreshIndicator(
       child: SafeArea(
         child: Padding(

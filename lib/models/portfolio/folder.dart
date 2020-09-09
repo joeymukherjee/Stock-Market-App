@@ -37,6 +37,7 @@ class FolderChange extends Equatable {
 
 class PortfolioFolderModel extends Equatable {
   final String id;
+  final String userId;
   final int order;
   final String name;
   final bool exclude;
@@ -50,10 +51,11 @@ class PortfolioFolderModel extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [id, order, name, exclude, hideClosedPositions, daily, overall, lastUpdated];
+  List<Object> get props => [id, userId, order, name, exclude, hideClosedPositions, daily, overall, lastUpdated];
 
   PortfolioFolderModel({
     String id,
+    @required this.userId,
     @required this.order,
     @required this.name,
     @required this.exclude,
@@ -68,6 +70,7 @@ class PortfolioFolderModel extends Equatable {
 
   PortfolioFolderModel.empty () :
     this.id = '',
+    this.userId = '',
     this.order = -1,
     this.name = '',
     this.exclude = false,
@@ -79,6 +82,7 @@ class PortfolioFolderModel extends Equatable {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['userId'] = this.userId;
     data['order'] = this.order;
     data['name'] = this.name;
     data['exclude'] = this.exclude;
@@ -93,15 +97,16 @@ class PortfolioFolderModel extends Equatable {
   factory PortfolioFolderModel.fromStorage(Map<String, dynamic> json) {
     SortOptions sortOption = json ['defaultSortOption'] == null ? SortOptions.ticker : SortOptions.values.firstWhere((e) => e.toString() == json ['defaultSortOption']);
     return PortfolioFolderModel(
-      id: json ['id'],
+      id: json['id'],
+      userId: json['userId'],
       order: json['order'],
       name: json['name'],
       exclude: json['exclude'],
       hideClosedPositions: json['hideClosedPositions'] == null ? true : json ['hideClosedPositions'],
       defaultSortOption: sortOption,
-      daily: json ['daily'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['daily']),
-      overall: json ['overall'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['overall']),
-      lastUpdated: json ['lastUpdated'] == null ? DateTime.now() : json['lastUpdated'],
+      daily: json['daily'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['daily']),
+      overall: json['overall'] == null ? FolderChange(change: 0.0, changePercentage: 0.0) : FolderChange.fromJson(json['overall']),
+      lastUpdated: json['lastUpdated'] == null ? DateTime.now() : json['lastUpdated'],
     );
   }
 }

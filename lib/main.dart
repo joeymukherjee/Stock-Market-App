@@ -4,6 +4,7 @@ import 'package:firebase_analytics/observer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sma/bloc/authentication/authentication_bloc.dart';
 import 'package:sma/shared/styles.dart';
 
 import 'package:sma/bloc/news/news_bloc.dart';
@@ -39,6 +40,17 @@ void main() async {
       enabled: false,
       builder: (_) => MultiBlocProvider(
         providers: [
+          BlocProvider<AuthenticationService>(
+            create: (context){
+              return FirebaseEmailPassword();
+            },
+          ),
+          BlocProvider<AuthenticationBloc>(
+            create: (context) {
+              final authService = RepositoryProvider.of<AuthenticationService>(context);
+              return AuthenticationBloc(authService)..add(AppLoaded());
+            }
+          ),
           BlocProvider<SettingsBloc>(
             create: (context) => SettingsBloc(initialTheme)
           ),

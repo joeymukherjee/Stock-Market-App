@@ -7,6 +7,7 @@ import 'package:sma/helpers/sentry_helper.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/models/trade/trade_group.dart';
 import 'package:sma/respository/portfolio/folders_storage_client.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 part 'folders_event.dart';
 part 'folders_state.dart';
@@ -64,7 +65,7 @@ class PortfolioFoldersBloc extends Bloc<PortfolioFoldersEvent, PortfolioFoldersS
       for (var folder in foldersStored) {
         var changes = await toTotalReturnFromPortfolioIdUpdate (folder.id);
         PortfolioFolderModel updatedFolder = PortfolioFolderModel(
-          id: folder.id, name: folder.name, order: folder.order, exclude: folder.exclude,
+          id: folder.id, userId: FirebaseAuth.instance.currentUser.uid, name: folder.name, order: folder.order, exclude: folder.exclude,
           defaultSortOption: folder.defaultSortOption,
           hideClosedPositions: folder.hideClosedPositions,
           daily: changes ['daily'], overall: changes ['overall']);
