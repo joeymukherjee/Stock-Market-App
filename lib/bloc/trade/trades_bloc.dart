@@ -13,7 +13,8 @@ part 'trades_state.dart';
 
 class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
-  final TradesRepository repository = globalTradesDatabase;
+  final TradesRepository _tradesrepository = globalTradesDatabase;
+   final PortfolioFoldersRepository _foldersRepository = globalPortfolioFoldersDatabase;
 
   TradesBloc () : super (TradesInitial());
 
@@ -53,14 +54,29 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
     }
     if (event is DeletedTrade) {
       yield TradesLoading ();
-      yield* _mapDeletedTradeToState (event);
+      yield* _mapDeletedTradeToState(event);
     }
-
+    if (event is SaveFolderOnTradeGroupPage) {
+      yield TradesLoading();
+      yield* _mapSaveFolderOnTradeGroupPageToState(event);
+    }
     if (event is MergeMultipleTrades) {
       yield TradesLoading ();
-      yield* _mapMergeMultipleTradesToState (event);
+      yield* _mapMergeMultipleTradesToState(event);
+    }
+    if (event is ReorderedTradeGroups) { // TODO, we should probably save the order somehow so it persists
+      yield (TradeGroupsLoadSuccess(event.tradeGroups));
     }
     print ("mapEventToState: (event): " + event.toString());
+  }
+
+  Stream<TradesState> _mapSaveFolderOnTradeGroupPageToState(SaveFolderOnTradeGroupPage event) async* {
+    try {
+      yield await this._pickedPortfolio (event.model.id);
+    } catch (e) {
+      print (e);
+      yield TradesFailure (message: e.toString());
+    }
   }
 
   Stream<TradesState> _mapMergeMultipleTradesToState(MergeMultipleTrades event) async* {
@@ -75,9 +91,9 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Stream<TradesState> _mapDeletedTradeToState(DeletedTrade event) async* {
     try {
-      await this.repository.deleteTrade([event.id]);
+      await this._tradesrepository.deleteTrade([event.id]);
       yield TradesSavedOkay ();
-      List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+      List<Trade> trades = await this._tradesrepository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
       yield TradesLoadedEditing (trades);
     } catch (e) {
       print ("Exception: _mapDeletedTradeToState");
@@ -87,18 +103,18 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
   }
 
   Stream<TradesState> _mapSelectedTradesToState(SelectedTrades event) async* {
-    final List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    final List<Trade> trades = await this._tradesrepository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
     yield TradesLoaded (trades);
   }
 
   Stream<TradesState> _mapEditedTradesToState(EditedTrades event) async* {
-    final List<Trade> trades = await this.repository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
+    final List<Trade> trades = await this._tradesrepository.loadAllTradesForTickerAndPortfolio(event.ticker, event.portfolioId); // get all trades by portfolio id and ticker name ordered by date desc
     yield TradesLoadedEditing (trades);
   }
 
   Stream<TradesState> _mapDeletedTradeGroupToState(DeletedTradeGroup event) async* {
     try {
-      await this.repository.deleteAllTradesByTickerAndPortfolio(ticker: event.ticker, portfolioId: event.portfolioId);
+      await this._tradesrepository.deleteAllTradesByTickerAndPortfolio(ticker: event.ticker, portfolioId: event.portfolioId);
       yield TradesSavedOkay ();
     } catch (e) {
       print ("Exception: _mapDeletedTradeGroupToState");
@@ -109,9 +125,8 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Stream<TradesState> _mapEditedTradeGroupToState(EditedTradeGroup event) async* {
      try {
-      final _folderRepo = globalPortfolioFoldersDatabase;
-      PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: event.portfolioId);
-      final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
+      PortfolioFolderModel folder = await _foldersRepository.getPortfolioFolder(portfolioId: event.portfolioId);
+      final trades = await this._tradesrepository.loadAllTradesForPortfolio(event.portfolioId);
       if (trades.length == 0) yield TradesEmpty();
       else {
         var tradeGroups = await toTickerMapFromTrades (trades, folder);
@@ -132,14 +147,7 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Stream<TradesState> _mapPickedPortfolioToState(PickedPortfolio event) async* {
     try {
-      final _folderRepo = globalPortfolioFoldersDatabase;
-      PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: event.portfolioId);
-      final trades = await this.repository.loadAllTradesForPortfolio(event.portfolioId);
-      if (trades == null || trades.length == 0) yield TradesEmpty();
-      else {
-        var tradeGroups = await toTickerMapFromTrades (trades, folder);
-        yield TradeGroupsLoadSuccess(tradeGroups);
-      }
+      yield await this._pickedPortfolio(event.portfolioId);
     } catch (e) {
       print (e);
       yield TradesFailure(message: "Can't load your transactions for this portfolio!");
@@ -156,6 +164,17 @@ class TradesBloc extends Bloc<TradeEvent, TradesState> {
 
   Future _saveTrades (List<Trade> trades)
   {
-    return this.repository.saveTrades(trades);
+    return this._tradesrepository.saveTrades(trades);
+  }
+
+  Future<TradesState> _pickedPortfolio(String portfolioId) async {
+    final _folderRepo = globalPortfolioFoldersDatabase;
+      PortfolioFolderModel folder = await _folderRepo.getPortfolioFolder(portfolioId: portfolioId);
+      final trades = await this._tradesrepository.loadAllTradesForPortfolio(portfolioId);
+      if (trades == null || trades.length == 0) return TradesEmpty();
+      else {
+        var tradeGroups = await toTickerMapFromTrades (trades, folder);
+        return TradeGroupsLoadSuccess(tradeGroups);
+      }
   }
 }

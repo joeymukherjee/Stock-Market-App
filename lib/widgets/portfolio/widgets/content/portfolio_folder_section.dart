@@ -7,18 +7,28 @@ import 'package:sma/widgets/widgets/empty_screen.dart';
 import 'package:sma/bloc/trade/trades_bloc.dart';
 import 'package:sma/widgets/portfolio/widgets/content/porfolio_folder_stocks_card.dart';
 
-class PortfolioFolderSection extends StatelessWidget {
+class PortfolioFolderSection extends StatefulWidget {
   final PortfolioFolderModel folder;
 
   PortfolioFolderSection ({@required this.folder});
+
+  @override
+  _PortfolioFolderSectionState createState() => _PortfolioFolderSectionState();
+}
+
+class _PortfolioFolderSectionState extends State<PortfolioFolderSection> {
+
+  List<TradeGroup> _tradeGroups;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TradesBloc, TradesState>(
       builder: (BuildContext context, TradesState state) {
+        print (state);
         if (state is TradesSavedOkay) {
           BlocProvider
             .of<TradesBloc>(context)
-            .add(PickedPortfolio(folder.id));
+            .add(PickedPortfolio(widget.folder.id));
         }
         if (state is TradesEmpty) {
           return Column(
@@ -28,7 +38,7 @@ class PortfolioFolderSection extends StatelessWidget {
                   vertical: MediaQuery.of(context).size.height / 10,
                   horizontal: 4
                 ),
-                child: EmptyScreen(message: 'Looks like you don\'t have any transactions on ${folder.name}.  Add one by clicking the "Add" icon above!'),
+                child: EmptyScreen(message: 'Looks like you don\'t have any transactions on ${widget.folder.name}.  Add one by clicking the "Add" icon above!'),
               ),
             ],
           );
@@ -41,10 +51,11 @@ class PortfolioFolderSection extends StatelessWidget {
         }
         if (state is TradeGroupsLoadedEditing) {
           return Expanded(
-            child: _buildFolderSection(tradeGroups: state.tradeGroups)
+            child: _buildReorderableList(tradeGroups: state.tradeGroups)
           );
         }
         if (state is TradeGroupsLoadSuccess) {
+          _tradeGroups = state.tradeGroups;
           return Expanded(
             child: _buildFolderSection(tradeGroups: state.tradeGroups)
           );
@@ -56,6 +67,40 @@ class PortfolioFolderSection extends StatelessWidget {
             ),
         );
       }
+    );
+  }
+
+  Widget _getTile (TradeGroup item) {
+    return ListTile(
+      key: Key(item.ticker),
+      leading: Icon(Icons.highlight_off, color: Colors.blue),
+      title: Text(item.ticker, textAlign: TextAlign.center),
+      trailing: Icon(Icons.menu),
+    );
+  }
+
+  Widget _buildReorderableList ({List<TradeGroup> tradeGroups}) {
+    return ReorderableListView(
+      onReorder: (oldIndex, newIndex) {
+        setState (
+          () {
+              TradeGroup old = tradeGroups[oldIndex];
+              if (oldIndex > newIndex) {
+                for (int i = oldIndex; i > newIndex; i--) {
+                  tradeGroups[i] = tradeGroups[i - 1];
+                }
+                tradeGroups[newIndex] = old;
+              } else {
+                for (int i = oldIndex; i < newIndex - 1; i++) {
+                  tradeGroups[i] = tradeGroups[i + 1];
+                }
+                tradeGroups[newIndex - 1] = old;
+              }
+              _tradeGroups.clear();
+              tradeGroups.forEach((element) { _tradeGroups.add(TradeGroup.newOrder(element, _tradeGroups.length)); });
+          });
+      },
+      children: tradeGroups.map((item) => _getTile(item)).toList()
     );
   }
 

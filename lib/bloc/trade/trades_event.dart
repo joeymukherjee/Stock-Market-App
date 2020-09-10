@@ -111,3 +111,20 @@ class MergeMultipleTrades extends TradeEvent {
 
   MergeMultipleTrades ({@required this.portfolioId, @required this.trades});
 }
+
+class SaveFolderOnTradeGroupPage extends TradeEvent {
+
+  final PortfolioFolderModel model;
+
+  SaveFolderOnTradeGroupPage({
+    @required this.model
+  });
+}
+
+class ReorderedTradeGroups extends TradeEvent {
+  final List<TradeGroup> tradeGroups;
+
+  ReorderedTradeGroups({
+    @required this.tradeGroups
+  });
+}

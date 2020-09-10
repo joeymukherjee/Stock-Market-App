@@ -118,7 +118,7 @@ class FirestorePortfolioFoldersRepository extends PortfolioFoldersRepository {
 
   // Saves a portfolio folder in the database.
   Future<void> savePortfolioFolder({PortfolioFolderModel model}) async {
-    collection
+    await collection
     .doc(model.id == '' ? null : model.id)
     .set(model.toJson ())
     .then((value) => print("Folder updated!"))

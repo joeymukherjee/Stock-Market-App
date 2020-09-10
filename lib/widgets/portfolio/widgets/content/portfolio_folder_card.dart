@@ -38,13 +38,22 @@ class ChangeBox extends StatelessWidget {
   }
 }
 
-class PortfolioFolderCard extends StatelessWidget {
-
+class PortfolioFolderCard extends StatefulWidget {
   final PortfolioFolderModel data;
 
   PortfolioFolderCard({
     @required this.data
   });
+
+  @override
+  _PortfolioFolderCardState createState() => _PortfolioFolderCardState(data);
+}
+
+class _PortfolioFolderCardState extends State<PortfolioFolderCard> {
+
+  PortfolioFolderModel _data;
+
+  _PortfolioFolderCardState (this._data);
 
   @override
   Widget build(BuildContext context) {
@@ -60,21 +69,21 @@ class PortfolioFolderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Expanded(flex: 8, child: _buildFolderData()),
+                  Expanded(flex: 8, child: _buildFolderData(context, state)),
                 ],
               ),
             ),
 
             shape: RoundedRectangleBorder(borderRadius: kStandardBorder),
-            onPressed: () {
+            onPressed: () async {
               // Trigger fetch event.
               if (state is PortfolioFoldersLoadedEditingState) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', data)));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', _data)));
               } else {
                 BlocProvider
                   .of<TradesBloc>(context)
-                  .add(PickedPortfolio(data.id));
-                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(folder: data)));
+                  .add(PickedPortfolio(_data.id));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PortfolioFolder(folder: _data)));
               }
             },
           ),
@@ -83,62 +92,58 @@ class PortfolioFolderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFolderData() {
-    return BlocBuilder<PortfolioFoldersBloc, PortfolioFoldersState> (
-      builder: (BuildContext context, PortfolioFoldersState state) {
-        if (state is PortfolioFoldersLoadedEditingState) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              GestureDetector(
-                child: Icon(Icons.highlight_off, color: Colors.red),
-                onTap: () {
-                  Alert(
-                    context: context,
-                    type: AlertType.warning,
-                    title: "Delete Portfolio",
-                    desc: "Are you sure you wish to delete the portfolio " + data.name + "?",
-                    buttons: [
-                      DialogButton(
-                        child: Text(
-                          "Yes",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                        onPressed: () {
-                          BlocProvider.of<PortfolioFoldersBloc>(context).add(DeleteFolder(id: data.id));
-                          Navigator.pop(context);
-                        },
-                        color: Colors.red,
-                      ),
-                      DialogButton(
-                        child: Text(
-                          "No",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        color: Colors.green
-                      ),
-                    ],
-                  ).show();
-                },
-              ),
-              Text(data.name, style: Theme.of(context).textTheme.bodyText2),
-              Icon(Icons.menu) // TODO - figure out how to move rows in a list
-            ],
-          );
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              SizedBox(width: 100.0, child: Text(data.name, style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 10))),
-              ChangeBox (label: 'Daily', data: data.daily),
-              ChangeBox (label: 'Overall', data: data.overall)
-            ],
-          );
-        }
-      }
-    );
+  Widget _buildFolderData(BuildContext context, PortfolioFoldersState state) {
+    if (state is PortfolioFoldersLoadedEditingState) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          GestureDetector(
+            child: Icon(Icons.highlight_off, color: Colors.red),
+            onTap: () {
+              Alert(
+                context: context,
+                type: AlertType.warning,
+                title: "Delete Portfolio",
+                desc: "Are you sure you wish to delete the portfolio " + _data.name + "?",
+                buttons: [
+                  DialogButton(
+                    child: Text(
+                      "Yes",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    onPressed: () {
+                      BlocProvider.of<PortfolioFoldersBloc>(context).add(DeleteFolder(id: _data.id));
+                      Navigator.pop(context);
+                    },
+                    color: Colors.red,
+                  ),
+                  DialogButton(
+                    child: Text(
+                      "No",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    color: Colors.green
+                  ),
+                ],
+              ).show();
+            },
+          ),
+          Text(_data.name, style: Theme.of(context).textTheme.bodyText2),
+          Icon(Icons.menu) // TODO - figure out how to move rows in a list
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          SizedBox(width: 100.0, child: Text(_data.name, style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 10))),
+          ChangeBox (label: 'Daily', data: _data.daily),
+          ChangeBox (label: 'Overall', data: _data.overall)
+        ],
+      );
+    }
   }
 }

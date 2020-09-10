@@ -9,8 +9,8 @@ Math
 
 Trades
     Add total return as first portfolio
-    Reorder trade groups
     Import stuff from my Robinhood spreadsheet (works, but not on simulator?)
+    Persist order of trade groups
 
 Database
     Change to cloud based database for watchlists?
@@ -18,10 +18,8 @@ Database
 Portfolio UI
     reorder list on long press?
 
-
 Portfolio Stuff
     Reorder portfolios - control is there, but the Reorderable doesn't seem to work in a listview parent
-    On the add/edit portfolio, we have to use onChanged.  Why?  We only care after they save, but it doesn't change on the onSaved call
 
 Automation
     Download trades from TD Ameritrade - https://developer.tdameritrade.com/apis
@@ -34,8 +32,6 @@ Use finnhub.io or Tiingo in addition to IEX Cloud
 
 use GlobalConfiguration to save/retrieve things like which API provider to use?
    save this in SharedPreferences
-Integration with FireBase - cloud storage
-Convert SEMBAST to FireBase
 
 Authentication via FaceID/TouchID to open app
 

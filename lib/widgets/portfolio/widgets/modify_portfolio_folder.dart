@@ -95,10 +95,10 @@ class ModifyPortfolioFolderSection extends StatefulWidget {
   ModifyPortfolioFolderSection (this._prefix, this._data);
 
   @override
-  _State createState() => _State();
+  _ModifyPortfolioFolderSectionState createState() => _ModifyPortfolioFolderSectionState();
 }
 
-class _State extends State<ModifyPortfolioFolderSection> {
+class _ModifyPortfolioFolderSectionState extends State<ModifyPortfolioFolderSection> {
   final _formKey = GlobalKey<FormState>();
   String _name;
   bool _exclude;
@@ -183,6 +183,7 @@ class _State extends State<ModifyPortfolioFolderSection> {
                   DropdownButton (
                     value: _sortOption,
                     items: [
+                      DropdownMenuItem (value: SortOptions.order, child: Text ('Order')),
                       DropdownMenuItem (value: SortOptions.ticker, child: Text ('Symbol')),
                       DropdownMenuItem (value: SortOptions.equity, child: Text ('Equity')),
                       DropdownMenuItem (value: SortOptions.dailyChange, child: Text ('Daily Change')),

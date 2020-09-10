@@ -11,6 +11,7 @@ import 'package:sma/respository/trade/trades_repo.dart';
 import 'package:sma/respository/trade/companies_repo.dart';
 
 class TradeGroup extends Equatable {
+  final int order;
   final String ticker;
   final String companyName;
   final PortfolioFolderModel folder;
@@ -20,6 +21,7 @@ class TradeGroup extends Equatable {
   final FolderChange overall;
 
   TradeGroup({
+    @required this.order,
     @required this.ticker,
     @required this.companyName,
     @required this.folder,
@@ -28,6 +30,16 @@ class TradeGroup extends Equatable {
     @required this.daily,
     @required this.overall
   });
+
+  TradeGroup.newOrder(TradeGroup value, int order) :
+    this.ticker = value.ticker,
+    this.companyName = value.companyName,
+    this.folder = value.folder,
+    this.order = order,
+    this.totalNumberOfShares = value.totalNumberOfShares,
+    this.totalEquity = value.totalEquity,
+    this.daily = value.daily,
+    this.overall = value.overall;
 
   @override
   bool get stringify => true;
@@ -97,7 +109,7 @@ Future<Map<String, FolderChange>> toTotalReturnFromPortfolioIdUpdate (String por
   return {'daily': daily, 'overall': overall};
 }
 
-Future<TradeGroup> getTradeGroup (String ticker, PortfolioFolderModel folder, Company company, List<Trade> trades) async
+Future<TradeGroup> getTradeGroup (String ticker, int tickerNumber, PortfolioFolderModel folder, Company company, List<Trade> trades) async
 {
   final _companiesRepo = LocalCompaniesRepository ();
 
@@ -120,6 +132,7 @@ Future<TradeGroup> getTradeGroup (String ticker, PortfolioFolderModel folder, Co
   return TradeGroup (ticker: ticker,
                     companyName: company.companyName,
                     folder: folder,
+                    order: tickerNumber,
                     totalNumberOfShares: numberOfShares,
                     totalEquity: equity,
                     daily: dailyReturns,
@@ -133,13 +146,13 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, PortfolioFo
   await Future.forEach (trades, ((trade) async {
     if (!tickerMap.containsKey(trade.ticker)) {
       Company company = await _companiesRepo.loadCompany (trade.ticker);
-      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, folder, company, trades);
+      tickerMap[trade.ticker] = await getTradeGroup (trade.ticker, tickerMap.length, folder, company, trades);
     }
   }));
 
   SplayTreeMap <dynamic, TradeGroup> sortedMap = SplayTreeMap (
     (dynamic key1, dynamic key2) {
-      return key1 is num ? ((key1 as double).compareTo(key2 as double)) : key1.compareTo (key2);
+      return key1 is double ? (key1.compareTo(key2 as double)) : key1.compareTo (key2);
     }
   );
 
@@ -153,7 +166,7 @@ Future <List<TradeGroup>> toTickerMapFromTrades (List<Trade> trades, PortfolioFo
         if (value.totalNumberOfShares != 0 || !value.folder.hideClosedPositions) {
           dynamic key;
           switch (folder.defaultSortOption) {
-            case SortOptions.order : key = value.ticker; break; // TODO - we don't have order saved?
+            case SortOptions.order : key = value.order; break; // TODO - we don't have order saved?
             case SortOptions.ticker : key = value.ticker; break;
             case SortOptions.equity : key = value.totalEquity + value.overall.change; break;
             case SortOptions.dailyChange : key = value.daily.change; break;

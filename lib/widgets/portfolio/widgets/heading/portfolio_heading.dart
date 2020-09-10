@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sma/bloc/portfolio/folders_bloc.dart';
 import 'package:sma/models/portfolio/folder.dart';
 import 'package:sma/shared/styles.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,16 +8,25 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sma/widgets/portfolio/widgets/modify_portfolio_folder.dart';
 import 'package:sma/widgets/portfolio/transaction.dart';
 
-class PortfolioHeadingSection extends StatelessWidget {
+class PortfolioHeadingSection extends StatefulWidget {
   final PortfolioFolderModel folder;
 
   PortfolioHeadingSection ({@required this.folder});
 
+  @override
+  _PortfolioHeadingSectionState createState() => _PortfolioHeadingSectionState(folder);
+}
+
+class _PortfolioHeadingSectionState extends State<PortfolioHeadingSection> {
+  PortfolioFolderModel _folder;
+
+  _PortfolioHeadingSectionState (this._folder);
+
   void clickedAdd(BuildContext context, TradesState state) async {
     BlocProvider.of<TradesBloc>(context).add(AddedTransaction());
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: folder.name, portfolioId: folder.id, defaultTicker: null)));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => AddTransaction(portfolioName: _folder.name, portfolioId: _folder.id, defaultTicker: null)));
     if (state is TradesSavedOkay) {
-      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id));
+      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(_folder.id));
     }
   }
 
@@ -29,13 +39,25 @@ class PortfolioHeadingSection extends StatelessWidget {
     } else {
       BlocProvider
         .of<TradesBloc>(context)
-        .add(EditedTradeGroup(folder.id));
+        .add(EditedTradeGroup(_folder.id));
+    }
+  }
+
+  void finishedEditing(BuildContext context, TradesState state) {
+    if (state is TradeGroupsLoadedEditing) {
+      BlocProvider.of<TradesBloc>(context).add(ReorderedTradeGroups(tradeGroups: state.tradeGroups));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TradesBloc, TradesState> (
+    return BlocListener<PortfolioFoldersBloc, PortfolioFoldersState> (
+      listener: (context, state) {
+        if (state is PortfolioFolderSavedOkay) {
+          _folder = state.folder;
+        }
+      },
+      child: BlocBuilder<TradesBloc, TradesState> (
       builder: (BuildContext context, TradesState state) {
         bool _isEditing = (state is TradeGroupsLoadedEditing) || (state is TradesEmpty);
         return Padding(
@@ -50,18 +72,14 @@ class PortfolioHeadingSection extends StatelessWidget {
                   GestureDetector(
                     child: _isEditing ? Icon(Icons.done) : Icon(Icons.arrow_back_ios),
                     onTap: () => {
-                      _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) :
-                                    {
-                                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id))
-                                    }
-                                  } : Navigator.pop(context)
+                      _isEditing ? {(state is TradesEmpty) ? Navigator.pop(context) : finishedEditing(context, state)} : Navigator.pop(context)
                     }
                   ),
                   GestureDetector(
-                    child: Text(folder.name, style: kPortfolioHeaderTitle, textAlign: TextAlign.center),
+                    child: Text(_folder.name, style: kPortfolioHeaderTitle, textAlign: TextAlign.center),
                     onTap: () async {
-                      await Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', folder)));
-                      BlocProvider.of<TradesBloc>(context).add(PickedPortfolio(folder.id));
+                      await Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyPortfolioFolderSection ('Edit', _folder)));
+                      BlocProvider.of<TradesBloc>(context).add(SaveFolderOnTradeGroupPage(model: _folder));
                     },
                   ),
                   GestureDetector(
@@ -74,6 +92,7 @@ class PortfolioHeadingSection extends StatelessWidget {
           )
         );
       }
+      )
     );
   }
 }
